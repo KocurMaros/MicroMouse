@@ -1,0 +1,12 @@
+M48
+; DRILL file {KiCad 7.0.10-unknown-202401012134~036241c819~ubuntu22.04.1} date St 10. január 2024, 18:25:39
+; FORMAT={-:-/ absolute / inch / decimal}
+; #@! TF.CreationDate,2024-01-10T18:25:39+01:00
+; #@! TF.GenerationSoftware,Kicad,Pcbnew,7.0.10-unknown-202401012134~036241c819~ubuntu22.04.1
+; #@! TF.FileFunction,NonPlated,1,2,NPTH
+FMAT,2
+INCH
+%
+G90
+G05
+M30
