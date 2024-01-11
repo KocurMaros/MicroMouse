@@ -48,13 +48,7 @@
           "min_clearance": 0.5
         }
       },
-      "diff_pair_dimensions": [
-        {
-          "gap": 0.0,
-          "via_gap": 0.0,
-          "width": 0.0
-        }
-      ],
+      "diff_pair_dimensions": [],
       "drc_exclusions": [],
       "meta": {
         "version": 2
@@ -171,19 +165,8 @@
           "td_width_to_size_filter_ratio": 0.9
         }
       ],
-      "track_widths": [
-        0.0,
-        0.3,
-        0.5,
-        0.7,
-        1.0
-      ],
-      "via_dimensions": [
-        {
-          "diameter": 0.0,
-          "drill": 0.0
-        }
-      ],
+      "track_widths": [],
+      "via_dimensions": [],
       "zones_allow_external_fillets": false
     },
     "layer_presets": [],
@@ -409,7 +392,7 @@
     "pinned_symbol_libs": []
   },
   "meta": {
-    "filename": "main_board.kicad_pro",
+    "filename": "power_pcb.kicad_pro",
     "version": 1
   },
   "net_settings": {
@@ -445,7 +428,7 @@
       "idf": "",
       "netlist": "",
       "specctra_dsn": "",
-      "step": "../../../../../delete/main_board.step",
+      "step": "",
       "vrml": ""
     },
     "page_layout_descr_file": ""
@@ -486,20 +469,16 @@
   },
   "sheets": [
     [
-      "3863100a-f026-49db-8424-2d27c05016cc",
+      "5af65d2c-bfc9-444e-9e0e-de6b43a50f70",
       ""
     ],
     [
-      "deb1eb25-7588-4e1f-97f3-93d61e76bc0e",
-      "MCU"
-    ],
-    [
-      "112733e4-8eb6-414e-afb1-76d63d2a808b",
+      "d5dffbbc-f0ec-4c66-af12-40ea050b2ce4",
       "Power Supplies"
     ],
     [
-      "e041bfaf-2492-4cbf-be74-a40fc3304146",
-      "sensors"
+      "471a5e04-d549-427e-8bb5-8a84e9e413d0",
+      "Motors"
     ]
   ],
   "text_variables": {}
