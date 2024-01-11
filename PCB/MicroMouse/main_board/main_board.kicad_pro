@@ -443,7 +443,7 @@
       "idf": "",
       "netlist": "",
       "specctra_dsn": "",
-      "step": "",
+      "step": "../../../../../delete/main_board.step",
       "vrml": ""
     },
     "page_layout_descr_file": ""
@@ -486,6 +486,22 @@
     [
       "3863100a-f026-49db-8424-2d27c05016cc",
       ""
+    ],
+    [
+      "deb1eb25-7588-4e1f-97f3-93d61e76bc0e",
+      "MCU"
+    ],
+    [
+      "de46862b-6f95-48bf-93c3-bde6508b6494",
+      "Motors"
+    ],
+    [
+      "112733e4-8eb6-414e-afb1-76d63d2a808b",
+      "Power Supplies"
+    ],
+    [
+      "e041bfaf-2492-4cbf-be74-a40fc3304146",
+      "sensors"
     ]
   ],
   "text_variables": {}
