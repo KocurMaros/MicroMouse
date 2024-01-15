@@ -55,9 +55,11 @@ void task_acquire(void * arg)
         act_time = esp_timer_get_time();
         if ( cycle_time > act_time )  // ak pretecie act_time, vyresetuj cycle_time
             cycle_time = act_time;
-        else if ((act_time - cycle_time) > 100000000 ) {
-            xQueueSend( FIFO_Acq_to_Comm, &meas, 30 / portTICK_PERIOD_MS );
-            xTaskNotify(xTaskCommHandle, ATMEL_COMM_OK, eSetBits);
+        else if ((act_time - cycle_time) > 10000000 ) {
+            atmel_read(0x00, 3);
+            
+            // xQueueSend( FIFO_Acq_to_Comm, &meas, 30 / portTICK_PERIOD_MS );
+            // xTaskNotify(xTaskCommHandle, ATMEL_COMM_OK, eSetBits);
         }
         loop_counter++;
     }

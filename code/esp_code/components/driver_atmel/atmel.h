@@ -27,7 +27,7 @@
 #define SCK     18
 #define MOSI    23 
 #define MISO    19 
-#define CLOCK_SPEED 8000000
+#define CLOCK_SPEED 4000000
 #define CS      21
 
 #define ATMEL_RESET 5555 
@@ -38,10 +38,10 @@
  * @return  esp_err_t 
  */
 esp_err_t spi_master_init(void);
+
 esp_err_t atmel_init();
 void atmel_reset();
-void atmel_write(uint8_t reg, uint8_t reg_val_HSB, uint8_t reg_val_MSB, uint8_t reg_val_LSB, int length);
 uint32_t atmel_read(uint8_t reg, int length);
-void atmel_command(uint8_t cmd);
+
 
 #endif

@@ -64,27 +64,6 @@ esp_err_t atmel_init(){
     vTaskDelay(1000 / portTICK_PERIOD_MS);
     return ret;
 }
-void atmel_write(uint8_t reg, uint8_t reg_val_HSB, uint8_t reg_val_MSB, uint8_t reg_val_LSB, int length){
-    uint8_t write_command = 0xC0;
-
-	write_command |= (reg << 1);
-   
-    spi_transaction_t write_reg;	 
-
-    memset(&write_reg, 0, sizeof(write_reg));  //sets trans_desc1 to zero.  Errors will occur if this is not done.
- 
-
-	write_reg.addr = 0;
-	write_reg.cmd  = write_command;
-	write_reg.flags = SPI_TRANS_USE_TXDATA;
-	write_reg.length = length;    
-	write_reg.rxlength = 0;
-	write_reg.tx_data[0] = reg_val_HSB;
-	write_reg.tx_data[1] = reg_val_MSB;
-	write_reg.tx_data[2] = reg_val_LSB;
-
-	spi_device_transmit(spi3, &write_reg);
-}
 
 uint32_t atmel_read(uint8_t reg, int length){
    
@@ -131,16 +110,3 @@ uint32_t atmel_read(uint8_t reg, int length){
 
 }
 
-void atmel_command(uint8_t cmd){
-    spi_transaction_t trans_desc;
-
-    memset(&trans_desc,0,sizeof(trans_desc));
-
-	trans_desc.addr = 0;
-	trans_desc.cmd  = (cmd);  //conversion command 0x80 | cmd
-	trans_desc.flags = 0;
-	trans_desc.length = 8;    
-	trans_desc.rxlength = 0;
-
-	ESP_ERROR_CHECK(spi_device_transmit(spi3, &trans_desc));
-}

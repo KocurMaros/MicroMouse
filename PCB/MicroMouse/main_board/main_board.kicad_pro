@@ -34,9 +34,9 @@
         "other_text_thickness": 0.15,
         "other_text_upright": false,
         "pads": {
-          "drill": 0.762,
-          "height": 1.524,
-          "width": 1.524
+          "drill": 1.19,
+          "height": 2.19,
+          "width": 1.74
         },
         "silk_line_width": 0.15,
         "silk_text_italic": false,
@@ -500,6 +500,10 @@
     [
       "e041bfaf-2492-4cbf-be74-a40fc3304146",
       "sensors"
+    ],
+    [
+      "b8b764a9-91e9-4645-b5a7-2fa40e552ab9",
+      "Motors"
     ]
   ],
   "text_variables": {}
