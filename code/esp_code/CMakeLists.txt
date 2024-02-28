@@ -3,8 +3,8 @@
 cmake_minimum_required(VERSION 3.5)
 
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
-idf_build_component("components/driver_atmel")
 idf_build_component("components/Tasks")
+idf_build_component("components/driver_tof")
 
 # set(EXTRA_COMPONENT_DIRS $ENV{HOME}/Nextcloud/IDF/esp-idf-lib/components)
 project(MicroMouse)

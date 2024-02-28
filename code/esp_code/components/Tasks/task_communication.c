@@ -3,9 +3,6 @@
 #include "../../main/main.h"
 #include "../../build/config/sdkconfig.h"
 
-#include "../driver_atmel/atmel.h"
-#include "../driver_atmel/VALUES.h"
-
 #include "esp_system.h"
 #include "esp_sntp.h"
 #include "esp_log.h"

@@ -9,8 +9,6 @@
 #include "driver/ledc.h"
 #include "esp_timer.h"
 
-#include "../driver_atmel/atmel.h"  
-#include "../driver_atmel/VALUES.h"
 #include "../../main/main.h"
 
 
