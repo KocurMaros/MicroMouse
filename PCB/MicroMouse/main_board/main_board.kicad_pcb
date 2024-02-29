@@ -184,7 +184,7 @@
 		(descr "Through hole straight socket strip, 1x06, 2.54mm pitch, single row (from Kicad 4.0.7), script generated")
 		(tags "Through hole socket strip THT 1x06 2.54mm single row")
 		(property "Reference" "J4"
-			(at 0 -2.769999 100)
+			(at 0 -2.769998 100)
 			(layer "F.Fab")
 			(uuid "46a19e2b-6453-4dde-b665-548ea0e59cc1")
 			(effects
@@ -1056,7 +1056,7 @@
 		(descr "Through hole straight socket strip, 1x06, 2.54mm pitch, single row (from Kicad 4.0.7), script generated")
 		(tags "Through hole socket strip THT 1x06 2.54mm single row")
 		(property "Reference" "J8"
-			(at 0 -2.769999 80)
+			(at 0 -2.769998 80)
 			(layer "F.Fab")
 			(uuid "ba3538de-fe98-4ce5-8b8d-b143125ebcb9")
 			(effects
@@ -1485,7 +1485,7 @@
 			(uuid "fa7a06d0-ddf6-4b16-a139-691a7714fb96")
 		)
 		(fp_line
-			(start -0.799999 0.4)
+			(start -0.799998 0.4)
 			(end -0.8 -0.4)
 			(stroke
 				(width 0.1)
@@ -1496,7 +1496,7 @@
 		)
 		(fp_line
 			(start -0.8 -0.4)
-			(end 0.799999 -0.4)
+			(end 0.799998 -0.4)
 			(stroke
 				(width 0.1)
 				(type solid)
@@ -1506,7 +1506,7 @@
 		)
 		(fp_line
 			(start 0.8 0.4)
-			(end -0.799999 0.4)
+			(end -0.799998 0.4)
 			(stroke
 				(width 0.1)
 				(type solid)
@@ -1515,7 +1515,7 @@
 			(uuid "7fdc47af-dbf2-4c01-87e6-a13b7476c59e")
 		)
 		(fp_line
-			(start 0.799999 -0.4)
+			(start 0.799998 -0.4)
 			(end 0.8 0.4)
 			(stroke
 				(width 0.1)
@@ -8415,7 +8415,7 @@
 			(uuid "84d7193c-dec9-417c-b9b4-cbe809a4b617")
 		)
 		(fp_line
-			(start -0.799999 -0.4)
+			(start -0.799998 -0.4)
 			(end 0.8 -0.4)
 			(stroke
 				(width 0.1)
@@ -8426,7 +8426,7 @@
 		)
 		(fp_line
 			(start -0.8 0.4)
-			(end -0.799999 -0.4)
+			(end -0.799998 -0.4)
 			(stroke
 				(width 0.1)
 				(type solid)
@@ -8436,7 +8436,7 @@
 		)
 		(fp_line
 			(start 0.8 -0.4)
-			(end 0.799999 0.4)
+			(end 0.799998 0.4)
 			(stroke
 				(width 0.1)
 				(type solid)
@@ -8445,7 +8445,7 @@
 			(uuid "3cd28aab-4ce0-44c7-b748-b0313e1ff4fc")
 		)
 		(fp_line
-			(start 0.799999 0.4)
+			(start 0.799998 0.4)
 			(end -0.8 0.4)
 			(stroke
 				(width 0.1)
@@ -11842,8 +11842,8 @@
 		(uuid "a6f81b10-60da-4544-8cdb-8158bfce7c93")
 	)
 	(gr_rect
-		(start 30 60)
-		(end 65 167)
+		(start 23.6 50.2)
+		(end 58.6 157.2)
 		(stroke
 			(width 0.15)
 			(type default)
