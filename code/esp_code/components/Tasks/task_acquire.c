@@ -10,7 +10,7 @@
 #include "esp_timer.h"
 
 #include "../../main/main.h"
-
+#include "meas_data.h"
 
 static const char *TAG = "task_acquire.c";
 
@@ -22,9 +22,9 @@ static const char *TAG = "task_acquire.c";
 #define LEDC_FREQUENCY          (50) // Frequency in Hertz. Set frequency at 5 kHz
 
 
-VALUES_Meas meas;
-    QueueHandle_t FIFO_Acq_to_Comm;
-    TaskHandle_t xTaskCommHandle;
+MeasData meas;
+QueueHandle_t FIFO_Acq_to_Comm;
+TaskHandle_t xTaskCommHandle;
 
 static void IRAM_ATTR gpio_isr_handler(void* arg){
 
@@ -43,8 +43,7 @@ void task_acquire(void * arg)
     gpio_config(&io_conf);
     gpio_install_isr_service(0);
     gpio_isr_handler_add(pin_example, gpio_isr_handler, (void*) &pin_example);
-    
-    ESP_ERROR_CHECK(atmel_init());
+
    
     uint64_t cycle_time = esp_timer_get_time();
     uint64_t act_time;
@@ -53,9 +52,11 @@ void task_acquire(void * arg)
         act_time = esp_timer_get_time();
         if ( cycle_time > act_time )  // ak pretecie act_time, vyresetuj cycle_time
             cycle_time = act_time;
-        else if ((act_time - cycle_time) > 10000000 ) {
-            atmel_read(0x00, 3);
-            
+        else if ((act_time - cycle_time) > 10000000 ) {          
+
+            /*
+            * Inotify to send data between tasks
+            */   
             // xQueueSend( FIFO_Acq_to_Comm, &meas, 30 / portTICK_PERIOD_MS );
             // xTaskNotify(xTaskCommHandle, ATMEL_COMM_OK, eSetBits);
         }

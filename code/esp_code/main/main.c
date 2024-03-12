@@ -17,8 +17,7 @@
 #include "nvs_flash.h"
 #include "nvs.h"
 
-#include "../components/driver_atmel/atmel.h"
-#include "../components/driver_atmel/VALUES.h"
+#include "../components/Tasks/meas_data.h"
 
 // Variables from main.h
 QueueHandle_t FIFO_Acq_to_Comm;
@@ -66,7 +65,7 @@ void app_main()
         ESP_LOGE("main.c", "NVS open error");    
     }
     
-    FIFO_Acq_to_Comm = xQueueCreate(2, sizeof(VALUES_Meas));
+    FIFO_Acq_to_Comm = xQueueCreate(2, sizeof(MeasData));
     //* Initialize taskstask_acquire, "Acquisition task for MAX11254", 4096, NULL, 10, &xTaskAcqHandle); // ADE7880
    
     xTaskCreatePinnedToCore(

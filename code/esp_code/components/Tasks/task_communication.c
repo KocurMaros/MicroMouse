@@ -8,11 +8,12 @@
 #include "esp_log.h"
 #include "nvs_flash.h"
 
+#include "meas_data.h"
 /** FreeRTOS */
 static const char *TAG = "task_communication.c";
 
 
-static VALUES_Meas val;
+static MeasData val;
 QueueHandle_t FIFO_Acq_to_Comm;
 
 void task_communication(void *arg)
