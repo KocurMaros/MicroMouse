@@ -10,22 +10,22 @@
 
 typedef enum meas_code_t
 {
-    ATMEL_COMM_FAIL = 0,
-    ATMEL_COMM_OK = 1
+    COMM_FAIL = 0,
+    COMM_OK = 1
 } meas_code_t;
 
 //* FreeRTOS Queues
-extern QueueHandle_t FIFO_Acq_to_Comm;
+extern QueueHandle_t FIFO_Meas_to_Cont;
 
 #define bitRead(value,bit) (((value) >> (bit)) & 0x01)
 #define bitClear(value,bit) ((value) &= ~(1UL << (bit)))
 #define bitSet(value,bit) ((value) |= (1UL << (bit)))
 
 //* FreeRTOS Tasks
-extern TaskHandle_t xTaskCommHandle;
-extern TaskHandle_t xTaskAcqHandWle;
+extern TaskHandle_t xTaskControlHandle;
+extern TaskHandle_t xTaskMeasHandle;
 
-void task_communication(void * arg);
-void task_acquire(void * arg);
+void task_meas(void * arg);
+void task_control(void * arg);
 
 #endif /** __MAIN_H */
