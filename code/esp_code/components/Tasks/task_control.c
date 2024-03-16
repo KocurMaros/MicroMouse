@@ -60,7 +60,7 @@ void task_control(void *arg)
                 up = false;
         }
         vTaskDelay(10 / portTICK_PERIOD_MS);
-        printf("PWM: %d\n",pwm);
+        printf("PWM: %ld\n",pwm);
     }
 }
 
@@ -98,5 +98,5 @@ void pwm_change_duty_raw(uint8_t channel, uint32_t pwm){
     ESP_ERROR_CHECK(ledc_set_duty(LEDC_MODE, channel, pwm));
     // Update duty to apply the new value
     ESP_ERROR_CHECK(ledc_update_duty(LEDC_MODE, channel));
-    
 }
+
