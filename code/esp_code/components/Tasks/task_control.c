@@ -17,7 +17,7 @@
 #define LEDC_TIMER              LEDC_TIMER_0
 #define LEDC_MODE               LEDC_HIGH_SPEED_MODE
 #define LEDC_DUTY_RES           LEDC_TIMER_10_BIT // Set duty resolution to 13 bits
-#define LEDC_DUTY_MAX           (1023)  // 2 ** 13 -1 
+#define LEDC_DUTY_MAX           (1023)  // 2 ** 13 -1
 #define LEDC_FREQUENCY          (8000) // Frequency in Hertz. Set frequency at 5 kHz
 
 static const char *TAG = "task_control.c";
@@ -29,9 +29,9 @@ QueueHandle_t FIFO_Acq_to_Comm;
 
 void task_control(void *arg)
 {
-   
+
     uint32_t ulNotifiedValue;
-    
+
     gpio_set_direction(MOTOR_A_1, GPIO_MODE_OUTPUT);
     gpio_set_direction(MOTOR_A_2, GPIO_MODE_OUTPUT);
     gpio_set_direction(MOTOR_B_1, GPIO_MODE_OUTPUT);
@@ -46,7 +46,7 @@ void task_control(void *arg)
     uint32_t pwm = 0;
     bool up = true;
     for(;;)
-    {       
+    {
         pwm_change_duty_raw(MOTOR_A_PWM_CHANNEL1, pwm);
         pwm_change_duty_raw(MOTOR_B_PWM_CHANNEL1, pwm);
         if(!up){

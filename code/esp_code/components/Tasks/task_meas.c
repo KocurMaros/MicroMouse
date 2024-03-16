@@ -36,19 +36,19 @@ void task_meas(void * arg)
     gpio_install_isr_service(0);
     gpio_isr_handler_add(pin_example, gpio_isr_handler, (void*) &pin_example);
 
-   
+
     uint64_t cycle_time = esp_timer_get_time();
     uint64_t act_time;
     uint64_t loop_counter = 0;
-    for(;;){ 
+    for(;;){
         act_time = esp_timer_get_time();
         if ( cycle_time > act_time )  // ak pretecie act_time, vyresetuj cycle_time
             cycle_time = act_time;
-        else if ((act_time - cycle_time) > 10000000 ) {          
+        else if ((act_time - cycle_time) > 10000000 ) {
 
             /*
             * Inotify to send data between tasks
-            */   
+            */
             // xQueueSend( FIFO_Acq_to_Comm, &meas, 30 / portTICK_PERIOD_MS );
             // xTaskNotify(xTaskCommHandle, COMM_OK, eSetBits);
         }
