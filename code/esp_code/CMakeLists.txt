@@ -6,6 +6,6 @@ include($ENV{IDF_PATH}/tools/cmake/project.cmake)
 idf_build_component("components/Tasks")
 idf_build_component("components/driver_tof")
 
-# set(EXTRA_COMPONENT_DIRS $ENV{HOME}/Nextcloud/IDF/esp-idf-lib/components)
+set(EXTRA_COMPONENT_DIRS $ENV{IDF_PATH}../esp-idf-lib/components)
 project(MicroMouse)
 
