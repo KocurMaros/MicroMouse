@@ -29,26 +29,21 @@ QueueHandle_t FIFO_Acq_to_Comm;
 
 void task_control(void *arg)
 {
-
     uint32_t ulNotifiedValue;
 
-    gpio_set_direction(MOTOR_A_1, GPIO_MODE_OUTPUT);
-    gpio_set_direction(MOTOR_A_2, GPIO_MODE_OUTPUT);
-    gpio_set_direction(MOTOR_B_1, GPIO_MODE_OUTPUT);
-    gpio_set_direction(MOTOR_B_2, GPIO_MODE_OUTPUT);
-    gpio_set_level(MOTOR_A_1, 1);
-    gpio_set_level(MOTOR_A_2, 0);
-    gpio_set_level(MOTOR_B_1, 1);
-    gpio_set_level(MOTOR_B_2, 0);
+    gpio_set_direction(MOTOR_A, GPIO_MODE_OUTPUT);
+    gpio_set_direction(MOTOR_B, GPIO_MODE_OUTPUT);
+    gpio_set_level(MOTOR_A, 1);
+    gpio_set_level(MOTOR_B, 1);
 
-    pwm_init(MOTOR_A_PWM, MOTOR_A_PWM_CHANNEL1);
-    pwm_init(MOTOR_B_PWM, MOTOR_B_PWM_CHANNEL1);
+    pwm_init(MOTOR_A_PWM, MOTOR_A_PWM_CHANNEL);
+    pwm_init(MOTOR_B_PWM, MOTOR_B_PWM_CHANNEL);
     uint32_t pwm = 0;
     bool up = true;
     for(;;)
     {
-        pwm_change_duty_raw(MOTOR_A_PWM_CHANNEL1, pwm);
-        pwm_change_duty_raw(MOTOR_B_PWM_CHANNEL1, pwm);
+        pwm_change_duty_raw(MOTOR_A_PWM_CHANNEL, pwm);
+        pwm_change_duty_raw(MOTOR_B_PWM_CHANNEL, pwm);
         if(!up){
             pwm--;
             if(pwm == 0)
@@ -60,7 +55,7 @@ void task_control(void *arg)
                 up = false;
         }
         vTaskDelay(10 / portTICK_PERIOD_MS);
-        printf("PWM: %d\n",pwm);
+		ESP_LOG_LEVEL(ESP_LOG_INFO, __FILE__, "PWM: %ld\n", pwm);
     }
 }
 
