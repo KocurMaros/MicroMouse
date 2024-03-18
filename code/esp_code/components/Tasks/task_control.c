@@ -60,7 +60,7 @@ void task_control(void *arg)
                 up = false;
         }
         vTaskDelay(10 / portTICK_PERIOD_MS);
-        printf("PWM: %ld\n",pwm);
+        printf("PWM: %d\n",pwm);
     }
 }
 
