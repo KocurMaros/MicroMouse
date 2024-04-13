@@ -11,5 +11,5 @@
 void i2c_init(void);
 void vl53l1_init(VL53L1_Dev_t *dev, int address);
 void setupManualCalibration(VL53L1_Dev_t *dev);
-void readResults(VL53L1_Dev_t *dev);
+uint16_t readResults(VL53L1_Dev_t *dev);
 uint16_t vl53l1_read(VL53L1_Dev_t *dev);

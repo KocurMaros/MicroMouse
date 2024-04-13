@@ -78,11 +78,16 @@ void task_meas(void * arg)
         if ( cycle_time > act_time )  // ak pretecie act_time, vyresetuj cycle_time
             cycle_time = act_time;
         else if ((act_time - cycle_time) > 10000000 ) {
-                vl53l1_read(tof_sensors[0]);
-                vl53l1_read(tof_sensors[1]);
-                vl53l1_read(tof_sensors[2]);
-                vl53l1_read(tof_sensors[3]);
+                meas.tof.tof1 = vl53l1_read(tof_sensors[0]);
+                meas.tof.tof2 = vl53l1_read(tof_sensors[1]);
+                meas.tof.tof3 = vl53l1_read(tof_sensors[2]);
+                meas.tof.tof4 = vl53l1_read(tof_sensors[3]);
 
+                printf("TOF1: %g\n",meas.tof.tof1);
+                printf("TOF2: %g\n",meas.tof.tof2);
+                printf("TOF3: %g\n",meas.tof.tof3);
+                printf("TOF4: %g\n",meas.tof.tof4);
+                printf("\n");
             /*
             * Inotify to send data between tasks
             */

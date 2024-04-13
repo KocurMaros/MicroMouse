@@ -89,7 +89,7 @@ void setupManualCalibration(VL53L1_Dev_t *dev){
     VL53L1_WrByte(dev, VL53L1_CAL_CONFIG__VCSEL_START, phasecal_result);
 }
 
-void readResults(VL53L1_Dev_t *dev)
+uint16_t readResults(VL53L1_Dev_t *dev)
 {
     static bool calibrated = false;
     uint8_t results[17];
@@ -139,7 +139,7 @@ void readResults(VL53L1_Dev_t *dev)
         }
     }
     uint16_t range_mm = ((uint32_t)finalCrossTalkCorrectedMm * 2011 + 0x0400) / 0x0800;
-    printf("range_mm = %d\n", range_mm);
+    return range_mm;
     //todo: status ?
 }
 
@@ -159,6 +159,5 @@ uint16_t vl53l1_read(VL53L1_Dev_t *dev)
         VL53L1_RdByte(dev, VL53L1_GPIO__TIO_HV_STATUS, &byteData);
     }
 
-    readResults(dev);
-    return 1;
+    return readResults(dev);
 }
