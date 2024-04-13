@@ -47,42 +47,16 @@ void task_meas(void * arg)
         gpio_pad_select_gpio(xshut_pins[i]);
         gpio_set_direction(xshut_pins[i], GPIO_MODE_OUTPUT);
         gpio_set_level(xshut_pins[i], 0);  
-        // tof_sensors[i]->I2cHandle = &i2c_master_port;
-        // tof_sensors[i]->I2cDevAddr = 0x29;
+        tof_sensors[i]->I2cHandle = &i2c_master_port;
+        tof_sensors[i]->I2cDevAddr = 0x29;
     }   
- 
-    tof_sensors[0]->I2cHandle = &i2c_master_port;
-    tof_sensors[0]->I2cDevAddr = 0x29;
-
-    tof_sensors[1]->I2cHandle = &i2c_master_port;
-    tof_sensors[1]->I2cDevAddr = 0x29;
-
-    tof_sensors[2]->I2cHandle = &i2c_master_port;
-    tof_sensors[2]->I2cDevAddr = 0x29;
-
-    tof_sensors[3]->I2cHandle = &i2c_master_port;
-    tof_sensors[3]->I2cDevAddr = 0x29;
-
-    gpio_pad_select_gpio(xshut_pins[0]);
-    gpio_set_direction(xshut_pins[0], GPIO_MODE_INPUT);
-    vTaskDelay(100 / portTICK_PERIOD_MS);
-    vl53l1_init(tof_sensors[0],addresses[0]);
-   
-    gpio_pad_select_gpio(xshut_pins[1]);
-    gpio_set_direction(xshut_pins[1], GPIO_MODE_INPUT);
-    vTaskDelay(100 / portTICK_PERIOD_MS);
-    vl53l1_init(tof_sensors[1],addresses[1]);
-
-    gpio_pad_select_gpio(xshut_pins[2]);
-    gpio_set_direction(xshut_pins[2], GPIO_MODE_INPUT);
-    vTaskDelay(100 / portTICK_PERIOD_MS);
-    vl53l1_init(tof_sensors[2],addresses[2]);
-
-    gpio_pad_select_gpio(xshut_pins[3]);
-    gpio_set_direction(xshut_pins[3], GPIO_MODE_INPUT);
-    vTaskDelay(100 / portTICK_PERIOD_MS);
-    vl53l1_init(tof_sensors[3],addresses[3]);
-
+    
+    for (int i = 0; i < 4; i++){
+        gpio_pad_select_gpio(xshut_pins[i]);
+        gpio_set_direction(xshut_pins[i], GPIO_MODE_INPUT);
+        vTaskDelay(100 / portTICK_PERIOD_MS);
+        vl53l1_init(tof_sensors[i],addresses[i]);
+    }
 
     uint8_t pin_example = 15;
     gpio_config_t io_conf;
