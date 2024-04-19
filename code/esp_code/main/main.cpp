@@ -23,12 +23,16 @@
 QueueHandle_t FIFO_Meas_to_Cont;
 TaskHandle_t xTaskControlHandle;
 TaskHandle_t xTaskMeasHandle;
-
+extern "C" 
+{ 
+	void app_main(); 
+	void task_meas(void * arg);
+} 
+// extern "C" 
+// { 
+// } 
 void app_main()
 {
-    // printf("free mem: %d\n",esp_get_free_heap_size());
-    // printf("main CORE  %d\n", xPortGetCoreID());
-    
     //* Initialize Components
     esp_err_t ret = nvs_flash_init();    //Initialize NVS
     if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND)
@@ -39,10 +43,8 @@ void app_main()
     ESP_ERROR_CHECK(ret);
     
     FIFO_Meas_to_Cont = xQueueCreate(2, sizeof(MeasData));
-    //* Initialize taskstask_acquire, "Acquisition task for MAX11254", 4096, NULL, 10, &xTaskAcqHandle); // ADE7880
    
-    xTaskCreatePinnedToCore(
-                            task_meas,   /* Function to implement the task */
+    xTaskCreatePinnedToCore(task_meas,   /* Function to implement the task */
                             "meas data from sensosors", /* Name of the task */
                             8192,       /*Stack size in words */
                             NULL,       /* Task input parameter */
