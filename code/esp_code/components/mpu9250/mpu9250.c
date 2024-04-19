@@ -19,9 +19,10 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
-// #include "i2c-easy.h"
+#include "i2c-easy.h"
 #include "mpu9250.h"
 #include "ak8963.h"
+#include "esp_log.h"
 
 #define I2C_MASTER_SCL_IO 22     /*!< gpio number for I2C master clock */
 #define I2C_MASTER_SDA_IO 21     /*!< gpio number for I2C master data  */
@@ -60,7 +61,6 @@ esp_err_t i2c_mpu9250_init(calibration_t *c)
   cal = c;
 
   ESP_LOGD(TAG, "i2c_mpu9250_init");
-  
   ESP_ERROR_CHECK(i2c_write_bit(I2C_MASTER_NUM, MPU9250_I2C_ADDR, MPU9250_RA_PWR_MGMT_1, MPU9250_PWR1_DEVICE_RESET_BIT, 1));
   vTaskDelay(10 / portTICK_PERIOD_MS);
 
@@ -243,6 +243,7 @@ esp_err_t get_accel_gyro(vector_t *va, vector_t *vg)
 {
   esp_err_t ret;
   uint8_t bytes[14];
+  
   ret = i2c_read_bytes(I2C_MASTER_NUM, MPU9250_I2C_ADDR, MPU9250_ACCEL_XOUT_H, bytes, 14);
   if (ret != ESP_OK)
   {

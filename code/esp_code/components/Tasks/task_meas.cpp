@@ -95,7 +95,6 @@ static void transform_mag(vector_t *v)
   v->z = -z;
 }
 
-MeasData meas;
 QueueHandle_t FIFO_Acq_to_Comm;
 TaskHandle_t xTaskCommHandle;
 
@@ -105,6 +104,7 @@ static void IRAM_ATTR gpio_isr_handler(void* arg){
 
 extern "C" void task_meas(void * arg)
 {
+    MeasData meas;
     i2c_init();
     VL53L1_Dev_t vl53l1_dev_1;
     VL53L1_Dev_t vl53l1_dev_2;
@@ -154,8 +154,8 @@ extern "C" void task_meas(void * arg)
     uint64_t i = 0;
     float temp = 0;
 
-    // i2c_mpu9250_init(&cal);
-    // ahrs_init(SAMPLE_FREQ_Hz, 0.9);
+    i2c_mpu9250_init(&cal);
+    ahrs_init(SAMPLE_FREQ_Hz, 0.9);
 
     for(;;){
         start_time = esp_timer_get_time();
@@ -163,17 +163,23 @@ extern "C" void task_meas(void * arg)
         vector_t va_temp, vg_temp, vm_temp;
 
         // Get the Accelerometer, Gyroscope and Magnetometer values.
-        // ESP_ERROR_CHECK(get_accel_gyro(&va, &vg));
+        ESP_ERROR_CHECK(get_accel_gyro(&va, &vg));
         va_temp = va;
         vg_temp = vg;
         vm_temp = vm;
         // xQueueSend( FIFO_Acq_to_Comm, &meas, 10 / portTICK_RATE_MS ); 
         // xTaskNotify(xTaskCommHandle, ADE_MEASURE_OK, eSetBits); // Notify the other task
-        // transform_accel_gyro(&va);
-	    // transform_accel_gyro(&vg);
+        transform_accel_gyro(&va);
+	    transform_accel_gyro(&vg);
+        meas.accel.accel_x = va.x;
+        meas.accel.accel_y = va.y;
+        meas.accel.accel_z = va.z;
+        meas.gyro.gyro_x = vg.x;
+        meas.gyro.gyro_y = vg.y;
+        meas.gyro.gyro_z = vg.z;
         end_time = esp_timer_get_time();
         frequency = 1000000.0/(end_time-start_time);
-        // ahrs_init(frequency, 0.9);
+        ahrs_init(frequency, 0.9);
 
         act_time = esp_timer_get_time();
         if ( cycle_time > act_time )  // ak pretecie act_time, vyresetuj cycle_time
@@ -189,7 +195,8 @@ extern "C" void task_meas(void * arg)
                 printf("TOF3: %g\n",meas.tof.tof3);
                 printf("TOF4: %g\n",meas.tof.tof4);
                 printf("\n");
-                // ESP_LOGI("IMU", "Temp	 %2.3f°C, Acc X	 %2.3f, Acc Y	 %2.3f, Acc Z	 %2.3f, Ang X	 %2.3f, Ang Y	 %2.3f, Ang Z	 %2.3f", temp, va_temp.x, va_temp.y, va_temp.z, vg_temp.x, vg_temp.y, vg_temp.z);
+                ESP_LOGI("IMU", "Acc X	 %2.3f, Acc Y	 %2.3f, Acc Z	 %2.3f, Ang X	 %2.3f, Ang Y	 %2.3f, Ang Z	 %2.3f", 
+                meas.accel.accel_x, meas.accel.accel_y, meas.accel.accel_z, meas.gyro.gyro_x, meas.gyro.gyro_y, meas.gyro.gyro_z);
             /*
             * Inotify to send data between tasks
             */
