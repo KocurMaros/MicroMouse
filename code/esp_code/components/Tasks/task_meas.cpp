@@ -104,6 +104,9 @@ static void IRAM_ATTR gpio_isr_handler(void* arg){
 
 extern "C" void task_meas(void * arg)
 {
+    gpio_pad_select_gpio(GPIO_NUM_13);
+    gpio_set_direction(GPIO_NUM_13, GPIO_MODE_OUTPUT);
+    gpio_set_level(GPIO_NUM_13, 0);  
     MeasData meas;
     i2c_init();
     VL53L1_Dev_t vl53l1_dev_1;
@@ -154,6 +157,8 @@ extern "C" void task_meas(void * arg)
     uint64_t i = 0;
     float temp = 0;
 
+    gpio_set_level(GPIO_NUM_13, 1); 
+    vTaskDelay(100 / portTICK_PERIOD_MS); 
     i2c_mpu9250_init(&cal);
     ahrs_init(SAMPLE_FREQ_Hz, 0.9);
 

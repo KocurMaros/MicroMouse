@@ -24,10 +24,7 @@ extern QueueHandle_t FIFO_Meas_to_Cont;
 //* FreeRTOS Tasks
 extern TaskHandle_t xTaskControlHandle;
 extern TaskHandle_t xTaskMeasHandle;
-// extern "C" 
-// { 
-// 	void task_meas(void * arg);
-// } 
+
 void task_control(void * arg);
 
 #endif /** __MAIN_H */
