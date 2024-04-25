@@ -5,6 +5,7 @@ cmake_minimum_required(VERSION 3.5)
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
 idf_build_component("components/Tasks")
 idf_build_component("components/driver_tof")
+idf_build_component("components/udp")
 
 set(EXTRA_COMPONENT_DIRS $ENV{IDF_PATH}../esp-idf-lib/components)
 project(MicroMouse)
