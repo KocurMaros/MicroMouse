@@ -58,18 +58,6 @@ void task_meas(void * arg)
         vl53l1_init(tof_sensors[i],addresses[i]);
     }
 
-    uint8_t pin_example = 15;
-    gpio_config_t io_conf;
-    io_conf.intr_type = GPIO_INTR_NEGEDGE;
-    io_conf.mode = GPIO_MODE_INPUT;
-    io_conf.pull_down_en = false;
-    io_conf.pull_up_en = false;
-    io_conf.pin_bit_mask = (1ULL << pin_example);
-    gpio_config(&io_conf);
-    gpio_install_isr_service(0);
-    gpio_isr_handler_add(pin_example, gpio_isr_handler, (void*) &pin_example);
-
-
     uint64_t cycle_time = esp_timer_get_time();
     uint64_t act_time;
     uint64_t loop_counter = 0;
@@ -77,7 +65,7 @@ void task_meas(void * arg)
         act_time = esp_timer_get_time();
         if ( cycle_time > act_time )  // ak pretecie act_time, vyresetuj cycle_time
             cycle_time = act_time;
-        else if ((act_time - cycle_time) > 10000000 ) {
+        else if ((act_time - cycle_time) > 10000 ) {
                 meas.tof.tof1 = vl53l1_read(tof_sensors[0]);
                 meas.tof.tof2 = vl53l1_read(tof_sensors[1]);
                 meas.tof.tof3 = vl53l1_read(tof_sensors[2]);
@@ -93,6 +81,7 @@ void task_meas(void * arg)
             */
             // xQueueSend( FIFO_Acq_to_Comm, &meas, 30 / portTICK_PERIOD_MS );
             // xTaskNotify(xTaskCommHandle, COMM_OK, eSetBits);
+            cycle_time = act_time;
         }
         loop_counter++;
     }
