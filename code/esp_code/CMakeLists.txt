@@ -6,6 +6,7 @@ include($ENV{IDF_PATH}/tools/cmake/project.cmake)
 idf_build_component("components/Tasks")
 idf_build_component("components/driver_tof")
 idf_build_component("components/udp")
+idf_build_component("components/protocol_examples_common")
 
 set(EXTRA_COMPONENT_DIRS $ENV{IDF_PATH}../esp-idf-lib/components)
 project(MicroMouse)
