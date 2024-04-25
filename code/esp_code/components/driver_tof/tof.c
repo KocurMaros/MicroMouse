@@ -91,7 +91,6 @@ void setupManualCalibration(VL53L1_Dev_t *dev){
 
 uint16_t readResults(VL53L1_Dev_t *dev)
 {
-    static bool calibrated = false;
     uint8_t results[17];
 
 
@@ -104,11 +103,10 @@ uint16_t readResults(VL53L1_Dev_t *dev)
     uint16_t finalCrossTalkCorrectedMm = (results[13] << 8) + results[14];
     uint16_t peakSignalCountRateCrosstalk = (results[15] << 8) + results[16];
 
-
-    if (!calibrated)
+    if (!dev->calibrated)
     {
         setupManualCalibration(dev);
-        calibrated = true;
+        dev->calibrated = 1;
     }
 
     uint16_t spadCount = dssActualEffectiveSpadsSD0;
