@@ -82,7 +82,7 @@ esp_err_t i2c_mpu9250_init(calibration_t *c)
 
   ESP_LOGD(TAG, "END of MPU9250 initialization");
 
-  // ESP_ERROR_CHECK(enable_magnetometer());
+  ESP_ERROR_CHECK(enable_magnetometer());
 
   print_settings();
 
