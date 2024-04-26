@@ -27,7 +27,7 @@ extern "C" {
 #include "calibrate.h"
 #include "common.h"
 }
-
+#include <stdint.h>
 
 #define XSHUT1 GPIO_NUM_23
 #define XSHUT2 GPIO_NUM_5
@@ -78,7 +78,10 @@ static void transform_accel_gyro(vector_t *v)
 //   v->y = -z;
 //   v->z = -z;
 }
-
+float gyroDegPerSec(int16_t gyroRaw) {
+    float gyroRes = static_cast<float>(251<<1)/INT16_MAX;
+    return (float)gyroRaw * gyroRes;
+}
 /**
  * Transformation: to get magnetometer aligned
  * @param  {object} s {x,y,z} sensor
@@ -153,7 +156,7 @@ extern "C" void task_meas(void * arg)
      * MPU9250
     */
     uint64_t start_time = 0, end_time = 0;
-    uint16_t frequency = 0;
+    uint16_t dt = 0;
     uint64_t i = 0;
     float temp = 0;
 
@@ -161,30 +164,48 @@ extern "C" void task_meas(void * arg)
     vTaskDelay(100 / portTICK_PERIOD_MS); 
     i2c_mpu9250_init(&cal);
     ahrs_init(SAMPLE_FREQ_Hz, 0.9);
+    float g_roll, g_pitch, g_yaw;
+    float a_roll, a_pitch;
 
-    for(;;){
-        start_time = esp_timer_get_time();
-        vector_t va, vg, vm;
-        vector_t va_temp, vg_temp, vm_temp;
+    vector_t va, vg, vm;
+    vector_t va_temp, vg_temp, vm_temp;
+    float roll{0}, pitch{0}, yaw{0};
+
+    for(;;){    
 
         // Get the Accelerometer, Gyroscope and Magnetometer values.
+        start_time = esp_timer_get_time();
         ESP_ERROR_CHECK(get_accel_gyro(&va, &vg));
-        va_temp = va;
-        vg_temp = vg;
-        vm_temp = vm;
-        // xQueueSend( FIFO_Acq_to_Comm, &meas, 10 / portTICK_RATE_MS ); 
-        // xTaskNotify(xTaskCommHandle, ADE_MEASURE_OK, eSetBits); // Notify the other task
-        transform_accel_gyro(&va);
-	    transform_accel_gyro(&vg);
+        dt = (start_time-end_time);
+        g_roll = roll + gyroDegPerSec(vg.x)*dt;
+        g_pitch = pitch + gyroDegPerSec(vg.y)*dt;
+        g_yaw = yaw + gyroDegPerSec(vg.z)*dt;
+        
+        a_roll = atan2(-va.y, va.z) * 180 / M_PI;
+        a_pitch = atan2(va.y, sqrt(va.x * va.x + va.z * va.z)) * 180 / M_PI;
+        // FUSION
+        roll = 0.95f * g_roll + 0.05f * a_roll;
+        pitch = 0.95f * g_pitch + 0.05f * a_pitch;
+        yaw = g_yaw;
+        // correct yaw
+        if (yaw > 180.f)
+            yaw -= 360.f;
+        else if (yaw < -180.f)
+            yaw += 360.f;
+
+        end_time = esp_timer_get_time();
+        // transform_accel_gyro(&va);
+	    // transform_accel_gyro(&vg);
+
+        // ahrs_init(frequency, 0.9);
+        // ahrs_update(vg.x, vg.y, vg.z, va.x, va.y, va.z, 0, 0, 0);
+        // ahrs_get_euler_in_degrees(&roll, &pitch, &yaw);
         meas.accel.accel_x = va.x;
         meas.accel.accel_y = va.y;
         meas.accel.accel_z = va.z;
         meas.gyro.gyro_x = vg.x;
         meas.gyro.gyro_y = vg.y;
         meas.gyro.gyro_z = vg.z;
-        end_time = esp_timer_get_time();
-        frequency = 1000000.0/(end_time-start_time);
-        ahrs_init(frequency, 0.9);
 
         act_time = esp_timer_get_time();
         if ( cycle_time > act_time )  // ak pretecie act_time, vyresetuj cycle_time
@@ -200,13 +221,20 @@ extern "C" void task_meas(void * arg)
                 printf("TOF3: %g\n",meas.tof.tof3);
                 printf("TOF4: %g\n",meas.tof.tof4);
                 printf("\n");
-                ESP_LOGI("IMU", "Acc X	 %2.3f, Acc Y	 %2.3f, Acc Z	 %2.3f, Ang X	 %2.3f, Ang Y	 %2.3f, Ang Z	 %2.3f", 
-                meas.accel.accel_x, meas.accel.accel_y, meas.accel.accel_z, meas.gyro.gyro_x, meas.gyro.gyro_y, meas.gyro.gyro_z);
-            /*
+                printf("Roll: %g\n",roll);  
+                printf("Pitch: %g\n",pitch);
+                printf("Yaw: %g\n",yaw);
+        
+                // ESP_LOGI("IMU", "Acc X	 %2.3f, Acc Y	 %2.3f, Acc Z	 %2.3f, Ang X	 %2.3f, Ang Y	 %2.3f, Ang Z	 %2.3f", 
+                // meas.accel.accel_x, meas.accel.accel_y, meas.accel.accel_z, meas.gyro.gyro_x, meas.gyro.gyro_y, meas.gyro.gyro_z);
+           
+           /*
             * Inotify to send data between tasks
             */
             // xQueueSend( FIFO_Acq_to_Comm, &meas, 30 / portTICK_PERIOD_MS );
             // xTaskNotify(xTaskCommHandle, COMM_OK, eSetBits);
+            // xQueueSend( FIFO_Acq_to_Comm, &meas, 10 / portTICK_RATE_MS ); 
+            // xTaskNotify(xTaskCommHandle, ADE_MEASURE_OK, eSetBits); // Notify the other task
         }
         loop_counter++;
     }

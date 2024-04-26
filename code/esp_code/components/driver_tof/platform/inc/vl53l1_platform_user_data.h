@@ -52,6 +52,7 @@ typedef struct {
 	uint16_t  comms_speed_khz;
 	uint32_t  new_data_ready_poll_duration_ms;
 	int *I2cHandle;
+	uint8_t calibrated;
 
 	// I2C_HandleTypeDef *I2cHandle;
 
