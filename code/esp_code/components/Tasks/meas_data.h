@@ -8,19 +8,20 @@ typedef struct values_tof {
     float tof3;
     float tof4;
 } values_tof;
-typedef struct values_gyro {
-    float gyro_x;
-    float gyro_y;
-    float gyro_z;
-} values_gyro;
-typedef struct values_accel {
-    float accel_x;
-    float accel_y;
-    float accel_z;
-} values_accel;
+typedef struct orientation {
+    float roll;
+    float pitch;
+    float heading;
+} orientation;
+typedef struct encoders {
+    uint64_t encoder1;
+    uint64_t encoder2;
+    uint64_t encoder3;
+    uint64_t encoder4;
+} encoders;
 typedef struct MeasData {
     values_tof tof;
-    values_gyro gyro;
-    values_accel accel;
+    orientation gyro;
+    encoders enc;
 } MeasData;
 #endif

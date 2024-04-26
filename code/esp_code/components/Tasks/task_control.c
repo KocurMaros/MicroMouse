@@ -8,11 +8,13 @@
 #include "esp_log.h"
 #include "nvs_flash.h"
 
-#include "driver/gpio.h"
 #include "driver/ledc.h"
+#include "driver/gpio.h"
 
 #include "meas_data.h"
 #include "motor_driver.h"
+
+
 
 #define LEDC_TIMER              LEDC_TIMER_0
 #define LEDC_MODE               LEDC_HIGH_SPEED_MODE
@@ -30,6 +32,9 @@ QueueHandle_t FIFO_Acq_to_Comm;
 void task_control(void *arg)
 {
 
+    
+
+
     uint32_t ulNotifiedValue;
 
     gpio_set_direction(MOTOR_A_1, GPIO_MODE_OUTPUT);
@@ -41,14 +46,15 @@ void task_control(void *arg)
     gpio_set_level(MOTOR_B_1, 1);
     gpio_set_level(MOTOR_B_2, 0);
 
-    pwm_init(MOTOR_A_PWM, MOTOR_A_PWM_CHANNEL1);
-    pwm_init(MOTOR_B_PWM, MOTOR_B_PWM_CHANNEL1);
+    pwm_init(MOTOR_A_PWM, MOTOR_A_PWM_CHANNEL);
+    pwm_init(MOTOR_B_PWM, MOTOR_B_PWM_CHANNEL);
     uint32_t pwm = 0;
     bool up = true;
+    int64_t prev_time = esp_timer_get_time();
     for(;;)
     {
-        pwm_change_duty_raw(MOTOR_A_PWM_CHANNEL1, pwm);
-        pwm_change_duty_raw(MOTOR_B_PWM_CHANNEL1, pwm);
+        pwm_change_duty_raw(MOTOR_A_PWM_CHANNEL, pwm);
+        pwm_change_duty_raw(MOTOR_B_PWM_CHANNEL, pwm);
         if(!up){
             pwm--;
             if(pwm == 0)
@@ -56,9 +62,20 @@ void task_control(void *arg)
         }
         else{
             pwm++;
-            if(pwm == LEDC_DUTY_MAX)
+            if(pwm == LEDC_DUTY_MAX/4)
                 up = false;
         }
+        // if((esp_timer_get_time() - prev_time) > 1000000){
+        //     prev_time = esp_timer_get_time();
+        //     printf("Encoder 1 A: %lld\n",interrupts[0]);
+        //     printf("Encoder 1 B: %lld\n",interrupts[1]);
+        //     printf("Encoder 2 A: %lld\n",interrupts[2]);
+        //     printf("Encoder 2 B: %lld\n",interrupts[3]);
+        //     interrupts[0] = 0;
+        //     interrupts[1] = 0;
+        //     interrupts[2] = 0;
+        //     interrupts[3] = 0;
+        // }
         vTaskDelay(10 / portTICK_PERIOD_MS);
         printf("PWM: %d\n",pwm);
     }
