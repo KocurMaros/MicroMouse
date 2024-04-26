@@ -21,7 +21,7 @@ typedef struct encoders {
 } encoders;
 typedef struct MeasData {
     values_tof tof;
-    orientation gyro;
+    orientation orient;
     encoders enc;
 } MeasData;
 #endif
