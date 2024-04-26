@@ -196,9 +196,9 @@ extern "C" void task_meas(void * arg)
             ahrs_update(DEG2RAD(vg.x), DEG2RAD(vg.y), DEG2RAD(vg.z),
                     va.x, va.y, va.z,
                     vm.x, vm.y, vm.z);
-            meas.orientation.roll = roll;
-            meas.orientation.pitch = pitch;
-            meas.orientation.heading = heading;
+            meas.orient.roll = roll;
+            meas.orient.pitch = pitch;
+            meas.orient.heading = heading;
             end_time = esp_timer_get_time();
         }
         meas.tof.tof1 = vl53l1_read(tof_sensors[0])/1000.0;
