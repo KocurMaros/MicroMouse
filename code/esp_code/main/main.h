@@ -25,6 +25,6 @@ extern QueueHandle_t FIFO_Meas_to_Cont;
 extern TaskHandle_t xTaskControlHandle;
 extern TaskHandle_t xTaskMeasHandle;
 
-void task_control(void * arg);
+
 
 #endif /** __MAIN_H */

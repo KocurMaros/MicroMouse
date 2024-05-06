@@ -13,7 +13,6 @@
 
 #include "../../main/main.h"
 #include "meas_data.h"
-#include "motor_driver.h"
 
 #include <bitset>
 #include <driver/gpio.h>
@@ -33,6 +32,12 @@ extern "C" {
 #define XSHUT2 GPIO_NUM_5
 #define XSHUT3 GPIO_NUM_25
 #define XSHUT4 GPIO_NUM_12
+
+
+#define ENCODER_1_A             GPIO_NUM_34
+#define ENCODER_1_B             GPIO_NUM_35
+#define ENCODER_2_A             GPIO_NUM_32
+#define ENCODER_2_B             GPIO_NUM_33
 
 
 static const char *TAG = "task_meas.c";
