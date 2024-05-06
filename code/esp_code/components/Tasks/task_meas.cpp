@@ -86,11 +86,6 @@ static void transform_mag(vector_t *v)
   v->y = z;
   v->z = -x;
 }
-
-
-QueueHandle_t FIFO_Acq_to_Comm;
-TaskHandle_t xTaskCommHandle;
-
 uint64_t interrupts[4] = {0,0,0,0};
 void encoder_isr_handler(void *arg)
 {
@@ -114,8 +109,11 @@ void encoder_isr_handler(void *arg)
     }
 }
 
+TaskHandle_t xTaskCommHandle;
+
 extern "C" void task_meas(void * arg)
 {
+
     MeasData meas;
     
     uint64_t cycle_time = esp_timer_get_time();
@@ -232,10 +230,8 @@ extern "C" void task_meas(void * arg)
            /*
             * Inotify to send data between tasks
             */
-            // xQueueSend( FIFO_Acq_to_Comm, &meas, 30 / portTICK_PERIOD_MS );
-            // xTaskNotify(xTaskCommHandle, COMM_OK, eSetBits);
-            // xQueueSend( FIFO_Acq_to_Comm, &meas, 10 / portTICK_RATE_MS ); 
-            // xTaskNotify(xTaskCommHandle, ADE_MEASURE_OK, eSetBits); // Notify the other task
+            xQueueSend( FIFO_Meas_to_Cont, &meas, 10 / portTICK_RATE_MS ); 
+            xTaskNotify(xTaskMeasHandle, 1, eSetBits); // Notify the other task
         }
     }
 }

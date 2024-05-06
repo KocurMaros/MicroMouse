@@ -18,12 +18,12 @@ extern "C" {
 static const char *TAG = "task_control.c";
 
 static MeasData val;
-QueueHandle_t FIFO_Acq_to_Comm;
+
 
 extern "C" void task_control(void *arg)
 {
-
     uint32_t ulNotifiedValue;
+
 
     uint32_t pwm = 0;
     bool up = true;
@@ -31,27 +31,20 @@ extern "C" void task_control(void *arg)
     int64_t prev_time = esp_timer_get_time();
     for(;;)
     {
-        // if(!up){
-        //     pwm-=100;
-        //     if(pwm == 0)
-        //         up = true;
-        // }
+        xTaskNotifyWait(0x00, ULONG_MAX, &ulNotifiedValue, portMAX_DELAY);
+        xQueueReceive(FIFO_Meas_to_Cont, &val, (100/portTICK_PERIOD_MS));
+        if(ulNotifiedValue == 1)
+        {
+            printf("Received data from meas\n");
+            printf("Roll: %f\n",val.orient.roll);
+            printf("Pitch: %f\n",val.orient.pitch);
+            printf("Heading: %f\n",val.orient.heading);
+        }
         if(up){
             pwm+=10;
             if(pwm == 1100)
                 up = false;
         }
-        // if((esp_timer_get_time() - prev_time) > 1000000){
-        //     prev_time = esp_timer_get_time();
-        //     printf("Encoder 1 A: %lld\n",interrupts[0]);
-        //     printf("Encoder 1 B: %lld\n",interrupts[1]);
-        //     printf("Encoder 2 A: %lld\n",interrupts[2]);
-        //     printf("Encoder 2 B: %lld\n",interrupts[3]);
-        //     interrupts[0] = 0;
-        //     interrupts[1] = 0;
-        //     interrupts[2] = 0;
-        //     interrupts[3] = 0;
-        // }
         set_speed_dir(0,pwm,1);
         vTaskDelay(100 / portTICK_PERIOD_MS);
         printf("PWM: %d\n",pwm);

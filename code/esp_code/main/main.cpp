@@ -21,6 +21,7 @@
 
 // Variables from main.h
 QueueHandle_t FIFO_Meas_to_Cont;
+
 TaskHandle_t xTaskControlHandle;
 TaskHandle_t xTaskMeasHandle;
 extern "C" 
@@ -29,9 +30,6 @@ extern "C"
 	void task_meas(void * arg);
     void task_control(void * arg);  
 } 
-// extern "C" 
-// { 
-// } 
 void app_main()
 {
     //* Initialize Components
@@ -45,13 +43,13 @@ void app_main()
     
     FIFO_Meas_to_Cont = xQueueCreate(2, sizeof(MeasData));
    
-    // xTaskCreatePinnedToCore(task_meas,   /* Function to implement the task */
-    //                         "meas data from sensosors", /* Name of the task */
-    //                         8192,       /*Stack size in words */
-    //                         NULL,       /* Task input parameter */
-    //                         100,          /* Priority of the task */
-    //                         &xTaskMeasHandle,       /* Task handle. */
-    //                         1);  /* Core where the task should run */
+    xTaskCreatePinnedToCore(task_meas,   /* Function to implement the task */
+                            "meas data from sensosors", /* Name of the task */
+                            8192,       /*Stack size in words */
+                            NULL,       /* Task input parameter */
+                            100,          /* Priority of the task */
+                            &xTaskMeasHandle,       /* Task handle. */
+                            1);  /* Core where the task should run */
   
     xTaskCreatePinnedToCore(task_control, "Control motors and algorithm", 4096, NULL, 10, &xTaskControlHandle, 0);
 }
