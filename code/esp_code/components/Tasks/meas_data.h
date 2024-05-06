@@ -19,9 +19,13 @@ typedef struct encoders {
     uint64_t encoder3;
     uint64_t encoder4;
 } encoders;
+typedef struct battery {
+    float voltage;
+} battery;
 typedef struct MeasData {
     values_tof tof;
     orientation orient;
     encoders enc;
+    battery bat;
 } MeasData;
 #endif

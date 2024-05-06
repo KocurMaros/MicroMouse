@@ -22,6 +22,7 @@ static MeasData val;
 
 extern "C" void task_control(void *arg)
 {
+    printf("Task control run on core: %d\n", xPortGetCoreID());
     uint32_t ulNotifiedValue;
 
 
@@ -33,12 +34,23 @@ extern "C" void task_control(void *arg)
     {
         xTaskNotifyWait(0x00, ULONG_MAX, &ulNotifiedValue, portMAX_DELAY);
         xQueueReceive(FIFO_Meas_to_Cont, &val, (100/portTICK_PERIOD_MS));
-        if(ulNotifiedValue == 1)
+        
+        if((esp_timer_get_time() - prev_time) > 1000000)
+        {
+            prev_time = esp_timer_get_time();
+            printf("Received data from meas\n");
+            printf("Roll: %f\n",val.orient.roll);
+            printf("Pitch: %f\n",val.orient.pitch);
+            printf("Heading: %f\n",val.orient.heading);
+            printf("Voltage %f\n",val.bat.voltage);
+        }
+        if(ulNotifiedValue == COMM_OK)
         {
             printf("Received data from meas\n");
             printf("Roll: %f\n",val.orient.roll);
             printf("Pitch: %f\n",val.orient.pitch);
             printf("Heading: %f\n",val.orient.heading);
+            printf("Voltage %f\n",val.bat.voltage);
         }
         if(up){
             pwm+=10;

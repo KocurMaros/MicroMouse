@@ -6,5 +6,5 @@ idf_component_register(SRCS "task_control.cpp" "task_meas.cpp" "../ahrs/ahrs.c" 
                        "../ahrs/include/" 
                        "../mpu9250/include/"
                        "../motor_driver/include/"
-                       PRIV_REQUIRES driver nvs_flash esp_timer)
+                       PRIV_REQUIRES driver nvs_flash esp_timer esp_adc_cal)
                        target_compile_options(${COMPONENT_LIB} PRIVATE -std=gnu++17)

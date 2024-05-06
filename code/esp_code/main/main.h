@@ -14,13 +14,13 @@ typedef enum meas_code_t
     COMM_OK = 1
 } meas_code_t;
 
-//* FreeRTOS Queues
-extern QueueHandle_t FIFO_Meas_to_Cont;
 
 #define bitRead(value,bit) (((value) >> (bit)) & 0x01)
 #define bitClear(value,bit) ((value) &= ~(1UL << (bit)))
 #define bitSet(value,bit) ((value) |= (1UL << (bit)))
 
+//* FreeRTOS Queues
+extern QueueHandle_t FIFO_Meas_to_Cont;
 //* FreeRTOS Tasks
 extern TaskHandle_t xTaskControlHandle;
 extern TaskHandle_t xTaskMeasHandle;

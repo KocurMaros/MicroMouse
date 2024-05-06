@@ -17,6 +17,10 @@
 #include <bitset>
 #include <driver/gpio.h>
 #include <driver/ledc.h>
+
+#include "driver/adc.h"
+#include "esp_adc_cal.h"
+
 #include <algorithm>
 
 extern "C" {
@@ -38,6 +42,9 @@ extern "C" {
 #define ENCODER_1_B             GPIO_NUM_35
 #define ENCODER_2_A             GPIO_NUM_32
 #define ENCODER_2_B             GPIO_NUM_33
+
+#define DEFAULT_VREF    2000        //Use adc2_vref_to_gpio() to obtain a better estimate
+static esp_adc_cal_characteristics_t *adc_chars;
 
 
 static const char *TAG = "task_meas.c";
@@ -113,7 +120,7 @@ TaskHandle_t xTaskCommHandle;
 
 extern "C" void task_meas(void * arg)
 {
-
+    printf("Task meas run on core: %d\n", xPortGetCoreID());
     MeasData meas;
     
     uint64_t cycle_time = esp_timer_get_time();
@@ -185,10 +192,29 @@ extern "C" void task_meas(void * arg)
     vTaskDelay(100 / portTICK_PERIOD_MS); 
     i2c_mpu9250_init(&cal);
     ahrs_init(200, 0.8);        // 200 Hz, 0.8 beta
- 
+    
+    //start after presing button
+
+    gpio_pad_select_gpio(GPIO_NUM_0);
+    gpio_set_pull_mode(GPIO_NUM_0, GPIO_PULLUP_ONLY);
+    gpio_set_direction(GPIO_NUM_0, GPIO_MODE_INPUT);
+
+    while (gpio_get_level(GPIO_NUM_0) != 0) {
+        // continue reading GPIO_NUM_0
+    }
+
+    adc1_config_width(ADC_WIDTH_BIT_12);
+    adc1_config_channel_atten(ADC1_CHANNEL_3, ADC_ATTEN_DB_11);
+
+    //Characterize ADC
+    adc_chars = (esp_adc_cal_characteristics_t *)calloc(1, sizeof(esp_adc_cal_characteristics_t));
+    esp_adc_cal_value_t val_type = esp_adc_cal_characterize(ADC_UNIT_1, ADC_ATTEN_DB_11, ADC_WIDTH_BIT_12, DEFAULT_VREF, adc_chars);
+
     for(;;){    
 
         // Get the Accelerometer, Gyroscope and Magnetometer values.
+        meas.bat.voltage = esp_adc_cal_raw_to_voltage(adc1_get_raw(ADC1_CHANNEL_3), adc_chars)*2.0;
+
         act_time = esp_timer_get_time();
         if((act_time - end_time) > 5000){     //200Hz
             ESP_ERROR_CHECK(get_accel_gyro_mag(&va, &vg, &vm));
@@ -216,22 +242,13 @@ extern "C" void task_meas(void * arg)
                 meas.enc.encoder2 = interrupts[1];
                 meas.enc.encoder3 = interrupts[2];
                 meas.enc.encoder4 = interrupts[3];
-                printf("TOF1: %g\n",meas.tof.tof1);
-                printf("TOF2: %g\n",meas.tof.tof2);
-                printf("TOF3: %g\n",meas.tof.tof3);
-                printf("TOF4: %g\n",meas.tof.tof4);
-                printf("\n");
                 ahrs_get_euler_in_degrees(&heading, &pitch, &roll);
-
-                printf("Roll: %g\n",roll);  
-                printf("Pitch: %g\n",pitch);
-                printf("heading: %g\n",heading);
                 cycle_time = act_time;  
            /*
             * Inotify to send data between tasks
             */
             xQueueSend( FIFO_Meas_to_Cont, &meas, 10 / portTICK_RATE_MS ); 
-            xTaskNotify(xTaskMeasHandle, 1, eSetBits); // Notify the other task
+            xTaskNotify(xTaskMeasHandle, COMM_OK, eSetBits); // Notify the other task
         }
     }
 }
