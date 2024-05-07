@@ -21,6 +21,7 @@ typedef enum meas_code_t
 
 //* FreeRTOS Queues
 extern QueueHandle_t FIFO_Meas_to_Cont;
+extern uint64_t random_flag;
 //* FreeRTOS Tasks
 extern TaskHandle_t xTaskControlHandle;
 extern TaskHandle_t xTaskMeasHandle;

@@ -19,46 +19,50 @@ static const char *TAG = "task_control.c";
 
 static MeasData val;
 
-
 extern "C" void task_control(void *arg)
 {
     printf("Task control run on core: %d\n", xPortGetCoreID());
-    uint32_t ulNotifiedValue;
-
 
     uint32_t pwm = 0;
     bool up = true;
     init_motor_driver();
+
     int64_t prev_time = esp_timer_get_time();
-    for(;;)
-    {
-        xTaskNotifyWait(0x00, ULONG_MAX, &ulNotifiedValue, portMAX_DELAY);
-        xQueueReceive(FIFO_Meas_to_Cont, &val, (100/portTICK_PERIOD_MS));
-        
-        if((esp_timer_get_time() - prev_time) > 1000000)
-        {
-            prev_time = esp_timer_get_time();
+    uint64_t prev_random_flag = 0;
+    for(;;){
+        /**
+         * TOTO tu nechajte
+        */
+        if(prev_random_flag < random_flag){
+            xQueueReceive(FIFO_Meas_to_Cont, &val, (100/portTICK_PERIOD_MS));
             printf("Received data from meas\n");
             printf("Roll: %f\n",val.orient.roll);
             printf("Pitch: %f\n",val.orient.pitch);
             printf("Heading: %f\n",val.orient.heading);
-            printf("Voltage %f\n",val.bat.voltage);
+            printf("Voltage %f\n",val.log.voltage);
+
+            prev_random_flag = random_flag;
         }
-        if(ulNotifiedValue == COMM_OK)
-        {
-            printf("Received data from meas\n");
-            printf("Roll: %f\n",val.orient.roll);
-            printf("Pitch: %f\n",val.orient.pitch);
-            printf("Heading: %f\n",val.orient.heading);
-            printf("Voltage %f\n",val.bat.voltage);
+        if(prev_random_flag > random_flag){
+            printf("Error: Random flag is smaller than previous\n");
+            prev_random_flag = random_flag;
         }
-        if(up){
-            pwm+=10;
-            if(pwm == 1100)
-                up = false;
+        /**
+         * Po tadial vypisi mozte dat do prec
+        */
+        if(val.log.button_start){
+            if(up){
+                pwm+=10;
+                if(pwm == 1100)
+                    up = false;
+            }else{
+                pwm-=10;
+                if(pwm == 200)
+                    up = true;
+            }
+            set_speed_dir(0,pwm,1);
         }
-        set_speed_dir(0,pwm,1);
-        vTaskDelay(100 / portTICK_PERIOD_MS);
-        printf("PWM: %d\n",pwm);
+        // vTaskDelay(100 / portTICK_PERIOD_MS);
+        // printf("PWM: %d\n",pwm);
     }
 }

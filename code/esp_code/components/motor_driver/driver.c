@@ -67,8 +67,8 @@ void init_motor_driver(){
 void set_speed_dir(int motor, int speed, int dir){
     gpio_set_level(MOTOR_A_1, 1);
     gpio_set_level(MOTOR_A_2, 0);
-    gpio_set_level(MOTOR_B_1, 0);
-    gpio_set_level(MOTOR_B_2, 1);
+    gpio_set_level(MOTOR_B_1, 1);
+    gpio_set_level(MOTOR_B_2, 0);
     pwm_change_duty_raw(MOTOR_A_PWM_CHANNEL, speed);
     pwm_change_duty_raw(MOTOR_B_PWM_CHANNEL, speed);
 }
