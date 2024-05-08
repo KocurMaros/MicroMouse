@@ -83,8 +83,7 @@ extern "C" {
  * @param[out]   Dev   : Device handle
  */
 
-void VL53L1_init_version(
-	VL53L1_DEV         Dev);
+void VL53L1_init_version(VL53L1_DEV Dev);
 
 
 /**
@@ -94,9 +93,7 @@ void VL53L1_init_version(
  * @param[in]    ll_state  : Device state
  */
 
-void VL53L1_init_ll_driver_state(
-	VL53L1_DEV         Dev,
-	VL53L1_DeviceState ll_state);
+void VL53L1_init_ll_driver_state(VL53L1_DEV Dev, VL53L1_DeviceState ll_state);
 
 
 /**
@@ -108,8 +105,7 @@ void VL53L1_init_ll_driver_state(
  * @return  "Other error code"    See ::VL53L1_Error
  */
 
-VL53L1_Error VL53L1_update_ll_driver_rd_state(
-	VL53L1_DEV         Dev);
+VL53L1_Error VL53L1_update_ll_driver_rd_state(VL53L1_DEV Dev);
 
 
 /**
@@ -122,8 +118,7 @@ VL53L1_Error VL53L1_update_ll_driver_rd_state(
  * @return  "Other error code"    See ::VL53L1_Error
  */
 
-VL53L1_Error VL53L1_check_ll_driver_rd_state(
-	VL53L1_DEV         Dev);
+VL53L1_Error VL53L1_check_ll_driver_rd_state(VL53L1_DEV Dev);
 
 
 /**
@@ -135,8 +130,7 @@ VL53L1_Error VL53L1_check_ll_driver_rd_state(
  * @return  "Other error code"    See ::VL53L1_Error
  */
 
-VL53L1_Error VL53L1_update_ll_driver_cfg_state(
-	VL53L1_DEV         Dev);
+VL53L1_Error VL53L1_update_ll_driver_cfg_state(VL53L1_DEV Dev);
 
 
 /**
@@ -146,9 +140,7 @@ VL53L1_Error VL53L1_update_ll_driver_cfg_state(
  * @param[out]   pbuffer : pointer to buffer
  */
 
-void VL53L1_copy_rtn_good_spads_to_buffer(
-	VL53L1_nvm_copy_data_t  *pdata,
-	uint8_t                 *pbuffer);
+void VL53L1_copy_rtn_good_spads_to_buffer(VL53L1_nvm_copy_data_t *pdata, uint8_t *pbuffer);
 
 
 /**
@@ -160,8 +152,7 @@ void VL53L1_copy_rtn_good_spads_to_buffer(
  * @param[out]   pdata   : pointer to VL53L1_system_results_t
  */
 
-void VL53L1_init_system_results(
-	VL53L1_system_results_t      *pdata);
+void VL53L1_init_system_results(VL53L1_system_results_t *pdata);
 
 
 /**
@@ -170,8 +161,7 @@ void VL53L1_init_system_results(
  * @param[in]    Dev           : Device handler
  */
 
-void V53L1_init_zone_dss_configs(
-	VL53L1_DEV              Dev);
+void V53L1_init_zone_dss_configs(VL53L1_DEV Dev);
 
 
 /**
@@ -184,10 +174,7 @@ void V53L1_init_zone_dss_configs(
  * @param[out] pbuffer  : uint8_t pointer to the I2C write buffer
  */
 
-void VL53L1_i2c_encode_uint16_t(
-	uint16_t    ip_value,
-	uint16_t    count,
-	uint8_t    *pbuffer);
+void VL53L1_i2c_encode_uint16_t(uint16_t ip_value, uint16_t count, uint8_t *pbuffer);
 
 
 /**
@@ -201,9 +188,7 @@ void VL53L1_i2c_encode_uint16_t(
  * @return     value   : decoded uint16_t value
  */
 
-uint16_t VL53L1_i2c_decode_uint16_t(
-	uint16_t    count,
-	uint8_t    *pbuffer);
+uint16_t VL53L1_i2c_decode_uint16_t(uint16_t count, uint8_t *pbuffer);
 
 
 /**
@@ -216,10 +201,7 @@ uint16_t VL53L1_i2c_decode_uint16_t(
  * @param[out] pbuffer  : uint8_t pointer to the I2C write buffer
  */
 
-void VL53L1_i2c_encode_int16_t(
-	int16_t     ip_value,
-	uint16_t    count,
-	uint8_t    *pbuffer);
+void VL53L1_i2c_encode_int16_t(int16_t ip_value, uint16_t count, uint8_t *pbuffer);
 
 
 /**
@@ -233,9 +215,7 @@ void VL53L1_i2c_encode_int16_t(
  * @return     value   : decoded int16_t value
  */
 
-int16_t VL53L1_i2c_decode_int16_t(
-	uint16_t    count,
-	uint8_t    *pbuffer);
+int16_t VL53L1_i2c_decode_int16_t(uint16_t count, uint8_t *pbuffer);
 
 
 /**
@@ -248,10 +228,7 @@ int16_t VL53L1_i2c_decode_int16_t(
  * @param[out] pbuffer  : uint8_t pointer to the I2C write buffer
  */
 
-void VL53L1_i2c_encode_uint32_t(
-	uint32_t    ip_value,
-	uint16_t    count,
-	uint8_t    *pbuffer);
+void VL53L1_i2c_encode_uint32_t(uint32_t ip_value, uint16_t count, uint8_t *pbuffer);
 
 
 /**
@@ -265,9 +242,7 @@ void VL53L1_i2c_encode_uint32_t(
  * @return     value   : decoded uint32_t value
  */
 
-uint32_t VL53L1_i2c_decode_uint32_t(
-	uint16_t    count,
-	uint8_t    *pbuffer);
+uint32_t VL53L1_i2c_decode_uint32_t(uint16_t count, uint8_t *pbuffer);
 
 
 /**
@@ -284,12 +259,7 @@ uint32_t VL53L1_i2c_decode_uint32_t(
  * @return     value    : decoded integer value
  */
 
-uint32_t VL53L1_i2c_decode_with_mask(
-	uint16_t    count,
-	uint8_t    *pbuffer,
-	uint32_t    bit_mask,
-	uint32_t    down_shift,
-	uint32_t    offset);
+uint32_t VL53L1_i2c_decode_with_mask(uint16_t count, uint8_t *pbuffer, uint32_t bit_mask, uint32_t down_shift, uint32_t offset);
 
 
 /**
@@ -302,10 +272,7 @@ uint32_t VL53L1_i2c_decode_with_mask(
  * @param[out] pbuffer  : uint8_t pointer to the I2C write buffer
  */
 
-void VL53L1_i2c_encode_int32_t(
-	int32_t     ip_value,
-	uint16_t    count,
-	uint8_t    *pbuffer);
+void VL53L1_i2c_encode_int32_t(int32_t ip_value, uint16_t count, uint8_t *pbuffer);
 
 
 /**
@@ -319,9 +286,7 @@ void VL53L1_i2c_encode_int32_t(
  * @return     value   : decoded int32_t value
  */
 
-int32_t VL53L1_i2c_decode_int32_t(
-	uint16_t    count,
-	uint8_t    *pbuffer);
+int32_t VL53L1_i2c_decode_int32_t(uint16_t count, uint8_t *pbuffer);
 
 
 /**
@@ -335,9 +300,7 @@ int32_t VL53L1_i2c_decode_int32_t(
  */
 
 #ifndef VL53L1_NOCALIB
-VL53L1_Error VL53L1_start_test(
-	VL53L1_DEV     Dev,
-	uint8_t        test_mode__ctrl);
+VL53L1_Error VL53L1_start_test(VL53L1_DEV Dev, uint8_t test_mode__ctrl);
 #endif
 
 
@@ -354,9 +317,7 @@ VL53L1_Error VL53L1_start_test(
  * @return  "Other error code"    See ::VL53L1_Error
  */
 
-VL53L1_Error VL53L1_set_firmware_enable_register(
-	VL53L1_DEV         Dev,
-	uint8_t            value);
+VL53L1_Error VL53L1_set_firmware_enable_register(VL53L1_DEV Dev, uint8_t value);
 
 
 /**
@@ -368,8 +329,7 @@ VL53L1_Error VL53L1_set_firmware_enable_register(
  * @return  "Other error code"    See ::VL53L1_Error
  */
 
-VL53L1_Error VL53L1_enable_firmware(
-	VL53L1_DEV         Dev);
+VL53L1_Error VL53L1_enable_firmware(VL53L1_DEV Dev);
 
 
 /**
@@ -383,8 +343,7 @@ VL53L1_Error VL53L1_enable_firmware(
  * @return  "Other error code"    See ::VL53L1_Error
  */
 
-VL53L1_Error VL53L1_disable_firmware(
-	VL53L1_DEV         Dev);
+VL53L1_Error VL53L1_disable_firmware(VL53L1_DEV Dev);
 
 
 /**
@@ -400,9 +359,7 @@ VL53L1_Error VL53L1_disable_firmware(
  * @return  "Other error code"    See ::VL53L1_Error
  */
 
-VL53L1_Error VL53L1_set_powerforce_register(
-	VL53L1_DEV         Dev,
-	uint8_t            value);
+VL53L1_Error VL53L1_set_powerforce_register(VL53L1_DEV Dev, uint8_t value);
 
 
 /**
@@ -420,8 +377,7 @@ VL53L1_Error VL53L1_set_powerforce_register(
  */
 
 
-VL53L1_Error VL53L1_enable_powerforce(
-	VL53L1_DEV         Dev);
+VL53L1_Error VL53L1_enable_powerforce(VL53L1_DEV Dev);
 
 /**
  * @brief Disables power force
@@ -436,8 +392,7 @@ VL53L1_Error VL53L1_enable_powerforce(
  * @return  "Other error code"    See ::VL53L1_Error
  */
 
-VL53L1_Error VL53L1_disable_powerforce(
-	VL53L1_DEV         Dev);
+VL53L1_Error VL53L1_disable_powerforce(VL53L1_DEV Dev);
 
 
 /**
@@ -450,8 +405,7 @@ VL53L1_Error VL53L1_disable_powerforce(
  */
 
 
-VL53L1_Error VL53L1_clear_interrupt(
-	VL53L1_DEV         Dev);
+VL53L1_Error VL53L1_clear_interrupt(VL53L1_DEV Dev);
 
 
 /**
@@ -465,8 +419,7 @@ VL53L1_Error VL53L1_clear_interrupt(
 
 
 #ifdef VL53L1_DEBUG
-VL53L1_Error VL53L1_force_shadow_stream_count_to_zero(
-	VL53L1_DEV         Dev);
+VL53L1_Error VL53L1_force_shadow_stream_count_to_zero(VL53L1_DEV Dev);
 #endif
 
 /**
@@ -485,9 +438,7 @@ VL53L1_Error VL53L1_force_shadow_stream_count_to_zero(
  * @return    macro_period_us : macro period in [us] 12.12 format
  */
 
-uint32_t VL53L1_calc_macro_period_us(
-	uint16_t fast_osc_frequency,
-	uint8_t  vcsel_period);
+uint32_t VL53L1_calc_macro_period_us(uint16_t fast_osc_frequency, uint8_t vcsel_period);
 
 
 /**
@@ -505,11 +456,7 @@ uint32_t VL53L1_calc_macro_period_us(
  * @return    range_ignore_threshold_kcps : rate per spad in mcps 3.13
  */
 
-uint16_t VL53L1_calc_range_ignore_threshold(
-	uint32_t central_rate,
-	int16_t  x_gradient,
-	int16_t  y_gradient,
-	uint8_t  rate_mult);
+uint16_t VL53L1_calc_range_ignore_threshold(uint32_t central_rate, int16_t x_gradient, int16_t y_gradient, uint8_t rate_mult);
 
 
 /**
@@ -522,9 +469,7 @@ uint16_t VL53L1_calc_range_ignore_threshold(
  * @return      timeout_mclks     : timeout in macro periods
  */
 
-uint32_t VL53L1_calc_timeout_mclks(
-	uint32_t  timeout_us,
-	uint32_t  macro_period_us);
+uint32_t VL53L1_calc_timeout_mclks(uint32_t timeout_us, uint32_t macro_period_us);
 
 /**
  * @brief Calculates the encoded timeout register value based on the input
@@ -536,9 +481,7 @@ uint32_t VL53L1_calc_timeout_mclks(
  * @return      timeout_encoded   : encoded timeout register value
  */
 
-uint16_t VL53L1_calc_encoded_timeout(
-	uint32_t  timeout_us,
-	uint32_t  macro_period_us);
+uint16_t VL53L1_calc_encoded_timeout(uint32_t timeout_us, uint32_t macro_period_us);
 
 
 /**
@@ -551,9 +494,7 @@ uint16_t VL53L1_calc_encoded_timeout(
  * @return      timeout_us    : encoded timeout register value
  */
 
-uint32_t VL53L1_calc_timeout_us(
-	uint32_t  timeout_mclks,
-	uint32_t  macro_period_us);
+uint32_t VL53L1_calc_timeout_us(uint32_t timeout_mclks, uint32_t macro_period_us);
 
 /**
  * @brief Calculates the decoded timeout in us based on the input
@@ -565,9 +506,7 @@ uint32_t VL53L1_calc_timeout_us(
  * @return      timeout_us    : encoded timeout register value
  */
 
-uint32_t VL53L1_calc_decoded_timeout_us(
-	uint16_t  timeout_encoded,
-	uint32_t  macro_period_us);
+uint32_t VL53L1_calc_decoded_timeout_us(uint16_t timeout_encoded, uint32_t macro_period_us);
 
 
 /**
@@ -578,8 +517,7 @@ uint32_t VL53L1_calc_decoded_timeout_us(
  * @return encoded_timeout : 16-bit encoded value
  */
 
-uint16_t VL53L1_encode_timeout(
-	uint32_t timeout_mclks);
+uint16_t VL53L1_encode_timeout(uint32_t timeout_mclks);
 
 
 /**
@@ -591,8 +529,7 @@ uint16_t VL53L1_encode_timeout(
  *
  */
 
-uint32_t VL53L1_decode_timeout(
-	uint16_t encoded_timeout);
+uint32_t VL53L1_decode_timeout(uint16_t encoded_timeout);
 
 
 /**
@@ -612,13 +549,8 @@ uint32_t VL53L1_decode_timeout(
  * @return  "Other error code"    See ::VL53L1_Error
  */
 
-VL53L1_Error  VL53L1_calc_timeout_register_values(
-	uint32_t                 phasecal_config_timeout_us,
-	uint32_t                 mm_config_timeout_us,
-	uint32_t                 range_config_timeout_us,
-	uint16_t                 fast_osc_frequency,
-	VL53L1_general_config_t *pgeneral,
-	VL53L1_timing_config_t  *ptiming);
+VL53L1_Error VL53L1_calc_timeout_register_values(uint32_t phasecal_config_timeout_us, uint32_t mm_config_timeout_us, uint32_t range_config_timeout_us,
+												 uint16_t fast_osc_frequency, VL53L1_general_config_t *pgeneral, VL53L1_timing_config_t *ptiming);
 
 
 /**
@@ -630,8 +562,7 @@ VL53L1_Error  VL53L1_calc_timeout_register_values(
  *
  */
 
-uint8_t VL53L1_encode_vcsel_period(
-	uint8_t vcsel_period_pclks);
+uint8_t VL53L1_encode_vcsel_period(uint8_t vcsel_period_pclks);
 
 
 /**
@@ -646,9 +577,7 @@ uint8_t VL53L1_encode_vcsel_period(
  *
  */
 
-uint32_t VL53L1_decode_unsigned_integer(
-	uint8_t  *pbuffer,
-	uint8_t   no_of_bytes);
+uint32_t VL53L1_decode_unsigned_integer(uint8_t *pbuffer, uint8_t no_of_bytes);
 
 
 /**
@@ -660,10 +589,7 @@ uint32_t VL53L1_decode_unsigned_integer(
  *
  */
 
-void   VL53L1_encode_unsigned_integer(
-	uint32_t  ip_value,
-	uint8_t   no_of_bytes,
-	uint8_t  *pbuffer);
+void VL53L1_encode_unsigned_integer(uint32_t ip_value, uint8_t no_of_bytes, uint8_t *pbuffer);
 
 /**
  * @brief Get the SPAD  number, byte index (0-31) and bit index (0-7) for
@@ -680,11 +606,7 @@ void   VL53L1_encode_unsigned_integer(
  *
  */
 
-void VL53L1_spad_number_to_byte_bit_index(
-	uint8_t  spad_number,
-	uint8_t *pbyte_index,
-	uint8_t *pbit_index,
-	uint8_t *pbit_mask);
+void VL53L1_spad_number_to_byte_bit_index(uint8_t spad_number, uint8_t *pbyte_index, uint8_t *pbit_index, uint8_t *pbit_mask);
 
 
 /**
@@ -697,10 +619,7 @@ void VL53L1_spad_number_to_byte_bit_index(
  *
  */
 
-void VL53L1_encode_row_col(
-	uint8_t  row,
-	uint8_t  col,
-	uint8_t *pspad_number);
+void VL53L1_encode_row_col(uint8_t row, uint8_t col, uint8_t *pspad_number);
 
 
 /**
@@ -712,10 +631,7 @@ void VL53L1_encode_row_col(
  *
  */
 
-void VL53L1_decode_zone_size(
-	uint8_t   encoded_xy_size,
-	uint8_t  *pwidth,
-	uint8_t  *pheight);
+void VL53L1_decode_zone_size(uint8_t encoded_xy_size, uint8_t *pwidth, uint8_t *pheight);
 
 
 /**
@@ -727,10 +643,7 @@ void VL53L1_decode_zone_size(
  *
  */
 
-void VL53L1_encode_zone_size(
-	uint8_t  width,
-	uint8_t  height,
-	uint8_t *pencoded_xy_size);
+void VL53L1_encode_zone_size(uint8_t width, uint8_t height, uint8_t *pencoded_xy_size);
 
 
 /**
@@ -747,13 +660,7 @@ void VL53L1_encode_zone_size(
  * @param[out]  py_ur             : Decoded zone upper right y coord
  */
 
-void VL53L1_decode_zone_limits(
-	uint8_t   encoded_xy_centre,
-	uint8_t   encoded_xy_size,
-	int16_t  *px_ll,
-	int16_t  *py_ll,
-	int16_t  *px_ur,
-	int16_t  *py_ur);
+void VL53L1_decode_zone_limits(uint8_t encoded_xy_centre, uint8_t encoded_xy_size, int16_t *px_ll, int16_t *py_ll, int16_t *px_ur, int16_t *py_ur);
 
 
 /**
@@ -765,9 +672,7 @@ void VL53L1_decode_zone_limits(
  * @return  is_aperture          : if > 0 the location is an apertured SPAD
  */
 
-uint8_t VL53L1_is_aperture_location(
-	uint8_t   row,
-	uint8_t   col);
+uint8_t VL53L1_is_aperture_location(uint8_t row, uint8_t col);
 
 
 /**
@@ -786,15 +691,8 @@ uint8_t VL53L1_is_aperture_location(
  *
  */
 
-void VL53L1_calc_mm_effective_spads(
-	uint8_t     encoded_mm_roi_centre,
-	uint8_t     encoded_mm_roi_size,
-	uint8_t     encoded_zone_centre,
-	uint8_t     encoded_zone_size,
-	uint8_t    *pgood_spads,
-	uint16_t    aperture_attenuation,
-	uint16_t   *pmm_inner_effective_spads,
-	uint16_t   *pmm_outer_effective_spads);
+void VL53L1_calc_mm_effective_spads(uint8_t encoded_mm_roi_centre, uint8_t encoded_mm_roi_size, uint8_t encoded_zone_centre, uint8_t encoded_zone_size,
+									uint8_t *pgood_spads, uint16_t aperture_attenuation, uint16_t *pmm_inner_effective_spads, uint16_t *pmm_outer_effective_spads);
 
 /**
  * @brief Function to save dynamic config data per zone at init and start range
@@ -806,8 +704,7 @@ void VL53L1_calc_mm_effective_spads(
  *
  */
 
-VL53L1_Error VL53L1_save_cfg_data(
-	VL53L1_DEV  Dev);
+VL53L1_Error VL53L1_save_cfg_data(VL53L1_DEV Dev);
 
 
 /**
@@ -817,8 +714,7 @@ VL53L1_Error VL53L1_save_cfg_data(
  * @return	The encoded system__interrupt_config_gpio byte
  */
 
-uint8_t	VL53L1_encode_GPIO_interrupt_config(
-	VL53L1_GPIO_interrupt_config_t	*pintconf);
+uint8_t VL53L1_encode_GPIO_interrupt_config(VL53L1_GPIO_interrupt_config_t *pintconf);
 
 /**
  * @brief Decodes FW register to VL53L1_GPIO_interrupt_config_t structure
@@ -827,8 +723,7 @@ uint8_t	VL53L1_encode_GPIO_interrupt_config(
  * @return	The decoded structure
  */
 
-VL53L1_GPIO_interrupt_config_t VL53L1_decode_GPIO_interrupt_config(
-	uint8_t		system__interrupt_config);
+VL53L1_GPIO_interrupt_config_t VL53L1_decode_GPIO_interrupt_config(uint8_t system__interrupt_config);
 
 /**
  * @brief SET GPIO distance threshold
@@ -838,10 +733,7 @@ VL53L1_GPIO_interrupt_config_t VL53L1_decode_GPIO_interrupt_config(
  * @param[in]    threshold_low  : Low distance threshold in mm
  */
 
-VL53L1_Error VL53L1_set_GPIO_distance_threshold(
-	VL53L1_DEV                      Dev,
-	uint16_t			threshold_high,
-	uint16_t			threshold_low);
+VL53L1_Error VL53L1_set_GPIO_distance_threshold(VL53L1_DEV Dev, uint16_t threshold_high, uint16_t threshold_low);
 
 /**
  * @brief SET GPIO rate threshold
@@ -851,10 +743,7 @@ VL53L1_Error VL53L1_set_GPIO_distance_threshold(
  * @param[in]    threshold_low  : Low rate threshold in 9.7 Mcps
  */
 
-VL53L1_Error VL53L1_set_GPIO_rate_threshold(
-	VL53L1_DEV                      Dev,
-	uint16_t			threshold_high,
-	uint16_t			threshold_low);
+VL53L1_Error VL53L1_set_GPIO_rate_threshold(VL53L1_DEV Dev, uint16_t threshold_high, uint16_t threshold_low);
 
 /**
  * @brief SET GPIO thresholds from structure. Sets both rate and distance
@@ -864,9 +753,7 @@ VL53L1_Error VL53L1_set_GPIO_rate_threshold(
  * @param[in]    pintconf	: Pointer to structure
  */
 
-VL53L1_Error VL53L1_set_GPIO_thresholds_from_struct(
-	VL53L1_DEV                      Dev,
-	VL53L1_GPIO_interrupt_config_t *pintconf);
+VL53L1_Error VL53L1_set_GPIO_thresholds_from_struct(VL53L1_DEV Dev, VL53L1_GPIO_interrupt_config_t *pintconf);
 
 
 /**
@@ -900,14 +787,8 @@ VL53L1_Error VL53L1_set_GPIO_thresholds_from_struct(
 
 
 #ifndef VL53L1_NOCALIB
-VL53L1_Error VL53L1_set_ref_spad_char_config(
-	VL53L1_DEV    Dev,
-	uint8_t       vcsel_period_a,
-	uint32_t      phasecal_timeout_us,
-	uint16_t      total_rate_target_mcps,
-	uint16_t      max_count_rate_rtn_limit_mcps,
-	uint16_t      min_count_rate_rtn_limit_mcps,
-	uint16_t      fast_osc_frequency);
+VL53L1_Error VL53L1_set_ref_spad_char_config(VL53L1_DEV Dev, uint8_t vcsel_period_a, uint32_t phasecal_timeout_us, uint16_t total_rate_target_mcps,
+											 uint16_t max_count_rate_rtn_limit_mcps, uint16_t min_count_rate_rtn_limit_mcps, uint16_t fast_osc_frequency);
 #endif
 
 
@@ -948,10 +829,7 @@ VL53L1_Error VL53L1_set_ref_spad_char_config(
  */
 
 #ifndef VL53L1_NOCALIB
-VL53L1_Error VL53L1_set_ssc_config(
-	VL53L1_DEV           Dev,
-	VL53L1_ssc_config_t *pssc_cfg,
-	uint16_t             fast_osc_frequency);
+VL53L1_Error VL53L1_set_ssc_config(VL53L1_DEV Dev, VL53L1_ssc_config_t *pssc_cfg, uint16_t fast_osc_frequency);
 #endif
 
 
@@ -981,9 +859,7 @@ VL53L1_Error VL53L1_set_ssc_config(
  */
 
 #ifndef VL53L1_NOCALIB
-VL53L1_Error VL53L1_get_spad_rate_data(
-	VL53L1_DEV                Dev,
-	VL53L1_spad_rate_data_t  *pspad_rates);
+VL53L1_Error VL53L1_get_spad_rate_data(VL53L1_DEV Dev, VL53L1_spad_rate_data_t *pspad_rates);
 #endif
 
 /**
@@ -1000,9 +876,7 @@ VL53L1_Error VL53L1_get_spad_rate_data(
  * @return plane_offset_with_margin in Kcps (7.9 format)
  */
 
-uint32_t VL53L1_calc_crosstalk_plane_offset_with_margin(
-		uint32_t     plane_offset_kcps,
-		int16_t      margin_offset_kcps);
+uint32_t VL53L1_calc_crosstalk_plane_offset_with_margin(uint32_t plane_offset_kcps, int16_t margin_offset_kcps);
 
 /**
  * @brief Initialize the Low Power Auto data structure
@@ -1015,9 +889,7 @@ uint32_t VL53L1_calc_crosstalk_plane_offset_with_margin(
  * @return  "Other error code"    See ::VL53L1_Error
  */
 
-VL53L1_Error VL53L1_low_power_auto_data_init(
-	VL53L1_DEV                     Dev
-	);
+VL53L1_Error VL53L1_low_power_auto_data_init(VL53L1_DEV Dev);
 
 /**
  * @brief Reset internal state but leave low_power_auto mode intact
@@ -1030,9 +902,7 @@ VL53L1_Error VL53L1_low_power_auto_data_init(
  * @return  "Other error code"    See ::VL53L1_Error
  */
 
-VL53L1_Error VL53L1_low_power_auto_data_stop_range(
-	VL53L1_DEV                     Dev
-	);
+VL53L1_Error VL53L1_low_power_auto_data_stop_range(VL53L1_DEV Dev);
 
 /**
  * @brief Initialize the config strcutures when low power auto preset modes are
@@ -1048,11 +918,7 @@ VL53L1_Error VL53L1_low_power_auto_data_stop_range(
  * @return  "Other error code"    See ::VL53L1_Error
  */
 
-VL53L1_Error VL53L1_config_low_power_auto_mode(
-	VL53L1_general_config_t   *pgeneral,
-	VL53L1_dynamic_config_t   *pdynamic,
-	VL53L1_low_power_auto_data_t *plpadata
-	);
+VL53L1_Error VL53L1_config_low_power_auto_mode(VL53L1_general_config_t *pgeneral, VL53L1_dynamic_config_t *pdynamic, VL53L1_low_power_auto_data_t *plpadata);
 
 /**
  * @brief Setup ranges after the first one in low power auto mode by turning
@@ -1066,8 +932,7 @@ VL53L1_Error VL53L1_config_low_power_auto_mode(
  * @return  "Other error code"    See ::VL53L1_Error
  */
 
-VL53L1_Error VL53L1_low_power_auto_setup_manual_calibration(
-	VL53L1_DEV        Dev);
+VL53L1_Error VL53L1_low_power_auto_setup_manual_calibration(VL53L1_DEV Dev);
 
 /**
  * @brief Do a DSS calculation and update manual config
@@ -1080,8 +945,7 @@ VL53L1_Error VL53L1_low_power_auto_setup_manual_calibration(
  * @return  "Other error code"    See ::VL53L1_Error
  */
 
-VL53L1_Error VL53L1_low_power_auto_update_DSS(
-	VL53L1_DEV        Dev);
+VL53L1_Error VL53L1_low_power_auto_update_DSS(VL53L1_DEV Dev);
 
 #ifdef __cplusplus
 }

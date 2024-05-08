@@ -65,8 +65,7 @@
 #define _VL53L1_PRESET_SETUP_H_
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
 /* indexes for the bare driver tuning setting API function */
@@ -84,7 +83,7 @@ enum VL53L1_Tuning_t {
 };
 
 /* default values for the tuning settings parameters */
-#define TUNING_VERSION	0x0004
+#define TUNING_VERSION 0x0004
 
 #define TUNING_PROXY_MIN -30 /* min distance in mm */
 #define TUNING_SINGLE_TARGET_XTALK_TARGET_DISTANCE_MM 600

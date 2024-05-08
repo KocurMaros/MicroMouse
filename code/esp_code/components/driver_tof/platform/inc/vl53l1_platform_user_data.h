@@ -39,18 +39,17 @@
 #include "vl53l1_def.h"
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
-typedef struct {
+typedef struct
+{
+	VL53L1_DevData_t Data;
 
-	VL53L1_DevData_t   Data;
-
-	uint8_t   I2cDevAddr;
-	uint8_t   comms_type;
-	uint16_t  comms_speed_khz;
-	uint32_t  new_data_ready_poll_duration_ms;
+	uint8_t I2cDevAddr;
+	uint8_t comms_type;
+	uint16_t comms_speed_khz;
+	uint32_t new_data_ready_poll_duration_ms;
 	int *I2cHandle;
 	uint8_t calibrated;
 

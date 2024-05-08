@@ -27,32 +27,30 @@ TaskHandle_t xTaskMeasHandle;
 
 uint64_t random_flag = 0;
 
-extern "C" 
-{ 
-	void app_main(); 
-	void task_meas(void * arg);
-    void task_control(void * arg);  
-} 
+extern "C" {
+void app_main();
+void task_meas(void *arg);
+void task_control(void *arg);
+}
 void app_main()
 {
-    //* Initialize Components
-    esp_err_t ret = nvs_flash_init();    //Initialize NVS
-    if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND)
-    {
-        ESP_ERROR_CHECK(nvs_flash_erase());
-        ret = nvs_flash_init();
-    }
-    ESP_ERROR_CHECK(ret);
-    
-    FIFO_Meas_to_Cont = xQueueCreate(2, sizeof(MeasData));
-   
-    xTaskCreatePinnedToCore(task_meas,   /* Function to implement the task */
-                            "meas data from sensosors", /* Name of the task */
-                            8192,       /*Stack size in words */
-                            NULL,       /* Task input parameter */
-                            10,          /* Priority of the task */
-                            &xTaskMeasHandle,       /* Task handle. */
-                            1);  /* Core where the task should run */
-  
-    xTaskCreatePinnedToCore(task_control, "Control motors and algorithm", 4096, NULL, 100, &xTaskControlHandle, 0);
+	//* Initialize Components
+	esp_err_t ret = nvs_flash_init(); //Initialize NVS
+	if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
+		ESP_ERROR_CHECK(nvs_flash_erase());
+		ret = nvs_flash_init();
+	}
+	ESP_ERROR_CHECK(ret);
+
+	FIFO_Meas_to_Cont = xQueueCreate(2, sizeof(MeasData));
+
+	xTaskCreatePinnedToCore(task_meas,					/* Function to implement the task */
+							"meas data from sensosors", /* Name of the task */
+							8192,						/*Stack size in words */
+							NULL,						/* Task input parameter */
+							10,							/* Priority of the task */
+							&xTaskMeasHandle,			/* Task handle. */
+							1);							/* Core where the task should run */
+
+	xTaskCreatePinnedToCore(task_control, "Control motors and algorithm", 4096, NULL, 100, &xTaskControlHandle, 0);
 }
