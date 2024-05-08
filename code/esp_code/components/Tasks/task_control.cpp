@@ -61,7 +61,7 @@ extern "C" void task_control(void *arg)
 				if (pwm == 200)
 					up = true;
 			}
-			set_speed_dir(pwm, 1);
+			set_speed_dir(Direction::Left, pwm);
 		}
 		// vTaskDelay(100 / portTICK_PERIOD_MS);
 		// printf("PWM: %d\n",pwm);
