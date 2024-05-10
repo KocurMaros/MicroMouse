@@ -156,7 +156,14 @@ void set_goal(PID *pid, double goal)
 	pid->goal = goal;
 }
 
-double pid_control(PID *pid, double error, bool limit)
+double pid_control(PID *pid, double feedback, bool limit)
+{
+	double error = pid->goal - feedback;
+
+	return pid_control_from_error(pid, error, limit);
+}
+
+double pid_control_from_error(PID *pid, double error, bool limit)
 {
 	pid->integral += error;
 	pid->integral += pid->clampedOutput - pid->virginOutput;
