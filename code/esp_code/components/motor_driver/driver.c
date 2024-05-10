@@ -18,6 +18,9 @@
 #define LEDC_DUTY_MAX (1023)			// 2 ** 13 -1
 #define LEDC_FREQUENCY (8000)			// Frequency in Hertz. Set frequency at 5 kHz
 
+PID *pid_left;
+PID *pid_right;
+
 void pwm_init(uint8_t pin, ledc_channel_t channel)
 {
 	ledc_timer_config_t ledc_timer = { .speed_mode = LEDC_MODE,
@@ -60,6 +63,9 @@ void init_motor_driver()
 	gpio_set_direction(MOTOR_B_2, GPIO_MODE_OUTPUT);
 	pwm_init(MOTOR_A_PWM, MOTOR_A_PWM_CHANNEL);
 	pwm_init(MOTOR_B_PWM, MOTOR_B_PWM_CHANNEL);
+
+	pid_left = init_pid(1, 0, 0, 1023);
+	pid_right = init_pid(1, 0, 0, 1023);
 }
 
 void move_forward()
@@ -94,23 +100,82 @@ void move_right()
 	gpio_set_level(MOTOR_B_2, 1);
 }
 
-void set_speed_dir(Direction dir, int speed)
+void set_speed_dir(double speed_left, double speed_right)
 {
-	switch (dir) {
-	case Forward:
-		move_forward();
-		break;
-	case Backwared:
-		move_backward();
-		break;
-	case Left:
+	Direction dir;
+	double diff = speed_left - speed_right;
+
+	if (diff < -0.1) {
+		dir = Left;
 		move_left();
-		break;
-	case Right:
+	}
+	else if (diff > 0.1) {
+		dir = Right;
 		move_right();
-		break;
+	}
+	else if (speed_left < 0) {
+		dir = Backwared;
+		move_backward();
+	}
+	else {
+		dir = Forward;
+		move_forward();
 	}
 
-	pwm_change_duty_raw(MOTOR_A_PWM_CHANNEL, speed);
-	pwm_change_duty_raw(MOTOR_B_PWM_CHANNEL, speed);
+	double pwm_left = pid_control(pid_left, 0, true);
+	double pwm_right = pid_control(pid_right, 0, true);
+
+	pwm_change_duty_raw(MOTOR_A_PWM_CHANNEL, pwm_right);
+	pwm_change_duty_raw(MOTOR_B_PWM_CHANNEL, pwm_left);
 }
+
+PID *init_pid(double kp, double ki, double kd, double limit)
+{
+	PID *pid = (PID*)calloc(1, sizeof(PID));
+
+	pid->kp = kp;
+	pid->ki = ki;
+	pid->kd = kd;
+	pid->integral = 0;
+	pid->last_error = 0;
+	pid->goal = 0;
+	pid->virginOutput = 0;
+	pid->clampedOutput = 0;
+	pid->limit = limit;
+
+	return pid;
+}
+
+void deinit_pid(PID *pid)
+{
+	free(pid);
+}
+
+void set_goal(PID *pid, double goal)
+{
+	pid->goal = goal;
+}
+
+double pid_control(PID *pid, double error, bool limit)
+{
+	pid->integral += error;
+	pid->integral += pid->clampedOutput - pid->virginOutput;
+
+	double derivative = error - pid->last_error;
+
+	pid->virginOutput = pid->kp * error + pid->ki * pid->integral + pid->kd * derivative;
+
+	if (limit) {
+		if (pid->virginOutput < 0) {
+			pid->clampedOutput = (pid->virginOutput < -pid->limit ? pid->limit : (pid->virginOutput > -15 ? -15. : pid->virginOutput));
+		}
+		else {
+			pid->clampedOutput = (pid->virginOutput > pid->limit ? pid->limit : (pid->virginOutput < 15 ? 15. : pid->virginOutput));
+		}
+	}
+
+	pid->last_error = (limit ? pid->clampedOutput : pid->virginOutput);
+
+	return (limit ? pid->clampedOutput : pid->virginOutput);
+}
+
