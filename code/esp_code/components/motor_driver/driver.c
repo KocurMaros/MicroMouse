@@ -18,7 +18,7 @@
 #define LEDC_DUTY_MAX (1023)			// 2 ** 13 -1
 #define LEDC_FREQUENCY (8000)			// Frequency in Hertz. Set frequency at 5 kHz
 
-void pwm_init(uint8_t pin, uint8_t channel)
+void pwm_init(uint8_t pin, ledc_channel_t channel)
 {
 	ledc_timer_config_t ledc_timer = { .speed_mode = LEDC_MODE,
 									   .timer_num = LEDC_TIMER,
@@ -28,11 +28,11 @@ void pwm_init(uint8_t pin, uint8_t channel)
 	ESP_ERROR_CHECK(ledc_timer_config(&ledc_timer));
 
 	// Prepare and then apply the LEDC PWM channel configuration
-	ledc_channel_config_t ledc_channel = { .speed_mode = LEDC_MODE,
+	ledc_channel_config_t ledc_channel = { .gpio_num = pin,
+										   .speed_mode = LEDC_MODE,
 										   .channel = channel,
-										   .timer_sel = LEDC_TIMER,
 										   .intr_type = LEDC_INTR_DISABLE,
-										   .gpio_num = pin,
+										   .timer_sel = LEDC_TIMER,
 										   .duty = 0, // Set duty to 0%
 										   .hpoint = 0 };
 	ESP_ERROR_CHECK(ledc_channel_config(&ledc_channel));
@@ -42,7 +42,7 @@ void pwm_init(uint8_t pin, uint8_t channel)
 	// printf("PIN %d channel %d \n",pin,channel);
 }
 
-void pwm_change_duty_raw(uint8_t channel, uint32_t pwm)
+void pwm_change_duty_raw(ledc_channel_t channel, uint32_t pwm)
 {
 	if (pwm > LEDC_DUTY_MAX)
 		pwm = LEDC_DUTY_MAX;

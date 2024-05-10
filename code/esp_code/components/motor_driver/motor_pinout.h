@@ -7,8 +7,8 @@
 #define MOTOR_B_1 GPIO_NUM_16
 #define MOTOR_B_2 GPIO_NUM_4
 #define MOTOR_B_PWM GPIO_NUM_2
-#define MOTOR_A_PWM_CHANNEL 0
-#define MOTOR_B_PWM_CHANNEL 1
+#define MOTOR_A_PWM_CHANNEL (ledc_channel_t)0
+#define MOTOR_B_PWM_CHANNEL (ledc_channel_t)1
 
 #define ENCODER_1_A GPIO_NUM_34
 #define ENCODER_1_B GPIO_NUM_35
