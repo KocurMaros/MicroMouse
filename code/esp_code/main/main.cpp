@@ -21,14 +21,21 @@
 
 // Variables from main.h
 QueueHandle_t FIFO_Meas_to_Cont;
+
 TaskHandle_t xTaskControlHandle;
 TaskHandle_t xTaskMeasHandle;
 
+uint64_t random_flag = 0;
+
+extern "C" 
+{ 
+#include "udp_client.h" 
+	void app_main(); 
+	void task_meas(void * arg);
+    void task_control(void * arg);  
+} 
 void app_main()
 {
-    // printf("free mem: %d\n",esp_get_free_heap_size());
-    // printf("main CORE  %d\n", xPortGetCoreID());
-    
     //* Initialize Components
     esp_err_t ret = nvs_flash_init();    //Initialize NVS
     if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND)
@@ -39,16 +46,15 @@ void app_main()
     ESP_ERROR_CHECK(ret);
     
     FIFO_Meas_to_Cont = xQueueCreate(2, sizeof(MeasData));
-    //* Initialize taskstask_acquire, "Acquisition task for MAX11254", 4096, NULL, 10, &xTaskAcqHandle); // ADE7880
-   
-    // xTaskCreatePinnedToCore(
-    //                         task_meas,   /* Function to implement the task */
+    init_udp();
+    send_message("Hello from ESP32");
+    // xTaskCreatePinnedToCore(task_meas,   /* Function to implement the task */
     //                         "meas data from sensosors", /* Name of the task */
-    //                         4096,       /*Stack size in words */
+    //                         8192,       /*Stack size in words */
     //                         NULL,       /* Task input parameter */
-    //                         100,          /* Priority of the task */
+    //                         10,          /* Priority of the task */
     //                         &xTaskMeasHandle,       /* Task handle. */
     //                         1);  /* Core where the task should run */
   
-    xTaskCreatePinnedToCore(task_control, "Control motors and algorithm", 4096, NULL, 10, &xTaskControlHandle, 0);
+    // xTaskCreatePinnedToCore(task_control, "Control motors and algorithm", 4096, NULL, 100, &xTaskControlHandle, 0);
 }

@@ -6,6 +6,7 @@
 #include "freertos/event_groups.h"
 #include "freertos/queue.h"
 
+
 #define FIRMWARE_VERSION    "1.0"
 
 typedef enum meas_code_t
@@ -14,18 +15,18 @@ typedef enum meas_code_t
     COMM_OK = 1
 } meas_code_t;
 
-//* FreeRTOS Queues
-extern QueueHandle_t FIFO_Meas_to_Cont;
 
 #define bitRead(value,bit) (((value) >> (bit)) & 0x01)
 #define bitClear(value,bit) ((value) &= ~(1UL << (bit)))
 #define bitSet(value,bit) ((value) |= (1UL << (bit)))
 
+//* FreeRTOS Queues
+extern QueueHandle_t FIFO_Meas_to_Cont;
+extern uint64_t random_flag;
 //* FreeRTOS Tasks
 extern TaskHandle_t xTaskControlHandle;
 extern TaskHandle_t xTaskMeasHandle;
 
-void task_meas(void * arg);
-void task_control(void * arg);
+
 
 #endif /** __MAIN_H */
