@@ -16,3 +16,7 @@ in idf.py menuconfig
 set Example Connection Configuration SSID and Password
 
 and check Example Configuration if port used by ESP is free on your pc arp -a linux
+
+# RUn script
+
+python3 udp_server.py IPv4
