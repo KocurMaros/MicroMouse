@@ -1,6 +1,7 @@
 #ifndef MEAS_DATA_H
 #define MEAS_DATA_H
 
+#include <stdint.h>
 
 typedef struct values_tof
 {
@@ -21,6 +22,7 @@ typedef struct encoders
 	uint64_t encoder2;
 	uint64_t encoder3;
 	uint64_t encoder4;
+	uint64_t time_diff;
 } encoders;
 typedef struct logging
 {

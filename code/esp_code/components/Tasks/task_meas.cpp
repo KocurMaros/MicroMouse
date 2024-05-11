@@ -117,6 +117,7 @@ void encoder_isr_handler(void *arg)
 
 TaskHandle_t xTaskCommHandle;
 
+static uint64_t last_time = 0;
 extern "C" void task_meas(void *arg)
 {
 	printf("Task meas run on core: %d\n", xPortGetCoreID());
@@ -234,6 +235,10 @@ extern "C" void task_meas(void *arg)
 			meas.enc.encoder2 = interrupts[1];
 			meas.enc.encoder3 = interrupts[2];
 			meas.enc.encoder4 = interrupts[3];
+
+			meas.enc.time_diff = esp_timer_get_time() - last_time;
+			last_time = meas.enc.time_diff;
+
 			for (size_t i = 0; i < 4; i++)
 				interrupts[i] = 0;
 
