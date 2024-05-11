@@ -57,18 +57,18 @@ void init_motor_driver();
  * 7,539822369 cm is the distance traveled per rotation.
  * Gear is 8:32.
  *
- * @param speed_left PWM value 0-1023 included.
- * @param speed_right PWM value 0-1023 included.
+ * @param speed_left [in] PWM value 0-1023 included.
+ * @param speed_right [in] PWM value 0-1023 included.
  */
 void set_speed_dir(double speed_left, double speed_right);
 
 /**
  * @brief Initialize a PID controller.
  *
- * @param kp Proportional gain.
- * @param ki Integral gain.
- * @param kd Derivative gain.
- * @param limit The limit of the output.
+ * @param kp [in] Proportional gain.
+ * @param ki [in] Integral gain.
+ * @param kd [in] Derivative gain.
+ * @param limit [in] The limit of the output.
  *
  * @return The PID controller @c PID.
  */
@@ -77,15 +77,15 @@ PID *init_pid(double kp, double ki, double kd, double limit);
 /**
  * @brief Deinitialize a PID controller.
  *
- * @param pid The PID controller to deinitialize.
+ * @param pid [in] The PID controller to deinitialize.
  */
 void deinit_pid(PID *pid);
 
 /**
  * @brief Update the feedback value of the PID controller.
  *
- * @param pid The PID controller.
- * @param feedback The new feedback value.
+ * @param pid [in] The PID controller.
+ * @param feedback [in] The new feedback value.
  */
 void pid_update_feedback(PID *pid, double feedback);
 
@@ -94,9 +94,9 @@ void pid_update_feedback(PID *pid, double feedback);
  *
  * @see pid_control_from_error
  *
- * @param pid The PID controller.
- * @param reference The current output value.
- * @param limit If the output should be limited.
+ * @param pid [in] The PID controller.
+ * @param reference [in] The current output value.
+ * @param limit [in] If the output should be limited.
  *
  * @return The output of the PID controller.
  */
@@ -107,9 +107,9 @@ double pid_control(PID *pid, double reference, bool limit);
  *
  * @see pid_control
  *
- * @param pid The PID controller.
- * @param error The difference between the reference value and current output value.
- * @param limit If the output should be limited.
+ * @param pid [in] The PID controller.
+ * @param error [in] The difference between the reference value and current output value.
+ * @param limit [in] If the output should be limited.
  *
  * @return The output of the PID controller.
  */
