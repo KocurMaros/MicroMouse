@@ -23,8 +23,9 @@
 #define IMPULZS_PER_ROTATION 4096		// 4096 impulzes per rotation
 #define CHASSIS_WIDTH 915				// 915 mm
 #define PI 3.14159265359
+#define GEAR_RATIO 4					// The motor does 4 rotations per one wheel rotation.
 
-#define TO_MM_PER_SECOND(encoder_impulzes, time_s) (encoder_impulzes * (PI * WHEEL_DIAMETER) / IMPULZS_PER_ROTATION * (time_s))
+#define TO_MM_PER_SECOND(encoder_impulzes, time_s) (encoder_impulzes * (PI * WHEEL_DIAMETER) / IMPULZS_PER_ROTATION / GEAR_RATIO  * (time_s))
 
 PID *pid_left;
 PID *pid_right;
@@ -210,13 +211,8 @@ double pid_control_from_error(PID *pid, double error, bool limit)
 
 void motor_update_current_speed(const encoders *enc, double delta_time_s, double *left, double *right)
 {
-	double left_forward = enc->encoder1;
-	double left_backward = enc->encoder2;
-	double right_forward = enc->encoder3;
-	double right_backward = enc->encoder4;
-
-	double left_speed = (left_forward - left_backward);
-	double right_speed = (right_forward - right_backward);
+	double left_speed = enc->encoder1;
+	double right_speed = enc->encoder2;
 
 	// Convert to mm/s from impulses pre second
 	left_speed = TO_MM_PER_SECOND(left_speed, delta_time_s);
