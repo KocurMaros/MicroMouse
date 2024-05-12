@@ -93,7 +93,7 @@ static void transform_mag(vector_t *v)
 	v->y = z;
 	v->z = -x;
 }
-uint64_t interrupts[4] = { 0, 0, 0, 0 };
+uint64_t interrupts[2] = { 0, 0 };
 void encoder_isr_handler(void *arg)
 {
 	uint32_t gpio_num = (uint32_t)arg;
@@ -101,14 +101,8 @@ void encoder_isr_handler(void *arg)
 	case ENCODER_1_A:
 		interrupts[0]++;
 		break;
-	case ENCODER_1_B:
-		interrupts[1]++;
-		break;
 	case ENCODER_2_A:
-		interrupts[2]++;
-		break;
-	case ENCODER_2_B:
-		interrupts[3]++;
+		interrupts[1]++;
 		break;
 	default:
 		break;
@@ -138,18 +132,12 @@ extern "C" void task_meas(void *arg)
      * Encoder
     */
 	gpio_set_direction(ENCODER_1_A, GPIO_MODE_INPUT);
-	gpio_set_direction(ENCODER_1_B, GPIO_MODE_INPUT);
 	gpio_set_direction(ENCODER_2_A, GPIO_MODE_INPUT);
-	gpio_set_direction(ENCODER_2_B, GPIO_MODE_INPUT);
 	gpio_set_intr_type(ENCODER_1_A, GPIO_INTR_POSEDGE);
-	gpio_set_intr_type(ENCODER_1_B, GPIO_INTR_POSEDGE);
 	gpio_set_intr_type(ENCODER_2_A, GPIO_INTR_POSEDGE);
-	gpio_set_intr_type(ENCODER_2_B, GPIO_INTR_POSEDGE);
 	gpio_install_isr_service(0);
 	gpio_isr_handler_add(ENCODER_1_A, encoder_isr_handler, (void *)ENCODER_1_A);
-	gpio_isr_handler_add(ENCODER_1_B, encoder_isr_handler, (void *)ENCODER_1_B);
 	gpio_isr_handler_add(ENCODER_2_A, encoder_isr_handler, (void *)ENCODER_2_A);
-	gpio_isr_handler_add(ENCODER_2_B, encoder_isr_handler, (void *)ENCODER_2_B);
 
 	/**
      * Turn of MPU9250
@@ -233,13 +221,11 @@ extern "C" void task_meas(void *arg)
 			meas.tof.tof4 = vl53l1_read(tof_sensors[3]) / 1000.0;
 			meas.enc.encoder1 = interrupts[0];
 			meas.enc.encoder2 = interrupts[1];
-			meas.enc.encoder3 = interrupts[2];
-			meas.enc.encoder4 = interrupts[3];
 
 			meas.enc.time_diff = esp_timer_get_time() - last_time;
 			last_time = meas.enc.time_diff;
 
-			for (size_t i = 0; i < 4; i++)
+			for (size_t i = 0; i < 2; i++)
 				interrupts[i] = 0;
 
 			ahrs_get_euler_in_degrees(&heading, &pitch, &roll);

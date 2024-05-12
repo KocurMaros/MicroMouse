@@ -20,8 +20,6 @@ typedef struct encoders
 {
 	uint64_t encoder1;
 	uint64_t encoder2;
-	uint64_t encoder3;
-	uint64_t encoder4;
 	uint64_t time_diff;
 } encoders;
 typedef struct logging
