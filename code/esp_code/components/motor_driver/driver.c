@@ -26,6 +26,7 @@
 #define GEAR_RATIO 4					// The motor does 4 rotations per one wheel rotation.
 
 #define TO_MM_PER_SECOND(encoder_impulzes, time_s) (encoder_impulzes * (PI * WHEEL_DIAMETER) / IMPULZS_PER_ROTATION / GEAR_RATIO  * (time_s))
+#define TO_PWM_FROM_MM_PER_SECOND(speed_mm_s) (speed_mm_s / (PI * WHEEL_DIAMETER) * IMPULZS_PER_ROTATION / GEAR_RATIO
 
 PID *pid_left;
 PID *pid_right;
@@ -125,10 +126,14 @@ const char *direction_to_string(Direction dir)
 	}
 }
 
-void set_speed_dir(double speed_left, double speed_right)
+void set_speed_dir(int speed_left, int speed_right)
 {
 	Direction dir;
-	double diff = speed_left - speed_right;
+	int diff = speed_left - speed_right;
+
+	speed_left = (speed_left < -1023 ? -1023 : speed_left > 1023 ? 1023 : speed_left);
+	speed_right = (speed_right < -1023 ? -1023 : speed_right > 1023 ? 1023 : speed_right);
+
 
 	if (diff < -0.1) {
 		dir = Left;
@@ -146,6 +151,9 @@ void set_speed_dir(double speed_left, double speed_right)
 		dir = Forward;
 		move_forward();
 	}
+
+	speed_left = abs(speed_left);
+	speed_right = abs(speed_right);
 
 	/* double pwm_left = pid_control(pid_left, 0, true); */
 	/* double pwm_right = pid_control(pid_right, 0, true); */

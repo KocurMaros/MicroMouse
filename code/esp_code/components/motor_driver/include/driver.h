@@ -60,7 +60,7 @@ void init_motor_driver();
  * @param speed_left [in] PWM value 0-1023 included.
  * @param speed_right [in] PWM value 0-1023 included.
  */
-void set_speed_dir(double speed_left, double speed_right);
+void set_speed_dir(int speed_left, int speed_right);
 
 /**
  * @brief Initialize a PID controller.
