@@ -30,6 +30,8 @@ extern "C" {
 #include "calibrate.h"
 #include "common.h"
 }
+
+
 #include <stdint.h>
 
 #define XSHUT1 GPIO_NUM_23
@@ -54,7 +56,7 @@ calibration_t cal = {
 	.mag_offset = {.x = 80.871094, .y = 179.189453, .z = 51.974609},
     .mag_scale = {.x = 1.346746, .y = 1.204810, .z = 0.700543},
 
-	.gyro_bias_offset = {.x = -0.187195, .y = -0.518792, .z = -0.949588}
+	.gyro_bias_offset = {.x = -0.187195, .y = -0.518792, .z = -0.949588},
 
 
 	.accel_offset = {.x = -0.000727, .y = 0.029688, .z = 0.051130},

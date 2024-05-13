@@ -6,6 +6,7 @@
    software is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
    CONDITIONS OF ANY KIND, either express or implied.
 */
+#include "include/udp_client.h"
 #include <string.h>
 #include <sys/param.h>
 #include "freertos/FreeRTOS.h"
@@ -24,8 +25,8 @@
 #include <lwip/netdb.h>
 #include "sdkconfig.h"
 
-#define HOST_IP_ADDR "127.0.0.1"
-#define PORT CONFIG_EXAMPLE_PORT
+#define HOST_IP_ADDR "192.168.202.37"
+#define PORT 3333
 
 static const char *TAG = "udp_client";
 char rx_buffer[128];
@@ -35,24 +36,10 @@ int sock;
 struct sockaddr_in dest_addr;
 
 void send_message(char *message){
-    char host_ip[] = HOST_IP_ADDR;
+    printf("Sending message\n   %s\n",message);
     int err = sendto(sock, message, strlen(message), 0, (struct sockaddr *)&dest_addr, sizeof(dest_addr));
     if (err < 0) {
         ESP_LOGE(TAG, "Error occurred during sending: errno %d", errno);
-    }
-    ESP_LOGI(TAG, "Message sent");
-    struct sockaddr_storage source_addr; // Large enough for both IPv4 or IPv6
-    socklen_t socklen = sizeof(source_addr);
-    int len = recvfrom(sock, rx_buffer, sizeof(rx_buffer) - 1, 0, (struct sockaddr *)&source_addr, &socklen);
-    if (len < 0) {
-        ESP_LOGE(TAG, "recvfrom failed: errno %d", errno);
-    }else {
-        rx_buffer[len] = 0; // Null-terminate whatever we received and treat like a string
-        ESP_LOGI(TAG, "Received %d bytes from %s:", len, host_ip);
-        ESP_LOGI(TAG, "%s", rx_buffer);
-        if (strncmp(rx_buffer, "OK: ", 4) == 0) {
-            ESP_LOGI(TAG, "Received expected message, reconnecting");
-        }
     }
 }
 

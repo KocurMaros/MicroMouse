@@ -10,8 +10,8 @@
 #include "nvs_flash.h"
 
 #include "meas_data.h"
-
 extern "C" {
+#include "../udp/include/udp_client.h"
     #include "driver.h"
 }
 
@@ -25,6 +25,7 @@ extern "C" void task_control(void *arg)
 
     uint32_t pwm = 0;
     bool up = true;
+    init_udp();
     init_motor_driver();
 
     int64_t prev_time = esp_timer_get_time();
@@ -47,6 +48,8 @@ extern "C" void task_control(void *arg)
             printf("Error: Random flag is smaller than previous\n");
             prev_random_flag = random_flag;
         }
+        send_message("Drz uz picku");
+        
         /**
          * Po tadial vypisi mozte dat do prec
         */
@@ -60,7 +63,7 @@ extern "C" void task_control(void *arg)
                 if(pwm == 200)
                     up = true;
             }
-            set_speed_dir(0,pwm,1);
+            // set_speed_dir(0,pwm,1);
         }
         // vTaskDelay(100 / portTICK_PERIOD_MS);
         // printf("PWM: %d\n",pwm);
