@@ -43,7 +43,7 @@ extern "C" void task_control(void *arg)
 			printf("Voltage %f\n", val.log.voltage);
 
 			prev_random_flag = random_flag;
-			printf("Encoder1: %llu Encoder2: %llu Encoder3: %llu Encoder4: %llu\n", val.enc.encoder1, val.enc.encoder2, val.enc.encoder3, val.enc.encoder4);
+			printf("Encoder1: %llu Encoder2: %llu\n", val.enc.encoder1, val.enc.encoder2);
 			calculate_odometry(&val.enc, &position);
 		}
 		if (prev_random_flag > random_flag) {
