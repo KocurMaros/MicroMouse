@@ -33,3 +33,12 @@ If you'd like to contribute to this project, please follow the guidelines outlin
 
 ## License
 This project is licensed under the [MIT License](LICENSE).
+
+
+# UDP Server guide 
+on linux export this everytime you run python server 
+
+
+export PYTHONPATH="$IDF_PATH/tools:$IDF_PATH/tools/ci/python_packages:$PYTHONPATH"
+
+send_message("message");  //set char message
