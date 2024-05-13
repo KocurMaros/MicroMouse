@@ -124,22 +124,22 @@
 
 typedef struct
 {
-  double x, y, z;
+	double x, y, z;
 } vector_t;
 
 typedef struct
 {
-  // Magnetometer
-  vector_t mag_offset;
-  vector_t mag_scale;
+	// Magnetometer
+	vector_t mag_offset;
+	vector_t mag_scale;
 
-  // Gryoscope
-  vector_t gyro_bias_offset;
+	// Gryoscope
+	vector_t gyro_bias_offset;
 
-  // Accelerometer
-  vector_t accel_offset;
-  vector_t accel_scale_lo;
-  vector_t accel_scale_hi;
+	// Accelerometer
+	vector_t accel_offset;
+	vector_t accel_scale_lo;
+	vector_t accel_scale_hi;
 
 } calibration_t;
 

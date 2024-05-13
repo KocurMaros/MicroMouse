@@ -9,16 +9,12 @@
 
 #define FIRMWARE_VERSION    "1.0"
 
-typedef enum meas_code_t
-{
-    COMM_FAIL = 0,
-    COMM_OK = 1
-} meas_code_t;
+typedef enum meas_code_t { COMM_FAIL = 0, COMM_OK = 1 } meas_code_t;
 
 
-#define bitRead(value,bit) (((value) >> (bit)) & 0x01)
-#define bitClear(value,bit) ((value) &= ~(1UL << (bit)))
-#define bitSet(value,bit) ((value) |= (1UL << (bit)))
+#define bitRead(value, bit) (((value) >> (bit)) & 0x01)
+#define bitClear(value, bit) ((value) &= ~(1UL << (bit)))
+#define bitSet(value, bit) ((value) |= (1UL << (bit)))
 
 //* FreeRTOS Queues
 extern QueueHandle_t FIFO_Meas_to_Cont;
@@ -26,7 +22,6 @@ extern uint64_t random_flag;
 //* FreeRTOS Tasks
 extern TaskHandle_t xTaskControlHandle;
 extern TaskHandle_t xTaskMeasHandle;
-
 
 
 #endif /** __MAIN_H */

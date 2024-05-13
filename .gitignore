@@ -3,3 +3,5 @@ PCB/MicroMouse/main_board/fp-info-cache
 *.zip
 .vscode
 build/
+.clangd
+code/esp_code/.cache/clangd/index
