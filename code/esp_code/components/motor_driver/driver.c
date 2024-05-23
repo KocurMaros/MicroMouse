@@ -25,7 +25,7 @@
 #define PI 3.14159265359
 #define GEAR_RATIO 4					// The motor does 4 rotations per one wheel rotation.
 
-#define TO_MM_PER_SECOND(encoder_impulzes, time_s) ((encoder_impulzes * ((PI * WHEEL_DIAMETER) / (IMPULZS_PER_ROTATION / GEAR_RATIO)))  / (time_s))
+#define TO_MM_PER_SECOND(encoder_impulzes, time_s) ((encoder_impulzes / (time_s) /  (IMPULZS_PER_ROTATION * GEAR_RATIO) * ((PI * WHEEL_DIAMETER))))
 #define TO_PWM_FROM_MM_PER_SECOND(speed_mm_s) (speed_mm_s / (PI * WHEEL_DIAMETER) * IMPULZS_PER_ROTATION / GEAR_RATIO)
 #define TO_MM_PER_SECOND_FROM_PWM(pwm)((PI * WHEEL_DIAMETER) * GEAR_RATIO * pwm / IMPULZS_PER_ROTATION)
 
@@ -80,8 +80,8 @@ void init_motor_driver()
 	pwm_init(MOTOR_A_PWM, MOTOR_A_PWM_CHANNEL);
 	pwm_init(MOTOR_B_PWM, MOTOR_B_PWM_CHANNEL);
 
-	pid_left = init_pid(0.2, 0.001, 0, 1023);
-	pid_right = init_pid(0.2, 0.001, 0, 1023);
+	pid_left = init_pid(0.2, 0.0001, 0, 1023);
+	pid_right = init_pid(0.2, 0.0001, 0, 1023);
 }
 
 void move_forward()
@@ -200,7 +200,7 @@ uint16_t pid_control_from_error(PID *pid, double error)
 	double derivative = error - pid->last_error;
 
 	double tmp = pid->kp * error + pid->ki * pid->integral + pid->kd * derivative;
-	pid->virginOutput = TO_PWM_FROM_MM_PER_SECOND(-tmp);
+	pid->virginOutput = TO_PWM_FROM_MM_PER_SECOND(tmp);
 	pid->clampedOutput = pid->virginOutput < 0 ? 0 : (pid->virginOutput > 1023 ? 1023 : pid->virginOutput); //(pid->virginOutput < 0 ? 0 : pid->virginOutput);
 	printf("PID_TMP: %1.2lf \t PID OUT: %1.2lf \t PID_ACTUAL: %1.2lf\n", tmp, pid->virginOutput, pid->clampedOutput);
 

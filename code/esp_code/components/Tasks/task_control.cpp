@@ -60,7 +60,7 @@ extern "C" void task_control(void *arg)
 		if (val.log.button_start && (curr_time - prev_time)/1000 > 10) { // capped at 100 Hz
 			prev_time = curr_time;
 			//printf("ENC1 = %llu, ENC2 = %llu\n", val.enc.encoder1, val.enc.encoder2);
-			set_speed_dir(20,20);
+			set_speed_dir(100,100);
 			motor_update_current_speed(&val.enc, NULL, NULL);			
 		}
 		// vTaskDelay(100 / portTICK_PERIOD_MS);
