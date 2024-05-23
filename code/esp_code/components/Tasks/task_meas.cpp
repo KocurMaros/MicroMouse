@@ -99,12 +99,20 @@ static void transform_mag(vector_t *v)
 	v->z = -x;
 }
 uint64_t interrupts[2] = { 0, 0 };
+//uint8_t prevEncoderTicks[] = {0,0};
 void encoder_isr_handler(void *arg)
 {
 	uint32_t gpio_num = (uint32_t)arg;
 	switch (gpio_num) {
 	case ENCODER_1_A:
+		//prevEncoderTicks[0] ++;
+
+		// if (prevEncoderTicks[0] > 10)
+		// {
 		interrupts[0]++;
+		// 	prevEncoderTicks[0] = 0;
+		// }
+		
 		break;
 	case ENCODER_2_A:
 		interrupts[1]++;
@@ -113,6 +121,8 @@ void encoder_isr_handler(void *arg)
 		break;
 	}
 }
+
+
 
 TaskHandle_t xTaskCommHandle;
 
@@ -181,7 +191,7 @@ extern "C" void task_meas(void *arg)
     */
 	uint64_t end_time = 0;
 
-	gpio_set_level(GPIO_NUM_13, 1);
+	(void)gpio_set_level(GPIO_NUM_13, 1);
 	vTaskDelay(100 / portTICK_PERIOD_MS);
 	i2c_mpu9250_init(&cal);
 	ahrs_init(200, 0.8); // 200 Hz, 0.8 beta
@@ -189,21 +199,22 @@ extern "C" void task_meas(void *arg)
 	//start after presing button
 
 	gpio_pad_select_gpio(GPIO_NUM_0);
-	gpio_set_pull_mode(GPIO_NUM_0, GPIO_PULLUP_ONLY);
-	gpio_set_direction(GPIO_NUM_0, GPIO_MODE_INPUT);
+	(void)gpio_set_pull_mode(GPIO_NUM_0, GPIO_PULLUP_ONLY);
+	(void)gpio_set_direction(GPIO_NUM_0, GPIO_MODE_INPUT);
 
 	while (gpio_get_level(GPIO_NUM_0) != 0) {
 		// continue reading GPIO_NUM_0
 	}
 	meas.log.button_start = true;
 
-	adc1_config_width(ADC_WIDTH_BIT_12);
-	adc1_config_channel_atten(ADC1_CHANNEL_3, ADC_ATTEN_DB_11);
+	(void)adc1_config_width(ADC_WIDTH_BIT_12);
+	(void)adc1_config_channel_atten(ADC1_CHANNEL_3, ADC_ATTEN_DB_11);
 
 	//Characterize ADC
 	adc_chars = (esp_adc_cal_characteristics_t *)calloc(1, sizeof(esp_adc_cal_characteristics_t));
 	esp_adc_cal_value_t val_type = esp_adc_cal_characterize(ADC_UNIT_1, ADC_ATTEN_DB_11, ADC_WIDTH_BIT_12, DEFAULT_VREF, adc_chars);
 	uint32_t ulNotifiedValue;
+
 	for (;;) {
 		// Get the Accelerometer, Gyroscope and Magnetometer values.
 		meas.log.voltage = esp_adc_cal_raw_to_voltage(adc1_get_raw(ADC1_CHANNEL_3), adc_chars) * 2.0;
@@ -220,27 +231,34 @@ extern "C" void task_meas(void *arg)
 		}
 		act_time = esp_timer_get_time();
 		if ((act_time - send_time) > 10000) { //100hz
+			meas.enc.encoder1 = interrupts[0];
+			meas.enc.encoder2 = interrupts[1];
+			// printf("ENC1_m = %llu, ENC2_m = %llu\n", interrupts[0], interrupts[1]);
+
+			int64_t time = esp_timer_get_time();
+			meas.enc.time_diff = time - last_time;
+			last_time = time;
+			//printf("dt = %llu\n", meas.enc.time_diff);
+
+			for (size_t i = 0; i < 2; i++)
+				interrupts[i] = 0;
+
+
 			meas.tof.tof1 = vl53l1_read(tof_sensors[0]) / 1000.0;
 			meas.tof.tof2 = vl53l1_read(tof_sensors[1]) / 1000.0;
 			meas.tof.tof3 = vl53l1_read(tof_sensors[2]) / 1000.0;
 			meas.tof.tof4 = vl53l1_read(tof_sensors[3]) / 1000.0;
-			meas.enc.encoder1 = interrupts[0];
-			meas.enc.encoder2 = interrupts[1];
-			printf("ENC1 = %llu, ENC2 = %llu\n", interrupts[0], interrupts[1]);
-
-			meas.enc.time_diff = esp_timer_get_time() - last_time;
-			last_time = meas.enc.time_diff;
-
-			// for (size_t i = 0; i < 2; i++)
-			// 	interrupts[i] = 0;
 
 			ahrs_get_euler_in_degrees(&heading, &pitch, &roll);
 			meas.orient.roll = roll;
 			meas.orient.pitch = pitch;
 			meas.orient.heading = heading;
 
-			xQueueSend(FIFO_Meas_to_Cont, &meas, 50 / portTICK_RATE_MS);
+			(void)xQueueSend(FIFO_Meas_to_Cont, &meas, 50 / portTICK_RATE_MS);
+			send_time = esp_timer_get_time();
+			// printf("Queue Send: %s\n", qRet == pdTRUE ? "OK" : "ERROR");
 			random_flag++;
+			
 		}
 		act_time = esp_timer_get_time();
 		if (cycle_time > act_time) // ak pretecie act_time, vyresetuj cycle_time

@@ -30,13 +30,15 @@ extern "C" void task_control(void *arg)
 
 
 	uint64_t prev_random_flag = 0;
+	int64_t prev_time = esp_timer_get_time(), curr_time = 0;
 	for (;;) {
-		int64_t prev_time = esp_timer_get_time();
+		curr_time = esp_timer_get_time();
 		/**
          * TOTO tu nechajte
         */
 		if (prev_random_flag < random_flag) {
-			xQueueReceive(FIFO_Meas_to_Cont, &val, (100 / portTICK_PERIOD_MS));
+			(void)xQueueReceive(FIFO_Meas_to_Cont, &val, (100/portTICK_PERIOD_MS)); // wait longer than 10 ms 
+			// printf("Queue Recieve: %s\n", qRec == pdTRUE ? "OK" : "ERROR");
 			// printf("Received data from meas\n");
 			// printf("Roll: %f\n", val.orient.roll);
 			// printf("Pitch: %f\n", val.orient.pitch);
@@ -54,9 +56,12 @@ extern "C" void task_control(void *arg)
         /**
          * Po tadial vypisi mozte dat do prec
         */
-		if (val.log.button_start) {
+	   	
+		if (val.log.button_start && (curr_time - prev_time)/1000 > 10) { // capped at 100 Hz
+			prev_time = curr_time;
+			//printf("ENC1 = %llu, ENC2 = %llu\n", val.enc.encoder1, val.enc.encoder2);
 			set_speed_dir(10,10);
-			motor_update_current_speed(&val.enc,(double)(esp_timer_get_time() - prev_time)/1000000.0, NULL, NULL);			
+			motor_update_current_speed(&val.enc, NULL, NULL);			
 		}
 		// vTaskDelay(100 / portTICK_PERIOD_MS);
 		// printf("PWM: %d\n",pwm);

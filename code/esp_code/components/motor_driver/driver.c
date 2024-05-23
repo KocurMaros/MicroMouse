@@ -25,7 +25,7 @@
 #define PI 3.14159265359
 #define GEAR_RATIO 4					// The motor does 4 rotations per one wheel rotation.
 
-#define TO_MM_PER_SECOND(encoder_impulzes, time_s) (encoder_impulzes * (PI * WHEEL_DIAMETER) / IMPULZS_PER_ROTATION / GEAR_RATIO  * (time_s))
+#define TO_MM_PER_SECOND(encoder_impulzes, time_s) ((encoder_impulzes * ((PI * WHEEL_DIAMETER) / (IMPULZS_PER_ROTATION / GEAR_RATIO)))  / (time_s))
 #define TO_PWM_FROM_MM_PER_SECOND(speed_mm_s) (speed_mm_s / (PI * WHEEL_DIAMETER) * IMPULZS_PER_ROTATION / GEAR_RATIO)
 #define TO_MM_PER_SECOND_FROM_PWM(pwm)((PI * WHEEL_DIAMETER) * GEAR_RATIO * pwm / IMPULZS_PER_ROTATION)
 
@@ -80,8 +80,8 @@ void init_motor_driver()
 	pwm_init(MOTOR_A_PWM, MOTOR_A_PWM_CHANNEL);
 	pwm_init(MOTOR_B_PWM, MOTOR_B_PWM_CHANNEL);
 
-	pid_left = init_pid(3, 0, 0, 1023);
-	pid_right = init_pid(3, 0, 0, 1023);
+	pid_left = init_pid(1, 0, 0, 1023);
+	pid_right = init_pid(1, 0, 0, 1023);
 }
 
 void move_forward()
@@ -169,11 +169,11 @@ void set_speed_dir(int speed_left, int speed_right)
 	cap_pwm(&pwm_right);
 	//printf("Setting speed: left: %f, right: %f, direction: %s\n", pwm_left, pwm_right, direction_to_string(dir)); 
 
-	//printf("PWM_RIGHT = %d\n", pwm_right);
-	//printf("PWM_LEFT = %d\n", pwm_left);
+	printf("PWM_RIGHT = %d\n", pwm_right);
+	printf("PWM_LEFT = %d\n", pwm_left);
 
-	pwm_change_duty_raw(MOTOR_A_PWM_CHANNEL, pwm_left);
-	pwm_change_duty_raw(MOTOR_B_PWM_CHANNEL, pwm_right);
+	pwm_change_duty_raw(MOTOR_A_PWM_CHANNEL, pwm_right);
+	pwm_change_duty_raw(MOTOR_B_PWM_CHANNEL, pwm_left);
 }
 
 PID *init_pid(double kp, double ki, double kd, double limit)
@@ -231,23 +231,20 @@ double pid_control_from_error(PID *pid, double error, bool limit)
 	return (limit ? pid->clampedOutput : pid->virginOutput);
 }
 
-void motor_update_current_speed(const encoders *enc, double delta_time_s, double *left, double *right)
+void motor_update_current_speed(const encoders *enc, double *left, double *right)
 {
-	double left_speed = enc->encoder1;
-	double right_speed = enc->encoder2;
+	double dt = (double)enc->time_diff / 1000000.0;
+	double  left_speed = TO_MM_PER_SECOND(enc->encoder1, dt), 
+		    right_speed = TO_MM_PER_SECOND(enc->encoder2, dt);
 
-	// Convert to mm/s from impulses pre second
-	left_speed = TO_MM_PER_SECOND(left_speed, delta_time_s);
-	right_speed = TO_MM_PER_SECOND(right_speed, delta_time_s);
-
-	//printf("LEFT_SPD = %1.2lf\nPRGHT_SPD = %1.2lf\n",left_speed,right_speed);
-
+	//printf("LEFT_SPD = %1.2lf, RIGHT_SPD = %1.2lf , dt = %lf\n", left_speed, right_speed, dt);
+	
 	pid_left->feedback = left_speed;
 	pid_right->feedback = right_speed;
 
 	if(left != NULL)
 		*left = left_speed;
-	
+
 	if(right != NULL)
 		*right = right_speed;
 }
@@ -269,7 +266,7 @@ void calculate_odometry(const encoders *enc, Position *pos)
 	double right_speed = 0;
 
 	double delta_time_s = enc->time_diff / 1000000.;
-	motor_update_current_speed(enc, delta_time_s, &left_speed, &right_speed);
+	motor_update_current_speed(enc, &left_speed, &right_speed);
 
 	double left_distance = left_speed * delta_time_s;
 	double right_distance = right_speed * delta_time_s;

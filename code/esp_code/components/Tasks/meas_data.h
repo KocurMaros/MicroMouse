@@ -16,6 +16,8 @@ typedef struct orientation
 	float pitch;
 	float heading;
 } orientation;
+
+/// @brief Encoder data, where encoder 1/2 are ticks and time_diff is the time difference in us
 typedef struct encoders
 {
 	uint64_t encoder1;

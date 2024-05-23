@@ -125,7 +125,7 @@ double pid_control_from_error(PID *pid, double error, bool limit);
  * @param left [out] The current speed of the left wheel in mm/s.
  * @param right [out] The current speed of the right wheel in mm/s.
  */
-void motor_update_current_speed(const encoders *enc, double delta_time_s, double *left, double *right);
+void motor_update_current_speed(const encoders *enc, double *left, double *right);
 
 /**
  * @brief Calculate the odometry of the robot.
