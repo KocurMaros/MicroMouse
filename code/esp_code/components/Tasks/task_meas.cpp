@@ -226,12 +226,13 @@ extern "C" void task_meas(void *arg)
 			meas.tof.tof4 = vl53l1_read(tof_sensors[3]) / 1000.0;
 			meas.enc.encoder1 = interrupts[0];
 			meas.enc.encoder2 = interrupts[1];
+			printf("ENC1 = %llu, ENC2 = %llu\n", interrupts[0], interrupts[1]);
 
 			meas.enc.time_diff = esp_timer_get_time() - last_time;
 			last_time = meas.enc.time_diff;
 
-			for (size_t i = 0; i < 2; i++)
-				interrupts[i] = 0;
+			// for (size_t i = 0; i < 2; i++)
+			// 	interrupts[i] = 0;
 
 			ahrs_get_euler_in_degrees(&heading, &pitch, &roll);
 			meas.orient.roll = roll;

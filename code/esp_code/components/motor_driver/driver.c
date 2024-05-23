@@ -26,16 +26,22 @@
 #define GEAR_RATIO 4					// The motor does 4 rotations per one wheel rotation.
 
 #define TO_MM_PER_SECOND(encoder_impulzes, time_s) (encoder_impulzes * (PI * WHEEL_DIAMETER) / IMPULZS_PER_ROTATION / GEAR_RATIO  * (time_s))
-#define TO_PWM_FROM_MM_PER_SECOND(speed_mm_s) (speed_mm_s / (PI * WHEEL_DIAMETER) * IMPULZS_PER_ROTATION / GEAR_RATIO
+#define TO_PWM_FROM_MM_PER_SECOND(speed_mm_s) (speed_mm_s / (PI * WHEEL_DIAMETER) * IMPULZS_PER_ROTATION / GEAR_RATIO)
+#define TO_MM_PER_SECOND_FROM_PWM(pwm)((PI * WHEEL_DIAMETER) * GEAR_RATIO * pwm / IMPULZS_PER_ROTATION)
 
 PID *pid_left;
 PID *pid_right;
 
+void cap_pwm(int *currentPwm)
+{
+	*currentPwm = (*currentPwm < -1023 ? -1023 : *currentPwm > 1023 ? 1023 : *currentPwm);
+}
+
 void pwm_init(uint8_t pin, ledc_channel_t channel)
 {
 	ledc_timer_config_t ledc_timer = { .speed_mode = LEDC_MODE,
-									   .timer_num = LEDC_TIMER,
 									   .duty_resolution = LEDC_DUTY_RES,
+									   .timer_num = LEDC_TIMER,
 									   .freq_hz = LEDC_FREQUENCY, // Set output frequency at 5 kHz
 									   .clk_cfg = LEDC_AUTO_CLK };
 	ESP_ERROR_CHECK(ledc_timer_config(&ledc_timer));
@@ -74,8 +80,8 @@ void init_motor_driver()
 	pwm_init(MOTOR_A_PWM, MOTOR_A_PWM_CHANNEL);
 	pwm_init(MOTOR_B_PWM, MOTOR_B_PWM_CHANNEL);
 
-	pid_left = init_pid(1, 0, 0, 1023);
-	pid_right = init_pid(1, 0, 0, 1023);
+	pid_left = init_pid(3, 0, 0, 1023);
+	pid_right = init_pid(3, 0, 0, 1023);
 }
 
 void move_forward()
@@ -128,40 +134,46 @@ const char *direction_to_string(Direction dir)
 
 void set_speed_dir(int speed_left, int speed_right)
 {
-	Direction dir;
-	int diff = speed_left - speed_right;
+	// Direction dir;
+	// int diff = speed_left - speed_right;
 
-	speed_left = (speed_left < -1023 ? -1023 : speed_left > 1023 ? 1023 : speed_left);
-	speed_right = (speed_right < -1023 ? -1023 : speed_right > 1023 ? 1023 : speed_right);
+	//cap_pwm(&speed_left);
+	//cap_pwm(&speed_right);
 
 
-	if (diff < -0.1) {
-		dir = Left;
-		move_left();
-	}
-	else if (diff > 0.1) {
-		dir = Right;
-		move_right();
-	}
-	else if (speed_left < 0) {
-		dir = Backwared;
-		move_backward();
-	}
-	else {
-		dir = Forward;
-		move_forward();
-	}
+	// if (diff < -0.1) {
+	// 	dir = Left;
+	// 	move_left();
+	// }
+	// else if (diff > 0.1) {
+	// 	dir = Right;
+	// 	move_right();
+	// }
+	// else if (speed_left < 0) {
+	// 	dir = Backwared;
+	// 	move_backward();
+	// }
+	// else {
+	// 	dir = Forward;
+	// 	move_forward();
+	// }
+	move_forward();
 
-	speed_left = abs(speed_left);
-	speed_right = abs(speed_right);
+	// speed_left = abs(speed_left);
+	// speed_right = abs(speed_right);
 
-	/* double pwm_left = pid_control(pid_left, 0, true); */
-	/* double pwm_right = pid_control(pid_right, 0, true); */
+	int pwm_left = TO_PWM_FROM_MM_PER_SECOND(pid_control(pid_left, speed_left, false)); 
+	int pwm_right = TO_PWM_FROM_MM_PER_SECOND(pid_control(pid_right, speed_right, false)); 
 
-	/* printf("Setting speed: left: %f, right: %f, direction: %s\n", pwm_left, pwm_right, direction_to_string(dir)); */
+	cap_pwm(&pwm_left);
+	cap_pwm(&pwm_right);
+	//printf("Setting speed: left: %f, right: %f, direction: %s\n", pwm_left, pwm_right, direction_to_string(dir)); 
 
-	pwm_change_duty_raw(MOTOR_A_PWM_CHANNEL, speed_left);
-	pwm_change_duty_raw(MOTOR_B_PWM_CHANNEL, speed_right);
+	//printf("PWM_RIGHT = %d\n", pwm_right);
+	//printf("PWM_LEFT = %d\n", pwm_left);
+
+	pwm_change_duty_raw(MOTOR_A_PWM_CHANNEL, pwm_left);
+	pwm_change_duty_raw(MOTOR_B_PWM_CHANNEL, pwm_right);
 }
 
 PID *init_pid(double kp, double ki, double kd, double limit)
@@ -190,14 +202,16 @@ void deinit_pid(PID *pid)
 double pid_control(PID *pid, double reference, bool limit)
 {
 	double error = reference - pid->feedback;
-
+	//printf("ERROR = %1.2lf\n", error);
 	return pid_control_from_error(pid, error, limit);
 }
 
 double pid_control_from_error(PID *pid, double error, bool limit)
 {
 	pid->integral += error;
-	pid->integral += pid->clampedOutput - pid->virginOutput;
+
+	if(limit)
+		pid->integral += pid->clampedOutput - pid->virginOutput;
 
 	double derivative = error - pid->last_error;
 
@@ -226,11 +240,16 @@ void motor_update_current_speed(const encoders *enc, double delta_time_s, double
 	left_speed = TO_MM_PER_SECOND(left_speed, delta_time_s);
 	right_speed = TO_MM_PER_SECOND(right_speed, delta_time_s);
 
+	//printf("LEFT_SPD = %1.2lf\nPRGHT_SPD = %1.2lf\n",left_speed,right_speed);
+
 	pid_left->feedback = left_speed;
 	pid_right->feedback = right_speed;
 
-	*left = left_speed;
-	*right = right_speed;
+	if(left != NULL)
+		*left = left_speed;
+	
+	if(right != NULL)
+		*right = right_speed;
 }
 
 static double wrap_angle(double angle)
