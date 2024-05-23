@@ -80,8 +80,8 @@ void init_motor_driver()
 	pwm_init(MOTOR_A_PWM, MOTOR_A_PWM_CHANNEL);
 	pwm_init(MOTOR_B_PWM, MOTOR_B_PWM_CHANNEL);
 
-	pid_left = init_pid(1, 0, 0, 1023);
-	pid_right = init_pid(1, 0, 0, 1023);
+	pid_left = init_pid(0.2, 0.001, 0, 1023);
+	pid_right = init_pid(0.2, 0.001, 0, 1023);
 }
 
 void move_forward()
@@ -158,22 +158,9 @@ void set_speed_dir(int speed_left, int speed_right)
 	// 	move_forward();
 	// }
 	move_forward();
-
-	// speed_left = abs(speed_left);
-	// speed_right = abs(speed_right);
-
-	int pwm_left = TO_PWM_FROM_MM_PER_SECOND(pid_control(pid_left, speed_left, false)); 
-	int pwm_right = TO_PWM_FROM_MM_PER_SECOND(pid_control(pid_right, speed_right, false)); 
-
-	cap_pwm(&pwm_left);
-	cap_pwm(&pwm_right);
-	//printf("Setting speed: left: %f, right: %f, direction: %s\n", pwm_left, pwm_right, direction_to_string(dir)); 
-
-	printf("PWM_RIGHT = %d\n", pwm_right);
-	printf("PWM_LEFT = %d\n", pwm_left);
-
-	pwm_change_duty_raw(MOTOR_A_PWM_CHANNEL, pwm_right);
-	pwm_change_duty_raw(MOTOR_B_PWM_CHANNEL, pwm_left);
+	
+	pwm_change_duty_raw(MOTOR_A_PWM_CHANNEL, pid_control(pid_left, speed_left));
+	pwm_change_duty_raw(MOTOR_B_PWM_CHANNEL, pid_control(pid_right, speed_right));
 }
 
 PID *init_pid(double kp, double ki, double kd, double limit)
@@ -199,36 +186,27 @@ void deinit_pid(PID *pid)
 	free(pid);
 }
 
-double pid_control(PID *pid, double reference, bool limit)
+uint16_t pid_control(PID *pid, double reference)
 {
 	double error = reference - pid->feedback;
-	//printf("ERROR = %1.2lf\n", error);
-	return pid_control_from_error(pid, error, limit);
+	//printf("Feedback: %1.2lf \t ERROR = %1.2lf\n", pid->feedback, error);
+	return pid_control_from_error(pid, error);
 }
 
-double pid_control_from_error(PID *pid, double error, bool limit)
+uint16_t pid_control_from_error(PID *pid, double error)
 {
 	pid->integral += error;
 
-	if(limit)
-		pid->integral += pid->clampedOutput - pid->virginOutput;
-
 	double derivative = error - pid->last_error;
 
-	pid->virginOutput = pid->kp * error + pid->ki * pid->integral + pid->kd * derivative;
+	double tmp = pid->kp * error + pid->ki * pid->integral + pid->kd * derivative;
+	pid->virginOutput = TO_PWM_FROM_MM_PER_SECOND(-tmp);
+	pid->clampedOutput = pid->virginOutput < 0 ? 0 : (pid->virginOutput > 1023 ? 1023 : pid->virginOutput); //(pid->virginOutput < 0 ? 0 : pid->virginOutput);
+	printf("PID_TMP: %1.2lf \t PID OUT: %1.2lf \t PID_ACTUAL: %1.2lf\n", tmp, pid->virginOutput, pid->clampedOutput);
 
-	if (limit) {
-		if (pid->virginOutput < 0) {
-			pid->clampedOutput = (pid->virginOutput < -pid->limit ? pid->limit : (pid->virginOutput > -15 ? -15. : pid->virginOutput));
-		}
-		else {
-			pid->clampedOutput = (pid->virginOutput > pid->limit ? pid->limit : (pid->virginOutput < 15 ? 15. : pid->virginOutput));
-		}
-	}
+	pid->last_error = error;
 
-	pid->last_error = (limit ? pid->clampedOutput : pid->virginOutput);
-
-	return (limit ? pid->clampedOutput : pid->virginOutput);
+	return (uint16_t)round(pid->clampedOutput);
 }
 
 void motor_update_current_speed(const encoders *enc, double *left, double *right)

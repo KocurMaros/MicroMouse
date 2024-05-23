@@ -96,11 +96,10 @@ void pid_update_feedback(PID *pid, double feedback);
  *
  * @param pid [in] The PID controller.
  * @param reference [in] The current output value.
- * @param limit [in] If the output should be limited.
  *
  * @return The output of the PID controller.
  */
-double pid_control(PID *pid, double reference, bool limit);
+uint16_t pid_control(PID *pid, double reference);
 
 /**
  * @brief Generate the next control signal value for the motor.
@@ -109,11 +108,10 @@ double pid_control(PID *pid, double reference, bool limit);
  *
  * @param pid [in] The PID controller.
  * @param error [in] The difference between the reference value and current output value.
- * @param limit [in] If the output should be limited.
  *
- * @return The output of the PID controller.
+ * @return The output of the PID controller [PWM].
  */
-double pid_control_from_error(PID *pid, double error, bool limit);
+uint16_t pid_control_from_error(PID *pid, double error);
 
 /**
  * @brief Calculate the current speed of the whees in mm/s.
