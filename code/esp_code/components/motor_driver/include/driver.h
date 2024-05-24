@@ -53,12 +53,8 @@ void init_motor_driver();
 /**
  * @brief Set the speed and direction of the motors.
  *
- * d = 2.4cm
- * 7,539822369 cm is the distance traveled per rotation.
- * Gear is 8:32.
- *
- * @param speed_left [in] PWM value 0-1023 included.
- * @param speed_right [in] PWM value 0-1023 included.
+ * @param speed_left [in] mm/s.
+ * @param speed_right [in] mm/s.
  */
 void set_speed_dir(int speed_left, int speed_right);
 
@@ -95,9 +91,9 @@ void pid_update_feedback(PID *pid, double feedback);
  * @see pid_control_from_error
  *
  * @param pid [in] The PID controller.
- * @param reference [in] The current output value.
+ * @param reference [in] The current setpoint [mm/s].
  *
- * @return The output of the PID controller.
+ * @return The output of the PID controller [PWM].
  */
 uint16_t pid_control(PID *pid, double reference);
 
@@ -107,7 +103,7 @@ uint16_t pid_control(PID *pid, double reference);
  * @see pid_control
  *
  * @param pid [in] The PID controller.
- * @param error [in] The difference between the reference value and current output value.
+ * @param error [in] The difference between the reference value and current output value [PWM].
  *
  * @return The output of the PID controller [PWM].
  */
@@ -119,7 +115,6 @@ uint16_t pid_control_from_error(PID *pid, double error);
  * The updated values are written to the PID controller's feedback values.
  *
  * @param enc [in] Encoder structure containting the current encoder values.
- * @param delta_time_s [in] The time difference between the last and the current encoder values.
  * @param left [out] The current speed of the left wheel in mm/s.
  * @param right [out] The current speed of the right wheel in mm/s.
  */

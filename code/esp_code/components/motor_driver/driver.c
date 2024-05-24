@@ -83,8 +83,8 @@ void init_motor_driver()
 	pwm_init(MOTOR_A_PWM, MOTOR_A_PWM_CHANNEL);
 	pwm_init(MOTOR_B_PWM, MOTOR_B_PWM_CHANNEL);
 
-	pid_left = init_pid(1, 0.01, 0.000001, 1023);
-	pid_right = init_pid(1, 0.01, 0.000001, 1023);
+	pid_left = init_pid(20, 0.05, 0, 1023);
+	pid_right = init_pid(20, 0.05, 0, 1023);
 }
 
 void move_forward()
@@ -188,14 +188,21 @@ void deinit_pid(PID *pid)
 
 uint16_t pid_control(PID *pid, double reference)
 {
+	static uint64_t start_time = 0;
 	reference = TO_PWM_FROM_MM_PER_SECOND(reference);
-	reference = reference > 1023 ? 1023 : (reference < -1023 ? -1023 : reference);
+	reference = reference > pid->limit ? pid->limit : (reference < -pid->limit ? -pid->limit : reference);
 
 	pid->feedback = TO_PWM_FROM_MM_PER_SECOND(pid->feedback);
-	pid->feedback = pid->feedback > 1023 ? 1023 : (pid->feedback < -1023 ? -1023 : pid->feedback);
+	pid->feedback = pid->feedback > pid->limit ? pid->limit : (pid->feedback < -pid->limit ? -pid->limit : pid->feedback);
 
 	double error = reference - pid->feedback;
-	printf("Reference: %1.2lf \t Feedback: %1.2lf \t ERROR = %1.2lf\n",reference,  pid->feedback, error);
+	//printf("Reference: %1.2lf \t Feedback: %1.2lf \t ERROR = %1.2lf\n",reference,  pid->feedback, error);
+	if ((double)(esp_timer_get_time() - start_time) / 1000.0 > 100.0)
+	{
+		printf("ERROR: %1.5lf\n", error);
+		start_time = esp_timer_get_time();
+	}
+	
 	return pid_control_from_error(pid, error);
 }
 
@@ -207,7 +214,7 @@ uint16_t pid_control_from_error(PID *pid, double error)
 
 	double tmp = pid->kp * error + pid->ki * pid->integral + pid->kd * derivative;
 	pid->virginOutput = tmp;
-	pid->clampedOutput = pid->virginOutput < 0 ? 0 : (pid->virginOutput > 1023 ? 1023 : pid->virginOutput);
+	pid->clampedOutput = pid->virginOutput < 0 ? 0 : (pid->virginOutput > pid->limit ? pid->limit : pid->virginOutput);
 	//printf("PID_TMP: %1.2lf \t PID OUT: %1.2lf \t PID_ACTUAL: %1.2lf \t ERROR: %1.2lf\n", tmp, pid->virginOutput, pid->clampedOutput, error);
 
 	pid->last_error = error;

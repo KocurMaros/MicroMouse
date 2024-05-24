@@ -230,7 +230,7 @@ extern "C" void task_meas(void *arg)
 			end_time = esp_timer_get_time();
 		}
 		act_time = esp_timer_get_time();
-		if ((act_time - send_time) > 10000) { //100hz
+		if ((act_time - send_time) > 1000) { //1kHz
 			meas.enc.encoder1 = interrupts[0];
 			meas.enc.encoder2 = interrupts[1];
 			// printf("ENC1_m = %llu, ENC2_m = %llu\n", interrupts[0], interrupts[1]);

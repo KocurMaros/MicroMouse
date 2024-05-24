@@ -57,7 +57,7 @@ extern "C" void task_control(void *arg)
          * Po tadial vypisi mozte dat do prec
         */
 	   	
-		if (val.log.button_start && (curr_time - prev_time)/1000 > 10) { // capped at 100 Hz
+		if (val.log.button_start && (curr_time - prev_time)/1000 > 1) { // capped at 1 kHz
 			prev_time = curr_time;
 			//printf("ENC1 = %llu, ENC2 = %llu\n", val.enc.encoder1, val.enc.encoder2);
 			set_speed_dir(100,100);
