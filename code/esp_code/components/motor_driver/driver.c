@@ -80,8 +80,8 @@ void init_motor_driver()
 	pwm_init(MOTOR_A_PWM, MOTOR_A_PWM_CHANNEL);
 	pwm_init(MOTOR_B_PWM, MOTOR_B_PWM_CHANNEL);
 
-	pid_left = init_pid(0.2, 0.0001, 0, 1023);
-	pid_right = init_pid(0.2, 0.0001, 0, 1023);
+	pid_left = init_pid(0.2, 0.002, 0.001, 0.000001, 1023);
+	pid_right = init_pid(0.2, 0.002, 0.001, 0.000001, 1023);
 }
 
 void move_forward()
@@ -137,9 +137,6 @@ void set_speed_dir(int speed_left, int speed_right)
 	// Direction dir;
 	// int diff = speed_left - speed_right;
 
-	//cap_pwm(&speed_left);
-	//cap_pwm(&speed_right);
-
 
 	// if (diff < -0.1) {
 	// 	dir = Left;
@@ -163,11 +160,12 @@ void set_speed_dir(int speed_left, int speed_right)
 	pwm_change_duty_raw(MOTOR_B_PWM_CHANNEL, pid_control(pid_right, speed_right));
 }
 
-PID *init_pid(double kp, double ki, double kd, double limit)
+PID *init_pid(double kp, double kp_0, double ki, double kd, double limit)
 {
 	PID *pid = (PID*)calloc(1, sizeof(PID));
 
 	pid->kp = kp;
+	pid->kp_0 = kp_0;
 	pid->ki = ki;
 	pid->kd = kd;
 	pid->integral = 0;
@@ -188,8 +186,14 @@ void deinit_pid(PID *pid)
 
 uint16_t pid_control(PID *pid, double reference)
 {
+	reference = TO_PWM_FROM_MM_PER_SECOND(reference);
+	reference = reference > 1023 ? 1023 : (reference < -1023 ? -1023 : reference);
+
+	pid->feedback = TO_PWM_FROM_MM_PER_SECOND(pid->feedback);
+	pid->feedback = pid->feedback > 1023 ? 1023 : (pid->feedback < -1023 ? -1023 : pid->feedback);
+
 	double error = reference - pid->feedback;
-	//printf("Feedback: %1.2lf \t ERROR = %1.2lf\n", pid->feedback, error);
+	printf("Reference: %1.2lf \t Feedback: %1.2lf \t ERROR = %1.2lf\n",reference,  pid->feedback, error);
 	return pid_control_from_error(pid, error);
 }
 
@@ -200,9 +204,9 @@ uint16_t pid_control_from_error(PID *pid, double error)
 	double derivative = error - pid->last_error;
 
 	double tmp = pid->kp * error + pid->ki * pid->integral + pid->kd * derivative;
-	pid->virginOutput = TO_PWM_FROM_MM_PER_SECOND(tmp);
-	pid->clampedOutput = pid->virginOutput < 0 ? 0 : (pid->virginOutput > 1023 ? 1023 : pid->virginOutput); //(pid->virginOutput < 0 ? 0 : pid->virginOutput);
-	printf("PID_TMP: %1.2lf \t PID OUT: %1.2lf \t PID_ACTUAL: %1.2lf\n", tmp, pid->virginOutput, pid->clampedOutput);
+	pid->virginOutput = tmp;
+	pid->clampedOutput = pid->virginOutput < 0 ? 0 : (pid->virginOutput > 1023 ? 1023 : pid->virginOutput);
+	//printf("PID_TMP: %1.2lf \t PID OUT: %1.2lf \t PID_ACTUAL: %1.2lf \t ERROR: %1.2lf\n", tmp, pid->virginOutput, pid->clampedOutput, error);
 
 	pid->last_error = error;
 

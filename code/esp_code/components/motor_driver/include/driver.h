@@ -19,6 +19,7 @@ typedef enum Direction {
  */
 typedef struct picontrol {
 	double kp;
+	double kp_0;
 	double ki;
 	double kd;
 	double integral;
@@ -72,7 +73,7 @@ void set_speed_dir(int speed_left, int speed_right);
  *
  * @return The PID controller @c PID.
  */
-PID *init_pid(double kp, double ki, double kd, double limit);
+PID *init_pid(double kp, double kp0, double ki, double kd, double limit);
 
 /**
  * @brief Deinitialize a PID controller.
