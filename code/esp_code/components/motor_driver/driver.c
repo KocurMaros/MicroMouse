@@ -24,10 +24,13 @@
 #define CHASSIS_WIDTH 915				// 915 mm
 #define PI 3.14159265359
 #define GEAR_RATIO 4					// The motor does 4 rotations per one wheel rotation.
+#define MAX_MOTOR_RPM 14100				// The max unloaded RPM of the motor
+
+#define MAX_WHEEL_RPM MAX_MOTOR_RPM / GEAR_RATIO
+#define MAX_WHEEL_SPEED ((MAX_WHEEL_RPM * PI * WHEEL_DIAMETER) / 60.0)
 
 #define TO_MM_PER_SECOND(encoder_impulzes, time_s) ((encoder_impulzes / (time_s) /  (IMPULZS_PER_ROTATION * GEAR_RATIO) * ((PI * WHEEL_DIAMETER))))
-#define TO_PWM_FROM_MM_PER_SECOND(speed_mm_s) (speed_mm_s / (PI * WHEEL_DIAMETER) * IMPULZS_PER_ROTATION / GEAR_RATIO)
-#define TO_MM_PER_SECOND_FROM_PWM(pwm)((PI * WHEEL_DIAMETER) * GEAR_RATIO * pwm / IMPULZS_PER_ROTATION)
+#define TO_PWM_FROM_MM_PER_SECOND(speed_mm_s) ((speed_mm_s) / MAX_WHEEL_SPEED * 1023)
 
 PID *pid_left;
 PID *pid_right;
@@ -80,8 +83,8 @@ void init_motor_driver()
 	pwm_init(MOTOR_A_PWM, MOTOR_A_PWM_CHANNEL);
 	pwm_init(MOTOR_B_PWM, MOTOR_B_PWM_CHANNEL);
 
-	pid_left = init_pid(0.2, 0.002, 0.001, 0.000001, 1023);
-	pid_right = init_pid(0.2, 0.002, 0.001, 0.000001, 1023);
+	pid_left = init_pid(1, 0.01, 0.000001, 1023);
+	pid_right = init_pid(1, 0.01, 0.000001, 1023);
 }
 
 void move_forward()
@@ -160,12 +163,11 @@ void set_speed_dir(int speed_left, int speed_right)
 	pwm_change_duty_raw(MOTOR_B_PWM_CHANNEL, pid_control(pid_right, speed_right));
 }
 
-PID *init_pid(double kp, double kp_0, double ki, double kd, double limit)
+PID *init_pid(double kp, double ki, double kd, double limit)
 {
 	PID *pid = (PID*)calloc(1, sizeof(PID));
 
 	pid->kp = kp;
-	pid->kp_0 = kp_0;
 	pid->ki = ki;
 	pid->kd = kd;
 	pid->integral = 0;
