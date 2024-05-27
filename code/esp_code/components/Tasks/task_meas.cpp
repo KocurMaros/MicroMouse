@@ -47,12 +47,16 @@ extern "C" {
 
 #define DEFAULT_VREF 2000 //Use adc2_vref_to_gpio() to obtain a better estimate
 
+
+typedef struct 
+{
+	uint8_t A_channel;
+	uint8_t B_channel;
+}Encoder_channel;
+
 static esp_adc_cal_characteristics_t *adc_chars;
 
-
-
 static const char *TAG = "task_meas.c";
-
 
 calibration_t cal = {
 	.mag_offset = {.x = 80.871094, .y = 179.189453, .z = 51.974609},
@@ -100,25 +104,102 @@ static void transform_mag(vector_t *v)
 	v->y = z;
 	v->z = -x;
 }
-uint64_t interrupts[2] = { 0, 0 };
-//uint8_t prevEncoderTicks[] = {0,0};
+
+
+Encoder_channel encoderStates[2] = {{.A_channel = 0, .B_channel = 0}, 
+									{.A_channel = 0, .B_channel = 0}},
+				prev_encoderStates[2] = {{.A_channel = 0, .B_channel = 0}, 
+										 {.A_channel = 0, .B_channel = 0}};
+
+int64_t interrupts[2] = { 0, 0 };
+
+static void change_encoder_value()
+{
+	for (uint8_t i = 0; i < 2; i++)
+	{
+		if(!prev_encoderStates[i].A_channel && !prev_encoderStates[i].B_channel)
+		{
+			if(encoderStates[i].A_channel && !encoderStates[i].B_channel)
+				interrupts[i]++;
+
+			else if (!encoderStates[i].A_channel && encoderStates[i].B_channel)
+				interrupts[i]--;
+		}
+
+		else if (prev_encoderStates[i].A_channel && !prev_encoderStates[i].B_channel)
+		{
+			if(encoderStates[i].A_channel && encoderStates[i].B_channel)
+				interrupts[i]++;
+
+			else if (!encoderStates[i].A_channel && !encoderStates[i].B_channel)
+				interrupts[i]--;
+		}
+
+		else if (prev_encoderStates[i].A_channel && prev_encoderStates[i].B_channel)
+		{
+			if(!encoderStates[i].A_channel && encoderStates[i].B_channel)
+				interrupts[i]++;
+
+			else if (encoderStates[i].A_channel && !encoderStates[i].B_channel)
+				interrupts[i]--;	
+		}
+		
+		else if (!prev_encoderStates[i].A_channel && prev_encoderStates[i].B_channel)
+		{
+			if (!encoderStates[i].A_channel && !encoderStates[i].B_channel)
+				interrupts[i]++;
+			
+			else if (encoderStates[i].A_channel && encoderStates[i].B_channel)
+				interrupts[i]--;
+		}
+	}
+}
+
+
 void encoder_isr_handler(void *arg)
 {
 	uint32_t gpio_num = (uint32_t)arg;
 	switch (gpio_num) {
 	case ENCODER_1_A:
-		//prevEncoderTicks[0] ++;
-
-		// if (prevEncoderTicks[0] > 10)
-		// {
-		interrupts[0]++;
-		// 	prevEncoderTicks[0] = 0;
-		// }
+		encoderStates[0].A_channel = 1;
+		encoderStates[0].B_channel = (uint8_t)gpio_get_level(ENCODER_1_B);
 		
+		change_encoder_value();
+
+		prev_encoderStates[0].A_channel = encoderStates[0].A_channel;
+		prev_encoderStates[0].B_channel = encoderStates[0].B_channel;
 		break;
+
+	case ENCODER_1_B:
+		encoderStates[0].B_channel = 1;
+		encoderStates[0].A_channel = (uint8_t)gpio_get_level(ENCODER_1_A);
+		
+		change_encoder_value();
+
+		prev_encoderStates[0].B_channel = encoderStates[0].B_channel;
+		prev_encoderStates[0].A_channel = encoderStates[0].A_channel;
+		break;
+
 	case ENCODER_2_A:
-		interrupts[1]++;
+		encoderStates[1].A_channel = 1;
+		encoderStates[1].B_channel = (uint8_t)gpio_get_level(ENCODER_2_B);
+		
+		change_encoder_value();
+
+		prev_encoderStates[1].A_channel = encoderStates[1].A_channel;
+		prev_encoderStates[1].B_channel = encoderStates[1].B_channel;
 		break;
+	
+	case ENCODER_2_B:
+		encoderStates[1].B_channel = 1;
+		encoderStates[1].A_channel = (uint8_t)gpio_get_level(ENCODER_2_A);
+		
+		change_encoder_value();
+
+		prev_encoderStates[1].B_channel = encoderStates[1].B_channel;
+		prev_encoderStates[1].A_channel = encoderStates[1].A_channel;
+		break;
+
 	default:
 		break;
 	}
@@ -261,8 +342,8 @@ extern "C" void task_meas(void *arg)
 
 			(void)xQueueSend(FIFO_Meas_to_Cont, &meas, 50 / portTICK_RATE_MS);
 			
-			send_time = esp_timer_get_time();//kokoce
-			// printf("Queue Send: %s\n", qRet == pdTRUE ? "OK" : "ERROR");
+			send_time = esp_timer_get_time();
+			// printf("Queue Send: %s\n", qRet == pdTRUE ? "kebap" : "questionable kebap");
 			random_flag++;
 			
 		}

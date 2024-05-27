@@ -34,6 +34,8 @@ typedef struct picontrol {
 	double limit;
 } PID;
 
+
+/// @brief Coords in our case: x [mm], y [mm], theta[rad]
 typedef struct position {
 	double x;
 	double y;

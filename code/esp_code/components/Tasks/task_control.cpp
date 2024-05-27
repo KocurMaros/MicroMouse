@@ -35,7 +35,7 @@ extern "C" void task_control(void *arg)
 
 
 	uint64_t prev_random_flag = 0;
-	int64_t prev_time = esp_timer_get_time(), curr_time = 0;
+	int64_t prev_time = esp_timer_get_time(), curr_time = 0, printTime = 0;
 	for (;;) {
 		curr_time = esp_timer_get_time();
 		/**
@@ -63,15 +63,26 @@ extern "C" void task_control(void *arg)
         */
 	   	
 		if (val.log.button_start && (curr_time - prev_time)/1000 > 1) { // capped at 1 kHz
-			prev_time = curr_time;
-			//printf("ENC1 = %llu, ENC2 = %llu\n", val.enc.encoder1, val.enc.encoder2);
-			set_speed_dir(100,100);
-			motor_update_current_speed(&val.enc, &motor_speed_left, &motor_speed_right);
-			sprintf(message_buff,"%llu, %1.3f, %1.3f, %1.3f, %1.3f, %1.3f, %1.3lf, %1.3lf", 
-								esp_timer_get_time(), val.tof.tof1, val.tof.tof2, val.tof.tof3, val.tof.tof4, val.orient.heading, motor_speed_left, motor_speed_right);
 			
-			send_message(message_buff);
-			memset(message_buff,'\0', MESSAGE_BUFF_LEN);
+			//printf("ENC1 = %llu, ENC2 = %llu\n", val.enc.encoder1, val.enc.encoder2); 
+			//set_speed_dir(150,150); // 20 min____150 max
+			//motor_update_current_speed(&val.enc, &motor_speed_left, &motor_speed_right);
+			
+
+			//calculate_odometry(&val.enc,&position);
+
+			if((double)(curr_time - printTime)/1000.0 > 100.0){
+				//printf("Pos X: %1.2lf, Pos Y: %1.2lf, Theta: %1.2lf\n", position.x, position.y, position.theta);
+				printf("GYRO: %1.2f\n",val.orient.heading);
+				printTime = curr_time;
+			}
+			
+			// sprintf(message_buff,"%llu, %1.3f, %1.3f, %1.3f, %1.3f, %1.3f, %1.3lf, %1.3lf", 
+			// 					esp_timer_get_time(), val.tof.tof1, val.tof.tof2, val.tof.tof3, val.tof.tof4, val.orient.heading, motor_speed_left, motor_speed_right);
+			
+			// send_message(message_buff);
+			// memset(message_buff,'\0', MESSAGE_BUFF_LEN);
+			prev_time = curr_time;
 		}
 		// vTaskDelay(100 / portTICK_PERIOD_MS);
 		// printf("PWM: %d\n",pwm);

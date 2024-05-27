@@ -27,7 +27,7 @@
 
 volatile float sampleFreq = 200;						   // 2 * proportional gain (Kp)
 volatile float betaIMU = 0.9;							   // 2 * proportional gain (Kp)
-volatile float q0 = 0.0f, q1 = 0.0f, q2 = 1.0f, q3 = 0.0f; // quaternion of sensor frame relative to auxiliary frame
+volatile float q0 = 1.0f, q1 = 0.0f, q2 = 0.0f, q3 = 0.0f; // quaternion of sensor frame relative to auxiliary frame
 
 //====================================================================================================
 // Functions

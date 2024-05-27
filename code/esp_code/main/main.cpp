@@ -46,7 +46,7 @@ void app_main()
     ESP_ERROR_CHECK(ret);
     
     FIFO_Meas_to_Cont = xQueueCreate(2, sizeof(MeasData));
-    init_udp();
+    //init_udp();
 
     xTaskCreatePinnedToCore(task_meas,   /* Function to implement the task */
                             "meas data from sensosors", /* Name of the task */

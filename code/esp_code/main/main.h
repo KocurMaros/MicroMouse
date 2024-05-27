@@ -23,5 +23,4 @@ extern uint64_t random_flag;
 extern TaskHandle_t xTaskControlHandle;
 extern TaskHandle_t xTaskMeasHandle;
 
-
 #endif /** __MAIN_H */

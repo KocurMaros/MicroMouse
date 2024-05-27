@@ -21,7 +21,7 @@
 
 #define WHEEL_DIAMETER 24				// 24 mm
 #define IMPULZS_PER_ROTATION 4096		// 4096 impulzes per rotation
-#define CHASSIS_WIDTH 915				// 915 mm
+#define TRACK_WIDTH 94.5				// 915 mm
 #define PI 3.14159265359
 #define GEAR_RATIO 4					// The motor does 4 rotations per one wheel rotation.
 #define MAX_MOTOR_RPM 14100				// The max unloaded RPM of the motor
@@ -31,6 +31,7 @@
 
 #define TO_MM_PER_SECOND(encoder_impulzes, time_s) ((encoder_impulzes / (time_s) /  (IMPULZS_PER_ROTATION * GEAR_RATIO) * ((PI * WHEEL_DIAMETER))))
 #define TO_PWM_FROM_MM_PER_SECOND(speed_mm_s) ((speed_mm_s) / MAX_WHEEL_SPEED * 1023)
+#define TO_M_FROM_MM(mms) ((mms) / 1000.0)
 
 PID *pid_left;
 PID *pid_right;
@@ -83,8 +84,8 @@ void init_motor_driver()
 	pwm_init(MOTOR_A_PWM, MOTOR_A_PWM_CHANNEL);
 	pwm_init(MOTOR_B_PWM, MOTOR_B_PWM_CHANNEL);
 
-	pid_left = init_pid(20, 0.05, 0.0001, 1023);
-	pid_right = init_pid(20, 0.05, 0.0001, 1023);
+	pid_left = init_pid(12.5, 0.15, 0, 1023);
+	pid_right = init_pid(12.5, 0.15, 0, 1023); //cc timo chod dopice pls dik
 }
 
 void move_forward()
@@ -192,14 +193,14 @@ uint16_t pid_control(PID *pid, double reference)
 	reference = TO_PWM_FROM_MM_PER_SECOND(reference);
 	reference = reference > pid->limit ? pid->limit : (reference < -pid->limit ? -pid->limit : reference);
 
-	pid->feedback = TO_PWM_FROM_MM_PER_SECOND(pid->feedback);
-	pid->feedback = pid->feedback > pid->limit ? pid->limit : (pid->feedback < -pid->limit ? -pid->limit : pid->feedback);
+	double tmp = TO_PWM_FROM_MM_PER_SECOND(pid->feedback);
+	tmp = tmp> pid->limit ? pid->limit : (tmp< -pid->limit ? -pid->limit : tmp);
 
-	double error = reference - pid->feedback;
+	double error = reference - tmp;
 	//printf("Reference: %1.2lf \t Feedback: %1.2lf \t ERROR = %1.2lf\n",reference,  pid->feedback, error);
 	if ((double)(esp_timer_get_time() - start_time) / 1000.0 > 100.0)
 	{
-		printf("ERROR: %1.5lf\n", error);
+		printf("ERROR: %1.5lf, SPEED: %1.5lf\n", error, pid->feedback);
 		start_time = esp_timer_get_time();
 	}
 	
@@ -262,11 +263,12 @@ void calculate_odometry(const encoders *enc, Position *pos)
 	double left_distance = left_speed * delta_time_s;
 	double right_distance = right_speed * delta_time_s;
 
-	// Calculate the distance the robot has moved
+	// Calculate the distance the robot has moved [mm]
 	double distance = (left_distance + right_distance) / 2.;
 
 	// Calculate the angle the robot has turned
-	double angle = (right_distance - left_distance) / CHASSIS_WIDTH;
+	//todo: calculate angle from gyro cuz of the skid
+	double angle = (TO_M_FROM_MM(right_distance) - TO_M_FROM_MM(left_distance)) / TO_M_FROM_MM(TRACK_WIDTH);
 
 	// Calculate the new position of the robot
 	pos->theta = wrap_angle(pos->theta + angle);
