@@ -14,11 +14,13 @@ extern "C" {
     #include "udp_client.h"
     #include "driver.h"
 }
+#define MESSAGE_BUFF_LEN 512
 
 static const char *TAG = "task_control.c";
 
 static MeasData val;
 static Position position;
+static char message_buff[MESSAGE_BUFF_LEN];
 
 extern "C" void task_control(void *arg)
 {
@@ -26,6 +28,9 @@ extern "C" void task_control(void *arg)
 
 	uint32_t pwm = 0;
 	bool up = true;
+	double motor_speed_left = 0, motor_speed_right = 0;
+	memset(message_buff,'\0', MESSAGE_BUFF_LEN);
+
 	init_motor_driver();
 
 
@@ -61,7 +66,12 @@ extern "C" void task_control(void *arg)
 			prev_time = curr_time;
 			//printf("ENC1 = %llu, ENC2 = %llu\n", val.enc.encoder1, val.enc.encoder2);
 			set_speed_dir(100,100);
-			motor_update_current_speed(&val.enc, NULL, NULL);			
+			motor_update_current_speed(&val.enc, &motor_speed_left, &motor_speed_right);
+			sprintf(message_buff,"%llu, %1.3f, %1.3f, %1.3f, %1.3f, %1.3f, %1.3lf, %1.3lf", 
+								esp_timer_get_time(), val.tof.tof1, val.tof.tof2, val.tof.tof3, val.tof.tof4, val.orient.heading, motor_speed_left, motor_speed_right);
+			
+			send_message(message_buff);
+			memset(message_buff,'\0', MESSAGE_BUFF_LEN);
 		}
 		// vTaskDelay(100 / portTICK_PERIOD_MS);
 		// printf("PWM: %d\n",pwm);

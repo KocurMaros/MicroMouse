@@ -46,7 +46,9 @@ extern "C" {
 #define ENCODER_2_B GPIO_NUM_33
 
 #define DEFAULT_VREF 2000 //Use adc2_vref_to_gpio() to obtain a better estimate
+
 static esp_adc_cal_characteristics_t *adc_chars;
+
 
 
 static const char *TAG = "task_meas.c";
@@ -132,11 +134,14 @@ extern "C" void task_meas(void *arg)
 	printf("Task meas run on core: %d\n", xPortGetCoreID());
 	MeasData meas;
 
+	
+
 	uint64_t cycle_time = esp_timer_get_time();
 	uint64_t act_time, send_time = 0;
 
 	vector_t va, vg, vm;
 	float roll, pitch, heading;
+	
 
 	VL53L1_Dev_t vl53l1_dev_1;
 	VL53L1_Dev_t vl53l1_dev_2;
@@ -255,7 +260,8 @@ extern "C" void task_meas(void *arg)
 			meas.orient.heading = heading;
 
 			(void)xQueueSend(FIFO_Meas_to_Cont, &meas, 50 / portTICK_RATE_MS);
-			send_time = esp_timer_get_time();
+			
+			send_time = esp_timer_get_time();//kokoce
 			// printf("Queue Send: %s\n", qRet == pdTRUE ? "OK" : "ERROR");
 			random_flag++;
 			
