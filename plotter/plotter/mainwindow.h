@@ -6,7 +6,7 @@
 #include <QtCharts/QLineSeries>
 #include <QtCharts/QBarSeries>
 #include <QtCharts/QBarSet>
-#include <QtCharts/QBarCategoryAxis>
+#include <QtCharts/QPolarChart>
 #include <QTimer>
 
 QT_CHARTS_USE_NAMESPACE
@@ -28,6 +28,8 @@ private:
     QLineSeries *series2;
     QBarSeries *barSeries;
     QBarSet *barSet;
+    QPolarChart *compassChart;
+    QLineSeries *compassSeries;
     QTimer *timer;
     int x;
 };

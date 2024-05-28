@@ -3,6 +3,7 @@
 #include <QtCharts/QBarSet>
 #include <QtCharts/QBarSeries>
 #include <QtCharts/QBarCategoryAxis>
+#include <QtCharts/QCategoryAxis>
 #include <QRandomGenerator>
 #include <QVBoxLayout>
 #include <QWidget>
@@ -14,6 +15,8 @@ MainWindow::MainWindow(QWidget *parent)
     series2(new QLineSeries()),
     barSeries(new QBarSeries()),
     barSet(new QBarSet("BarSet")),
+    compassChart(new QPolarChart()),
+    compassSeries(new QLineSeries()),
     timer(new QTimer(this)),
     x(0)
 {
@@ -61,6 +64,22 @@ MainWindow::MainWindow(QWidget *parent)
     barChart->addAxis(axisYBar, Qt::AlignLeft);
     barSeries->attachAxis(axisYBar);
 
+    // Setup compass chart
+    compassChart->addSeries(compassSeries);
+
+    QValueAxis *angularAxis = new QValueAxis();
+    angularAxis->setTickCount(9);
+    angularAxis->setLabelFormat("%.0f");
+    angularAxis->setRange(0, 360);
+    compassChart->addAxis(angularAxis, QPolarChart::PolarOrientationAngular);
+    compassSeries->attachAxis(angularAxis);
+
+    QValueAxis *radialAxis = new QValueAxis();
+    radialAxis->setLabelFormat("%d");
+    radialAxis->setRange(0, 100);
+    compassChart->addAxis(radialAxis, QPolarChart::PolarOrientationRadial);
+    compassSeries->attachAxis(radialAxis);
+
     // Configure layout
     QChartView *lineChartView = new QChartView(chart);
     lineChartView->setRenderHint(QPainter::Antialiasing);
@@ -68,10 +87,14 @@ MainWindow::MainWindow(QWidget *parent)
     QChartView *barChartView = new QChartView(barChart);
     barChartView->setRenderHint(QPainter::Antialiasing);
 
+    QChartView *compassChartView = new QChartView(compassChart);
+    compassChartView->setRenderHint(QPainter::Antialiasing);
+
     QWidget *centralWidget = new QWidget;
     QVBoxLayout *layout = new QVBoxLayout(centralWidget);
     layout->addWidget(lineChartView);
     layout->addWidget(barChartView);
+    layout->addWidget(compassChartView);
 
     setCentralWidget(centralWidget);
 
@@ -102,4 +125,10 @@ void MainWindow::updateChart()
     for (int i = 0; i < barSet->count(); ++i) {
         barSet->replace(i, QRandomGenerator::global()->bounded(0, 100));
     }
+
+    // Update compass chart
+    compassSeries->clear();
+    qreal angle = QRandomGenerator::global()->bounded(0, 360);
+    compassSeries->append(angle, 100);  // Point on the perimeter of the compass
+    compassSeries->append(angle, 0);    // Center of the compass
 }
