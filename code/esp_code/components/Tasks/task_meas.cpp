@@ -29,6 +29,8 @@ extern "C" {
 #include "mpu9250.h"
 #include "calibrate.h"
 #include "common.h"
+#include "udp_client.h"
+#include "driver.h"
 }
 
 
@@ -47,12 +49,16 @@ extern "C" {
 
 #define DEFAULT_VREF 2000 //Use adc2_vref_to_gpio() to obtain a better estimate
 
+#define MESSAGE_BUFF_LEN 512
 
 typedef struct 
 {
 	bool A_channel;
 	bool B_channel;
 }Encoder_channel;
+
+static Position position;
+static char message_buff[MESSAGE_BUFF_LEN];
 
 static esp_adc_cal_characteristics_t *adc_chars;
 
@@ -289,9 +295,14 @@ extern "C" void task_meas(void *arg)
 	//Characterize ADC
 	adc_chars = (esp_adc_cal_characteristics_t *)calloc(1, sizeof(esp_adc_cal_characteristics_t));
 	esp_adc_cal_value_t val_type = esp_adc_cal_characterize(ADC_UNIT_1, ADC_ATTEN_DB_11, ADC_WIDTH_BIT_12, DEFAULT_VREF, adc_chars);
-	uint32_t ulNotifiedValue;
 
 	double prev_inter1 = 0, prev_inter2 = 0;
+    int64_t curr_time = 0, printTime = 0;
+
+	double motor_speed_left = 0, motor_speed_right = 0;
+	memset(message_buff,'\0', MESSAGE_BUFF_LEN);
+
+    init_motor_driver();
 
 	for (;;) {
 		// Get the Accelerometer, Gyroscope and Magnetometer values.
@@ -351,22 +362,28 @@ extern "C" void task_meas(void *arg)
 			meas.orient.pitch = pitch;
 			meas.orient.heading = heading;
 
-			(void)xQueueSend(FIFO_Meas_to_Cont, &meas, 50 / portTICK_RATE_MS);
-			
+            /**
+             * @brief TASK CONTROL old code
+             * 
+             */
+            set_speed_dir(100,-100); // 20 min____150 max
+            calculate_odometry(&meas.enc,&position);
+            if((double)(curr_time - printTime)/1000.0 > 100.0){
+				//printf("Pos X: %1.2lf,  Enc1Ticks: %lld, Enc2Ticks: %lld\n", position.x/10.0, meas.enc.encoder1, meas.enc.encoder2);
+				//printf("Motor A dir %s, Motor B dir %s\n",meas.enc.dir_A ? "Forward" : "Revers", meas.enc.dir_B ? "Forward" : "Revers");
+				//printf("H: %1.2f, P: %1.2f, R: %1.2f\n",meas.orient.heading, meas.orient.pitch, meas.orient.roll);
+				printTime = curr_time;
+			}
+
 			send_time = esp_timer_get_time();
-			// printf("Queue Send: %s\n", qRet == pdTRUE ? "kebap" : "questionable kebap");
-			random_flag++;
-			
 		}
 		act_time = esp_timer_get_time();
 		if (cycle_time > act_time) // ak pretecie act_time, vyresetuj cycle_time
 			cycle_time = act_time;
 		else if ((act_time - cycle_time) > 1000000) {
 			cycle_time = act_time;
-			/*
-            * Inotify to send data between tasks
-            */
-			// xTaskNotify(xTaskMeasHandle, COMM_OK, eSetBits); // Notify the other task
 		}
 	}
+    deinit_pid(pid_left);
+	deinit_pid(pid_right);
 }
