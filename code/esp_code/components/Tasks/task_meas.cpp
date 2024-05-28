@@ -24,6 +24,8 @@
 #include <algorithm>
 
 extern "C" {
+#include "driver/pcnt.h"
+#include "esp_attr.h"
 #include "tof.h"
 #include "ahrs.h"
 #include "mpu9250.h"
@@ -65,11 +67,6 @@ static esp_adc_cal_characteristics_t *adc_chars;
 static const char *TAG = "task_meas.c";
 
 
-
-
-   
-
-
 calibration_t cal = {
 	.mag_offset = {.x = 97.166016, .y = 289.740234, .z = 140.156250},
     .mag_scale = {.x = 0.882882, .y = 1.107582, .z = 1.036830},
@@ -98,25 +95,93 @@ static void transform_accel_gyro(vector_t *v)
 	float z = v->z;
 
 	v->x = -x;
-	v->y = -z;
-	v->z = -y;
+	v->y = -y;
+	v->z = -z;
 }
-/**
- * Transformation: to get magnetometer aligned
- * @param  {object} s {x,y,z} sensor
- * @return {object}   {x,y,z} transformed
+
+#define PCNT_H_LIM_VAL      4096
+#define PCNT_L_LIM_VAL      0
+#define PCNT_THRESH1_VAL    2048
+
+#define PCNT_INPUT_SIG_IO   ENCODER_1_A  // Pulse Input GPIO
+#define PCNT_INPUT_CTRL_IO  ENCODER_1_B  // Control GPIO HIGH=count up, LOW=count down
+
+
+xQueueHandle pcnt_evt_queue;   // A queue to handle pulse counter events
+
+/* A sample structure to pass events from the PCNT
+ * interrupt handler to the main program.
  */
-static void transform_mag(vector_t *v)
-{
-	float x = v->x;
-	float y = v->y;
-	float z = v->z;
+typedef struct {
+    int unit;  // the PCNT unit that originated an interrupt
+    uint32_t status; // information on the event type that caused the interrupt
+} pcnt_evt_t;
 
-	v->x = -y;
-	v->y = z;
-	v->z = -x;
+/* Decode what PCNT's unit originated an interrupt
+ * and pass this information together with the event type
+ * the main program using a queue.
+ */
+
+static void IRAM_ATTR pcnt_example_intr_handler(void *arg)
+{
+    pcnt_unit_t pcnt_unit = (pcnt_unit_t)((int)arg);
+    pcnt_evt_t evt;
+    evt.unit = pcnt_unit;
+    /* Save the PCNT event type that caused an interrupt
+       to pass it to the main program */
+    pcnt_get_event_status(pcnt_unit, &evt.status);
+    xQueueSendFromISR(pcnt_evt_queue, &evt, NULL);
 }
 
+
+static void pcnt_example_init(pcnt_unit_t unit)
+{
+    /* Prepare configuration for the PCNT unit */
+    pcnt_config_t pcnt_config = {
+        // Set PCNT input signal and control GPIOs
+        .pulse_gpio_num = PCNT_INPUT_SIG_IO,
+        .ctrl_gpio_num = PCNT_INPUT_CTRL_IO,
+        .lctrl_mode = PCNT_MODE_REVERSE, // Reverse counting direction if low
+        .hctrl_mode = PCNT_MODE_KEEP,    // Keep the primary counter mode if high
+        .pos_mode = PCNT_COUNT_INC,   // Count up on the positive edge
+        .neg_mode = PCNT_COUNT_DIS,   // Keep the counter value on the negative edge
+        // What to do on the positive / negative edge of pulse input?
+        // What to do when control input is low or high?
+        // Set the maximum and minimum limit values to watch
+        .counter_h_lim = PCNT_H_LIM_VAL,
+        .counter_l_lim = PCNT_L_LIM_VAL,
+        .unit = unit,
+        .channel = PCNT_CHANNEL_0,
+    };
+
+    /* Initialize PCNT unit */
+    pcnt_unit_config(&pcnt_config);
+
+    /* Configure and enable the input filter */
+    pcnt_set_filter_value(unit, 100);
+    pcnt_filter_enable(unit);
+
+    /* Set threshold 0 and 1 values and enable events to watch */
+    pcnt_set_event_value(unit, PCNT_EVT_THRES_1, PCNT_THRESH1_VAL);
+    pcnt_event_enable(unit, PCNT_EVT_THRES_1);
+    // pcnt_set_event_value(unit, PCNT_EVT_THRES_0, PCNT_THRESH0_VAL);
+    // pcnt_event_enable(unit, PCNT_EVT_THRES_0);
+    /* Enable events on zero, maximum and minimum limit values */
+    // pcnt_event_enable(unit, PCNT_EVT_ZERO);
+    pcnt_event_enable(unit, PCNT_EVT_H_LIM);
+    // pcnt_event_enable(unit, PCNT_EVT_L_LIM);
+
+    /* Initialize PCNT's counter */
+    pcnt_counter_pause(unit);
+    pcnt_counter_clear(unit);
+
+    /* Install interrupt service and add isr callback handler */
+    pcnt_isr_service_install(0);
+    pcnt_isr_handler_add(unit, pcnt_example_intr_handler, (void *)unit);
+
+    /* Everything is set up, now go to counting */
+    pcnt_counter_resume(unit);
+}
 
 Encoder_channel encoderStates[2] = {{.A_channel = 0, .B_channel = 0}, 
 									{.A_channel = 0, .B_channel = 0}},
@@ -160,33 +225,13 @@ void dir_isr_handler(void *arg)
 		break;
 	}
 }
-/*
-void dir_isr_handler(void *arg)
-{
-	uint32_t gpio_num = (uint32_t)arg;
-	switch (gpio_num) {
-	case ENCODER_1_A:
-		interrupts[0] += 1.0;  //imp/s
-		break;	
-	case ENCODER_2_A:
-		interrupts[1] += 1.0;  //imp/s
-		break;
-	}
-}
-*/
 
-
-
-
-TaskHandle_t xTaskCommHandle;
 
 static uint64_t last_time = 0;
 extern "C" void task_meas(void *arg)
 {
 	printf("Task meas run on core: %d\n", xPortGetCoreID());
 	MeasData meas;
-
-	
 
 	uint64_t cycle_time = esp_timer_get_time();
 	uint64_t act_time, send_time = 0;
@@ -296,6 +341,22 @@ extern "C" void task_meas(void *arg)
 	adc_chars = (esp_adc_cal_characteristics_t *)calloc(1, sizeof(esp_adc_cal_characteristics_t));
 	esp_adc_cal_value_t val_type = esp_adc_cal_characterize(ADC_UNIT_1, ADC_ATTEN_DB_11, ADC_WIDTH_BIT_12, DEFAULT_VREF, adc_chars);
 
+    /**
+     * @brief PCNT
+     * 
+     */
+    pcnt_unit_t pcnt_unit = PCNT_UNIT_0;
+    pcnt_evt_queue = xQueueCreate(10, sizeof(pcnt_evt_t));
+    pcnt_example_init(pcnt_unit);
+
+    int16_t count = 0;
+    pcnt_evt_t evt;
+    portBASE_TYPE res;
+
+    /**
+     * @brief CONTROL
+     * 
+     */
 	double prev_inter1 = 0, prev_inter2 = 0;
     int64_t curr_time = 0, printTime = 0;
 
@@ -377,6 +438,29 @@ extern "C" void task_meas(void *arg)
 
 			send_time = esp_timer_get_time();
 		}
+        res = xQueueReceive(pcnt_evt_queue, &evt, 1000 / portTICK_PERIOD_MS);
+        if (res == pdTRUE) {
+            pcnt_get_counter_value(pcnt_unit, &count);
+            ESP_LOGI(TAG, "Event PCNT unit[%d]; cnt: %d", evt.unit, count);
+            if (evt.status & PCNT_EVT_THRES_1) {
+                ESP_LOGI(TAG, "THRES1 EVT");
+            }
+            if (evt.status & PCNT_EVT_THRES_0) {
+                ESP_LOGI(TAG, "THRES0 EVT");
+            }
+            if (evt.status & PCNT_EVT_L_LIM) {
+                ESP_LOGI(TAG, "L_LIM EVT");
+            }
+            if (evt.status & PCNT_EVT_H_LIM) {
+                ESP_LOGI(TAG, "H_LIM EVT");
+            }
+            if (evt.status & PCNT_EVT_ZERO) {
+                ESP_LOGI(TAG, "ZERO EVT");
+            }
+        } else {
+            pcnt_get_counter_value(pcnt_unit, &count);
+            ESP_LOGI(TAG, "Current counter value :%d", count);
+        }
 		act_time = esp_timer_get_time();
 		if (cycle_time > act_time) // ak pretecie act_time, vyresetuj cycle_time
 			cycle_time = act_time;
