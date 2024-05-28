@@ -50,6 +50,9 @@ extern "C" void task_control(void *arg)
 			// printf("Heading: %f\n", val.orient.heading);
 			// printf("Voltage %f\n", val.log.voltage);
 
+			if (random_flag - prev_random_flag != 1) {
+				ESP_LOGE(TAG, "random flag diff is not 1 Prev: %lld, Curr: %lld", prev_random_flag, random_flag);
+			}
             prev_random_flag = random_flag;
         }
         if(prev_random_flag > random_flag){

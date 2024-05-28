@@ -221,6 +221,7 @@ uint16_t pid_control_from_error(PID *pid, double error)
 
 	pid->last_error = error;
 
+	//printf("Calculated AZ: %lf\n", pid->clampedOutput);
 	return (uint16_t)round(pid->clampedOutput);
 }
 
@@ -291,7 +292,7 @@ void calculate_odometry(encoders *enc, Position *pos)
 
 	// Calculate the distance the robot has moved [mm]
 	double distance = (left_distance + right_distance) / 2.;
-	printf("LEFT_DIST = %1.2lf, RIGHT_DIST = %1.2lf, DIST = %1.2lf, DIR: %s\n", left_distance, right_distance, distance, direction_to_string(dir));
+	//sprintf("LEFT_DIST = %1.2lf, RIGHT_DIST = %1.2lf, DIST = %1.2lf, DIR: %s\n", left_distance, right_distance, distance, direction_to_string(dir));
 
 	// Calculate the angle the robot has turned
 	//todo: calculate angle from gyro cuz of the skid

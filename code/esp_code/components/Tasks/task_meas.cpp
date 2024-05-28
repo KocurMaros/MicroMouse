@@ -119,81 +119,10 @@ Encoder_channel encoderStates[2] = {{.A_channel = 0, .B_channel = 0},
 
 double interrupts[2] = { 0, 0 };
 
-bool dirs[2] = {false, false};
 
-static void change_encoder_value()
-{
-	for (uint8_t i = 0; i < 2; i++)
-	{
-		if(!prev_encoderStates[i].A_channel && !prev_encoderStates[i].B_channel)
-		{
-			if(encoderStates[i].A_channel && !encoderStates[i].B_channel)
-			{
-				interrupts[i]++;
-				dirs[i] = true;
-			}
+int64_t prev_time_1_A = 0;
+int64_t prev_time_2_A = 0;
 
-			else if (!encoderStates[i].A_channel && encoderStates[i].B_channel)
-			{
-				interrupts[i]--;
-				dirs[i] = false;
-			}
-		}
-
-		else if (prev_encoderStates[i].A_channel && !prev_encoderStates[i].B_channel)
-		{
-			if(encoderStates[i].A_channel && encoderStates[i].B_channel)
-			{
-				interrupts[i]++;
-				dirs[i] = true;
-			}
-
-			else if (!encoderStates[i].A_channel && !encoderStates[i].B_channel)
-			{
-				interrupts[i]--;
-				dirs[i] = false;
-			}
-		}
-
-		else if (prev_encoderStates[i].A_channel && prev_encoderStates[i].B_channel)
-		{
-			if(!encoderStates[i].A_channel && encoderStates[i].B_channel)
-			{
-				interrupts[i]++;
-				dirs[i] = true;
-			}
-
-			else if (encoderStates[i].A_channel && !encoderStates[i].B_channel)
-			{
-				interrupts[i]--;	
-				dirs[i] = false;
-			}
-		}
-		
-		else if (!prev_encoderStates[i].A_channel && prev_encoderStates[i].B_channel)
-		{
-			if (!encoderStates[i].A_channel && !encoderStates[i].B_channel)
-			{
-				interrupts[i]++;
-				dirs[i] = true;
-			}
-			
-			else if (encoderStates[i].A_channel && encoderStates[i].B_channel)
-			{
-				interrupts[i]--;
-				dirs[i] = false;
-			}
-		}
-	}
-}
-
-int64_t prev_time_1_A = 0, prev_time_1_B;
-int64_t prev_time_2_A = 0, prev_time_2_B;
-int64_t act_time_1_A = 0 , act_time_1_B = 0;
-int64_t act_time_2_A = 0 , act_time_2_B = 0;
-
-bool dirA = false, dirB = false;
-bool intA = false, intB = false;
 double periodA, periodB;
 void dir_isr_handler(void *arg)
 {
@@ -225,71 +154,20 @@ void dir_isr_handler(void *arg)
 		break;
 	}
 }
-
-// void dir_isr_handler(void *arg)
-// {
-// 	uint32_t gpio_num = (uint32_t)arg;
-// 	switch (gpio_num) {
-// 		case ENCODER_1_B:
-// 			if(act_time_1_A - esp_timer_get_time() > 0)
-// 				dirA = true;
-// 			else
-// 				dirA = false;
-// 		// gpio_get_level(ENCODER_1_A) ? dirA = true : dirA = false;
-// 		break;
-// 		case ENCODER_2_B:
-// 			if(act_time_2_A - esp_timer_get_time() > 0)
-// 				dirB = true;
-// 			else
-// 				dirB = false;
-// 		// gpio_get_level(ENCODER_2_A) ? dirB = false : dirB = true;
-//     	break;
-	
-// 	}
-// }
-
-
-
-void enc1_isr_handler(void* pin_no)
+/*
+void dir_isr_handler(void *arg)
 {
-	uint32_t pin = (uint32_t) pin_no;
-	
-	switch (pin)
-	{
+	uint32_t gpio_num = (uint32_t)arg;
+	switch (gpio_num) {
 	case ENCODER_1_A:
-		if(!gpio_get_level(ENCODER_1_B))
-			interrupts[0] ++;
-		break;
-	
-	case ENCODER_1_B:
-		if(!gpio_get_level(ENCODER_1_A))
-			interrupts[0]--;
-		break;
-
-	default:
-		break;
-	}
-}
-
-void enc2_isr_handler(void* pin_no)
-{
-	uint32_t pin = (uint32_t) pin_no;
-
-	switch (pin)
-	{
+		interrupts[0] += 1.0;  //imp/s
+		break;	
 	case ENCODER_2_A:
-		if(!gpio_get_level(ENCODER_2_B))
-			interrupts[1]--;	
-		break;
-	
-	case ENCODER_2_B:
-		if(!gpio_get_level(ENCODER_2_A))
-			interrupts[1]++;
-			
-	default:
+		interrupts[1] += 1.0;  //imp/s
 		break;
 	}
 }
+*/
 
 
 
@@ -320,18 +198,6 @@ extern "C" void task_meas(void *arg)
      * Encoder
     */
 	
-
-
-	// gpio_config_t io_conf;
-	// io_conf.intr_type = GPIO_INTR_NEGEDGE;
-	// io_conf.pin_bit_mask = ((1ULL << ENCODER_1_A) | (1ULL << ENCODER_1_B) | (1ULL << ENCODER_2_A) | (1ULL << ENCODER_2_B));
-	// io_conf.mode = GPIO_MODE_INPUT;
-	// io_conf.pull_down_en = GPIO_PULLDOWN_ENABLE;
-	// io_conf.pull_up_en = GPIO_PULLUP_DISABLE;
-	
-	// gpio_config(&io_conf);
-
-
 	gpio_set_direction(ENCODER_1_A, GPIO_MODE_INPUT);
 	gpio_set_direction(ENCODER_2_A, GPIO_MODE_INPUT);
 	gpio_set_direction(ENCODER_1_B, GPIO_MODE_INPUT);
@@ -425,6 +291,8 @@ extern "C" void task_meas(void *arg)
 	esp_adc_cal_value_t val_type = esp_adc_cal_characterize(ADC_UNIT_1, ADC_ATTEN_DB_11, ADC_WIDTH_BIT_12, DEFAULT_VREF, adc_chars);
 	uint32_t ulNotifiedValue;
 
+	double prev_inter1 = 0, prev_inter2 = 0;
+
 	for (;;) {
 		// Get the Accelerometer, Gyroscope and Magnetometer values.
 		meas.log.voltage = esp_adc_cal_raw_to_voltage(adc1_get_raw(ADC1_CHANNEL_3), adc_chars) * 2.0;
@@ -440,37 +308,29 @@ extern "C" void task_meas(void *arg)
 			ahrs_update_imu(DEG2RAD(vg.x), DEG2RAD(vg.y), DEG2RAD(vg.z), va.x, va.y, va.z);
 			end_time = esp_timer_get_time();
 		}
-		//ENCODER LOGIC
-		// if(act_time_1_A < act_time_1_B){
-		// 	interrupts[0] = (double)(act_time_1_A - prev_time_1_A)/1'000'000.0;
-		// 	dirA = true;
-		// }
-		// else{
-		// 	dirA = false;
-		// }
-			
-		// if(act_time_2_A < act_time_2_B){
-		// 	interrupts[1] = (double)(act_time_2_A - prev_time_2_A)/1'000'000.0;
-		// 	dirB = true;
-		// }
-		// else{
-		// 	dirB = false;
-		// }
 
 		act_time = esp_timer_get_time();
 		if ((act_time - send_time) > 1'000) { //1kHz
-            meas.enc.dir_A = dirA;
-            meas.enc.dir_B = dirB;
             //printf("Motor A dir: %s, Motor B dir: %s\n", meas.enc.dir_A ? "Front" : "Reverse", meas.enc.dir_B ? "Front" : "Reverse");
-			meas.enc.encoder1 = (int64_t)round(interrupts[0]/250.0); //(int64_t)interrupts[0];
-			meas.enc.encoder2 = (int64_t)round(interrupts[1]/250.0); //(int64_t)interrupts[1];
+			double inter1 = (int64_t)round(interrupts[0]/250.0);
+			double inter2 = (int64_t)round(interrupts[1]/250.0);
+
+			if (inter1 != 0 || abs(inter1 - prev_inter1) < 10) {
+				meas.enc.encoder1 = (int64_t)round(interrupts[0]/250.0);
+				
+			}
+
+			if(inter2 != 0 || abs(inter1 - prev_inter1) < 10){
+				meas.enc.encoder2 = (int64_t)round(interrupts[1]/250.0);
+			}
+
+			prev_inter1 = inter1;
+			prev_inter2 = inter2;
 			
+			// printf("Inter0: %lld, \tInter0: %lld\n",meas.enc.encoder1, meas.enc.encoder2);
 			// meas.enc.encoder2 = (uint64_t)round(interrupts[1]/500.0); //(int64_t)interrupts[1];
 			encoderStates[0].A_channel = false;
 			encoderStates[1].A_channel = false;
-
-			// meas.enc.dir_A = dirs[0];
-			// meas.enc.dir_B = dirs[1];
 			// printf("ENC1_m = %.2lf, ENC2_m = %.2lf\n states %d %d %lld %lld\n", interrupts[0], interrupts[1], encoderStates[0].A_channel, encoderStates[1].A_channel, prev_time_1_A, prev_time_2_A);
 
 			int64_t time = esp_timer_get_time();
@@ -480,7 +340,6 @@ extern "C" void task_meas(void *arg)
 
 			for (size_t i = 0; i < 2; i++)
 				interrupts[i] = 0;
-
 
 			meas.tof.tof1 = vl53l1_read(tof_sensors[0]) / 1000.0;
 			meas.tof.tof2 = vl53l1_read(tof_sensors[1]) / 1000.0;
