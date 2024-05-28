@@ -18,7 +18,59 @@ Kolesá a ozubené koliečko pre hriadeľ motora boli vytlačené v 3D tlačiarn
         \caption{Koleso s ozubenými kolesami}
         \label{fig:wheel_w_gear}
 \end{figure}
+\newpage
+\subsection{Motory}
+Použité motory boli vybrané s ohľadom na ich výkonnosť a spoľahlivosť. Nižšie uvádzame detaily o týchto motoroch \ref{fig:motor}:
 
+\begin{figure}[!htbp]
+        \centering
+        \includegraphics[scale=0.8]{includes/images/faulhaber.png}
+        \caption{DC Mikromotor Faulhaber 1717T003SR}
+        \label{fig:motor}
+\end{figure}
+
+\begin{itemize}
+  \item Model: Faulhaber 1717 T 
+  \item Typ: 003 SR
+  \item Max. točivý moment: 5.35 mNm
+  \item Max. rýchlosť: 11000 rpm
+  \item Odkaz na technický list: \href{https://www.faulhaber.com/fileadmin/Import/Media/EN_1717_SR_DFF.pdf}{Technický list motora}
+\end{itemize}
+
+\subsection{Enkódery}
+Na monitorovanie polohy a otáčok motorov sme použili enkódery. Nižšie sú uvedené informácie o použitých enkóderoch \ref{fig:encoder}:
+
+\begin{figure}[!htbp]
+        \centering
+        \includegraphics[scale=0.8]{includes/images/encoder.png}
+        \caption{Enkóder IEH2-4096}
+        \label{fig:encoder}
+\end{figure}
+
+\begin{itemize}
+  \item Model: IEH2-4096
+  \item Rozlíšenie: 4096
+  \item Kanály: 2
+  \item Odkaz na technický list: \href{https://www.faulhaber.com/fileadmin/Import/Media/EN_IEH2-4096_DFF.pdf}{Technický list enkódera}
+\end{itemize}
+Náklady na tieto motory so zabudovanýnmi enkódermi boli hradené školou vďaka finančnému príspevku od docenta Andreja Babinca.
+
+
+\subsection{Gyroskop}
+
+Na sledovanie orientácie a pohybu robota sme implementovali gyroskop. Ďalej sú uvedené podrobnosti o použitom gyroskopu \ref{fig:gyro}:
+\begin{figure}[!htbp]
+        \centering
+        \includegraphics[scale=0.8]{includes/images/mpu9205.png}
+        \caption{Gyroskop MPU9250}
+        \label{fig:gyro}
+\end{figure}
+\begin{itemize}
+  \item Model: MPU9250
+  \item Typ: Gyroskop a akcelerometer
+  \item Komunikácia: I2C, SPI
+  \item Odkaz na technický list: \href{https://www.invensense.com/products/motion-tracking/9-axis/mpu-9250/}{MPU9250 Technical Datasheet}
+\end{itemize}
 \subsection{ToF}
 Ako vzdialenostný senzor sme zvolili VL53L1X. Je to Time-of-Flight (doba trvania letu) laserový merací modul poskytujúci presné meranie vzdialenosti bez ohľadu na farbu alebo odrazivosť cieľa.
 
