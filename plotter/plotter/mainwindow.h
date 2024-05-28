@@ -9,6 +9,7 @@
 #include <QtCharts/QPolarChart>
 #include <QUdpSocket>
 #include <QTimer>
+#include <mutex>
 
 QT_CHARTS_USE_NAMESPACE
 
@@ -46,6 +47,7 @@ private:
     QVector<double> motorArrayB;
     QVector<QVector<double>> tofArray;
     QVector<double> gyroZArray;
+    std::mutex mut;
     int bufferSize;
     int x;
 };
