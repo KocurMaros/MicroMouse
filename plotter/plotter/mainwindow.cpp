@@ -77,8 +77,10 @@ MainWindow::MainWindow(QWidget *parent)
     QValueAxis *radialAxis = new QValueAxis();
     radialAxis->setLabelFormat("%d");
     radialAxis->setRange(0, 100);
+    radialAxis->setVisible(false);
     compassChart->addAxis(radialAxis, QPolarChart::PolarOrientationRadial);
     compassSeries->attachAxis(radialAxis);
+    compassChart->legend()->hide();
 
     // Configure layout
     QChartView *lineChartView = new QChartView(chart);
@@ -99,7 +101,7 @@ MainWindow::MainWindow(QWidget *parent)
     setCentralWidget(centralWidget);
 
     connect(timer, &QTimer::timeout, this, &MainWindow::updateChart);
-    timer->start(100);  // Update every 100 ms
+    timer->start(50);  // Update every 100 ms
 }
 
 MainWindow::~MainWindow()
