@@ -50,7 +50,7 @@ esp_err_t i2c_mpu9250_init(calibration_t *c)
 	ESP_LOGI(TAG, "Initializating MPU9250");
 	vTaskDelay(100 / portTICK_PERIOD_MS);
 
-	// i2c_master_init(I2C_MASTER_NUM, I2C_MASTER_SDA_IO, I2C_MASTER_SCL_IO);
+	//i2c_master_init(I2C_MASTER_NUM, I2C_MASTER_SDA_IO, I2C_MASTER_SCL_IO);
 
 	if (initialised) {
 		ESP_LOGE(TAG, "i2c_mpu9250_init has already been called");
@@ -81,7 +81,7 @@ esp_err_t i2c_mpu9250_init(calibration_t *c)
 
 	ESP_LOGD(TAG, "END of MPU9250 initialization");
 
-	ESP_ERROR_CHECK(enable_magnetometer());
+	// ESP_ERROR_CHECK(enable_magnetometer());
 
 	print_settings();
 

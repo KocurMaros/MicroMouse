@@ -29,7 +29,7 @@ uint64_t random_flag = 0;
 
 extern "C" 
 { 
-    #include "udp_client.h" 
+    #include "udp_client.h"
 	void app_main(); 
 	void task_meas(void * arg);
     void task_control(void * arg);  
@@ -45,6 +45,9 @@ void app_main()
     }
     ESP_ERROR_CHECK(ret);
     
+
+    
+
     FIFO_Meas_to_Cont = xQueueCreate(2, sizeof(MeasData));
     //init_udp();
 

@@ -1,6 +1,7 @@
 #include "include/driver.h"
 
 #include "../../build/config/sdkconfig.h"
+#include "../include/driver.h"
 
 #include "esp_system.h"
 #include "esp_sntp.h"
@@ -24,7 +25,7 @@
 #define TRACK_WIDTH 94.5				// 915 mm
 #define PI 3.14159265359
 #define GEAR_RATIO 4					// The motor does 4 rotations per one wheel rotation.
-#define MAX_MOTOR_RPM 14100				// The max unloaded RPM of the motor
+#define MAX_MOTOR_RPM 11000				// The max unloaded RPM of the motor
 
 #define MAX_WHEEL_RPM MAX_MOTOR_RPM / GEAR_RATIO
 #define MAX_WHEEL_SPEED ((MAX_WHEEL_RPM * PI * WHEEL_DIAMETER) / 60.0)
@@ -35,6 +36,7 @@
 
 PID *pid_left;
 PID *pid_right;
+Direction dir;
 
 void cap_pwm(int *currentPwm)
 {
@@ -125,7 +127,7 @@ const char *direction_to_string(Direction dir)
 	switch (dir) {
 	case Forward:
 		return "Forward";
-	case Backwared:
+	case Backward:
 		return "Backward";
 	case Left:
 		return "Left";
@@ -138,27 +140,23 @@ const char *direction_to_string(Direction dir)
 
 void set_speed_dir(int speed_left, int speed_right)
 {
-	// Direction dir;
-	// int diff = speed_left - speed_right;
-
-
-	// if (diff < -0.1) {
-	// 	dir = Left;
-	// 	move_left();
-	// }
-	// else if (diff > 0.1) {
-	// 	dir = Right;
-	// 	move_right();
-	// }
-	// else if (speed_left < 0) {
-	// 	dir = Backwared;
-	// 	move_backward();
-	// }
-	// else {
-	// 	dir = Forward;
-	// 	move_forward();
-	// }
-	move_forward();
+	if (speed_left < 0 && speed_right > 0) {
+		dir = Left;
+		move_left();
+	}
+	else if (speed_left > 0 && speed_right < 0) {
+		dir = Right;
+		move_right();
+	}
+	else if (speed_left < 0 && speed_right < 0) {
+		dir = Backward;
+		move_backward();
+	}
+	else {
+		dir = Forward;
+		move_forward();
+	}
+	//move_forward();
 	
 	pwm_change_duty_raw(MOTOR_A_PWM_CHANNEL, pid_control(pid_left, speed_left));
 	pwm_change_duty_raw(MOTOR_B_PWM_CHANNEL, pid_control(pid_right, speed_right));
@@ -190,6 +188,9 @@ void deinit_pid(PID *pid)
 uint16_t pid_control(PID *pid, double reference)
 {
 	static uint64_t start_time = 0;
+	
+	reference = reference < 0 ? -reference : reference;
+	
 	reference = TO_PWM_FROM_MM_PER_SECOND(reference);
 	reference = reference > pid->limit ? pid->limit : (reference < -pid->limit ? -pid->limit : reference);
 
@@ -197,7 +198,7 @@ uint16_t pid_control(PID *pid, double reference)
 	tmp = tmp> pid->limit ? pid->limit : (tmp< -pid->limit ? -pid->limit : tmp);
 
 	double error = reference - tmp;
-	//printf("Reference: %1.2lf \t Feedback: %1.2lf \t ERROR = %1.2lf\n",reference,  pid->feedback, error);
+	printf("Reference: %1.2lf \t Feedback: %1.2lf \t ERROR = %1.2lf\n",reference,  pid->feedback, error);
 	if ((double)(esp_timer_get_time() - start_time) / 1000.0 > 100.0)
 	{
 		//printf("ERROR: %1.5lf, SPEED: %1.5lf\n", error, pid->feedback);
@@ -226,9 +227,11 @@ uint16_t pid_control_from_error(PID *pid, double error)
 void motor_update_current_speed(const encoders *enc, double *left, double *right)
 {
 	double dt = (double)enc->time_diff / 1000000.0;
-	double  left_speed = TO_MM_PER_SECOND(enc->encoder1, dt), 
+	double  left_speed = (TO_MM_PER_SECOND(enc->encoder1, dt)), 
 		    right_speed = TO_MM_PER_SECOND(enc->encoder2, dt);
 
+	left_speed = left_speed < 0 ? -left_speed : left_speed;
+	right_speed = right_speed < 0 ? -right_speed : right_speed;
 	//printf("LEFT_SPD = %1.2lf, RIGHT_SPD = %1.2lf , dt = %lf\n", left_speed, right_speed, dt);
 	
 	pid_left->feedback = left_speed;
@@ -252,12 +255,35 @@ static double wrap_angle(double angle)
 	return angle;
 }
 
-void calculate_odometry(const encoders *enc, Position *pos)
+void update_encoders(encoders *enc)
+{
+	// Update the encoder values
+	switch (dir) {
+	case Backward:
+		enc->encoder1 = enc->encoder1 * -1;
+		enc->encoder2 = enc->encoder2 * -1;
+		break;
+	case Left:
+		enc->encoder1 = enc->encoder1;
+		enc->encoder2 = enc->encoder2 * -1;
+		break;
+	case Right:
+		enc->encoder1 = enc->encoder1 * -1;
+		enc->encoder2 = enc->encoder2;
+		break;
+	default:
+		break;
+	}
+}
+
+void calculate_odometry(encoders *enc, Position *pos)
 {
 	double left_speed = 0;
 	double right_speed = 0;
-
 	double delta_time_s = enc->time_diff / 1000000.;
+	
+	update_encoders(enc);
+
 	motor_update_current_speed(enc, &left_speed, &right_speed);
 
 	double left_distance = left_speed * delta_time_s;
@@ -265,6 +291,7 @@ void calculate_odometry(const encoders *enc, Position *pos)
 
 	// Calculate the distance the robot has moved [mm]
 	double distance = (left_distance + right_distance) / 2.;
+	printf("LEFT_DIST = %1.2lf, RIGHT_DIST = %1.2lf, DIST = %1.2lf, DIR: %s\n", left_distance, right_distance, distance, direction_to_string(dir));
 
 	// Calculate the angle the robot has turned
 	//todo: calculate angle from gyro cuz of the skid

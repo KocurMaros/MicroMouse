@@ -50,24 +50,30 @@ extern "C" {
 
 typedef struct 
 {
-	uint8_t A_channel;
-	uint8_t B_channel;
+	bool A_channel;
+	bool B_channel;
 }Encoder_channel;
 
 static esp_adc_cal_characteristics_t *adc_chars;
 
 static const char *TAG = "task_meas.c";
 
+
+
+
+   
+
+
 calibration_t cal = {
-	.mag_offset = {.x = 80.871094, .y = 179.189453, .z = 51.974609},
-    .mag_scale = {.x = 1.346746, .y = 1.204810, .z = 0.700543},
+	.mag_offset = {.x = 97.166016, .y = 289.740234, .z = 140.156250},
+    .mag_scale = {.x = 0.882882, .y = 1.107582, .z = 1.036830},
 
-	.gyro_bias_offset = {.x = -0.187195, .y = -0.518792, .z = -0.949588},
+	.gyro_bias_offset = {.x = -0.234663, .y = -0.495243, .z = -1.010486},
 
 
-	.accel_offset = {.x = -0.000727, .y = 0.029688, .z = 0.051130},
-    .accel_scale_lo = {.x = 1.009564, .y = 1.010043, .z = 1.026325},
-    .accel_scale_hi = {.x = -0.989742, .y = -0.993313, .z = -0.995663},
+	.accel_offset = {.x = 0.001634, .y = 0.024676, .z = 0.050066},
+	.accel_scale_lo = {.x = -0.995133, .y = -0.989244, .z = -1.002114},
+    .accel_scale_hi = {.x = 1.003912, .y = 1.013656, .z = 1.015352},
 
 	};
 
@@ -111,8 +117,10 @@ Encoder_channel encoderStates[2] = {{.A_channel = 0, .B_channel = 0},
 				prev_encoderStates[2] = {{.A_channel = 0, .B_channel = 0}, 
 										 {.A_channel = 0, .B_channel = 0}};
 
-int64_t interrupts[2] = { 0, 0 };
-bool dirA = false, dirB = false;
+double interrupts[2] = { 0, 0 };
+
+bool dirs[2] = {false, false};
+
 static void change_encoder_value()
 {
 	for (uint8_t i = 0; i < 2; i++)
@@ -120,63 +128,169 @@ static void change_encoder_value()
 		if(!prev_encoderStates[i].A_channel && !prev_encoderStates[i].B_channel)
 		{
 			if(encoderStates[i].A_channel && !encoderStates[i].B_channel)
+			{
 				interrupts[i]++;
+				dirs[i] = true;
+			}
 
 			else if (!encoderStates[i].A_channel && encoderStates[i].B_channel)
+			{
 				interrupts[i]--;
+				dirs[i] = false;
+			}
 		}
 
 		else if (prev_encoderStates[i].A_channel && !prev_encoderStates[i].B_channel)
 		{
 			if(encoderStates[i].A_channel && encoderStates[i].B_channel)
+			{
 				interrupts[i]++;
+				dirs[i] = true;
+			}
 
 			else if (!encoderStates[i].A_channel && !encoderStates[i].B_channel)
+			{
 				interrupts[i]--;
+				dirs[i] = false;
+			}
 		}
 
 		else if (prev_encoderStates[i].A_channel && prev_encoderStates[i].B_channel)
 		{
 			if(!encoderStates[i].A_channel && encoderStates[i].B_channel)
+			{
 				interrupts[i]++;
+				dirs[i] = true;
+			}
 
 			else if (encoderStates[i].A_channel && !encoderStates[i].B_channel)
+			{
 				interrupts[i]--;	
+				dirs[i] = false;
+			}
 		}
 		
 		else if (!prev_encoderStates[i].A_channel && prev_encoderStates[i].B_channel)
 		{
 			if (!encoderStates[i].A_channel && !encoderStates[i].B_channel)
+			{
 				interrupts[i]++;
+				dirs[i] = true;
+			}
 			
 			else if (encoderStates[i].A_channel && encoderStates[i].B_channel)
+			{
 				interrupts[i]--;
+				dirs[i] = false;
+			}
 		}
 	}
 }
 
+int64_t prev_time_1_A = 0, prev_time_1_B;
+int64_t prev_time_2_A = 0, prev_time_2_B;
+int64_t act_time_1_A = 0 , act_time_1_B = 0;
+int64_t act_time_2_A = 0 , act_time_2_B = 0;
 
-void encoder_isr_handler(void *arg)
+bool dirA = false, dirB = false;
+bool intA = false, intB = false;
+double periodA, periodB;
+void dir_isr_handler(void *arg)
 {
 	uint32_t gpio_num = (uint32_t)arg;
 	switch (gpio_num) {
 	case ENCODER_1_A:
-        if(gpio_get_level(ENCODER_1_B) == 1)
-            dirA = true;
-        else
-            dirA = false;
-		interrupts[0]++;
-		break;
-
+		if(!encoderStates[0].A_channel){
+			if(prev_time_1_A == 0){
+				prev_time_1_A = esp_timer_get_time();
+			}else if(prev_time_1_A != 0){
+				periodA = (double)(esp_timer_get_time() - prev_time_1_A)/1'000'000.0;
+				interrupts[0] = 1.0/(periodA);  //imp/s
+				prev_time_1_A = 0;
+				encoderStates[0].A_channel = true;
+			}
+		}
+		break;	
 	case ENCODER_2_A:
-        if(gpio_get_level(ENCODER_2_B) == 1)
-            dirB = true;
-        else
-            dirB = false;
-    	interrupts[1]++;
+		if(!encoderStates[1].A_channel){
+			if(prev_time_2_A == 0){
+				prev_time_2_A = esp_timer_get_time();
+			}else if( prev_time_2_A != 0){
+				periodB = (double)(esp_timer_get_time() - prev_time_2_A)/1'000'000.0;
+				interrupts[1] = 1.0/(periodB);  //imp/s
+				prev_time_2_A = 0;
+				encoderStates[1].A_channel = true;
+			}
+		}
+		break;
+	}
+}
+
+// void dir_isr_handler(void *arg)
+// {
+// 	uint32_t gpio_num = (uint32_t)arg;
+// 	switch (gpio_num) {
+// 		case ENCODER_1_B:
+// 			if(act_time_1_A - esp_timer_get_time() > 0)
+// 				dirA = true;
+// 			else
+// 				dirA = false;
+// 		// gpio_get_level(ENCODER_1_A) ? dirA = true : dirA = false;
+// 		break;
+// 		case ENCODER_2_B:
+// 			if(act_time_2_A - esp_timer_get_time() > 0)
+// 				dirB = true;
+// 			else
+// 				dirB = false;
+// 		// gpio_get_level(ENCODER_2_A) ? dirB = false : dirB = true;
+//     	break;
+	
+// 	}
+// }
+
+
+
+void enc1_isr_handler(void* pin_no)
+{
+	uint32_t pin = (uint32_t) pin_no;
+	
+	switch (pin)
+	{
+	case ENCODER_1_A:
+		if(!gpio_get_level(ENCODER_1_B))
+			interrupts[0] ++;
 		break;
 	
+	case ENCODER_1_B:
+		if(!gpio_get_level(ENCODER_1_A))
+			interrupts[0]--;
+		break;
+
+	default:
+		break;
+	}
 }
+
+void enc2_isr_handler(void* pin_no)
+{
+	uint32_t pin = (uint32_t) pin_no;
+
+	switch (pin)
+	{
+	case ENCODER_2_A:
+		if(!gpio_get_level(ENCODER_2_B))
+			interrupts[1]--;	
+		break;
+	
+	case ENCODER_2_B:
+		if(!gpio_get_level(ENCODER_2_A))
+			interrupts[1]++;
+			
+	default:
+		break;
+	}
+}
+
 
 
 
@@ -205,15 +319,37 @@ extern "C" void task_meas(void *arg)
 	/***
      * Encoder
     */
+	
+
+
+	// gpio_config_t io_conf;
+	// io_conf.intr_type = GPIO_INTR_NEGEDGE;
+	// io_conf.pin_bit_mask = ((1ULL << ENCODER_1_A) | (1ULL << ENCODER_1_B) | (1ULL << ENCODER_2_A) | (1ULL << ENCODER_2_B));
+	// io_conf.mode = GPIO_MODE_INPUT;
+	// io_conf.pull_down_en = GPIO_PULLDOWN_ENABLE;
+	// io_conf.pull_up_en = GPIO_PULLUP_DISABLE;
+	
+	// gpio_config(&io_conf);
+
+
 	gpio_set_direction(ENCODER_1_A, GPIO_MODE_INPUT);
 	gpio_set_direction(ENCODER_2_A, GPIO_MODE_INPUT);
-	gpio_set_intr_type(ENCODER_1_A, GPIO_INTR_POSEDGE);
-	gpio_set_intr_type(ENCODER_2_A, GPIO_INTR_POSEDGE);
-	gpio_install_isr_service(0);
-	gpio_isr_handler_add(ENCODER_1_A, encoder_isr_handler, (void *)ENCODER_1_A);
-	gpio_isr_handler_add(ENCODER_2_A, encoder_isr_handler, (void *)ENCODER_2_A);
+	gpio_set_direction(ENCODER_1_B, GPIO_MODE_INPUT);
+	gpio_set_direction(ENCODER_2_B, GPIO_MODE_INPUT);
 
-	/**
+	gpio_set_intr_type(ENCODER_1_A, GPIO_INTR_NEGEDGE /*GPIO_INTR_POSEDGE*/);
+	gpio_set_intr_type(ENCODER_2_A, GPIO_INTR_NEGEDGE /*GPIO_INTR_POSEDGE*/);
+	// gpio_set_intr_type(ENCODER_1_B, GPIO_INTR_NEGEDGE);
+	// gpio_set_intr_type(ENCODER_2_B, GPIO_INTR_NEGEDGE);
+	
+	gpio_install_isr_service(0);
+	
+	gpio_isr_handler_add(ENCODER_1_A, dir_isr_handler, (void *)ENCODER_1_A);
+	gpio_isr_handler_add(ENCODER_2_A, dir_isr_handler, (void *)ENCODER_2_A);
+	// gpio_isr_handler_add(ENCODER_1_B, dir2_isr_handler, (void *)ENCODER_1_B);
+	// gpio_isr_handler_add(ENCODER_2_B, dir2_isr_handler, (void *)ENCODER_2_B);
+
+/**
      * Turn of MPU9250
     */
 	gpio_pad_select_gpio(GPIO_NUM_13);
@@ -251,9 +387,23 @@ extern "C" void task_meas(void *arg)
 	uint64_t end_time = 0;
 
 	(void)gpio_set_level(GPIO_NUM_13, 1);
-	vTaskDelay(100 / portTICK_PERIOD_MS);
+
+	//////////////  CALIBRATION ROUTINE ////////////////
+
+	// printf("Calib starts in a sec\n");
+	// vTaskDelay(1000 / portTICK_PERIOD_MS);
+	// calibrate_gyro();
+	// calibrate_accel();
+	// printf("Steal the dejta\n");
+	// vTaskDelay(5000 / portTICK_PERIOD_MS);
+	// calibrate_mag();
+
+
+
+	/////////////////////////////////////////////////////
+ 
 	i2c_mpu9250_init(&cal);
-	ahrs_init(200, 0.8); // 200 Hz, 0.8 beta
+	ahrs_init(200, 0.9); // 200 Hz, 0.8 beta
 
 	//start after presing button
 
@@ -264,6 +414,7 @@ extern "C" void task_meas(void *arg)
 	while (gpio_get_level(GPIO_NUM_0) != 0) {
 		// continue reading GPIO_NUM_0
 	}
+
 	meas.log.button_start = true;
 
 	(void)adc1_config_width(ADC_WIDTH_BIT_12);
@@ -280,22 +431,47 @@ extern "C" void task_meas(void *arg)
 
 		act_time = esp_timer_get_time();
 		if ((act_time - end_time) > 5000) { //200Hz
-			ESP_ERROR_CHECK(get_accel_gyro_mag(&va, &vg, &vm));
+			// ahrs_init(1'000'000/(act_time - end_time), 0.8); 
+			ESP_ERROR_CHECK(get_accel_gyro(&va, &vg));
 			transform_accel_gyro(&va);
 			transform_accel_gyro(&vg);
-			transform_mag(&vm);
+			// transform_mag(&vm);
 
-			ahrs_update(DEG2RAD(vg.x), DEG2RAD(vg.y), DEG2RAD(vg.z), va.x, va.y, va.z, vm.x, vm.y, vm.z);
+			ahrs_update_imu(DEG2RAD(vg.x), DEG2RAD(vg.y), DEG2RAD(vg.z), va.x, va.y, va.z);
 			end_time = esp_timer_get_time();
 		}
+		//ENCODER LOGIC
+		// if(act_time_1_A < act_time_1_B){
+		// 	interrupts[0] = (double)(act_time_1_A - prev_time_1_A)/1'000'000.0;
+		// 	dirA = true;
+		// }
+		// else{
+		// 	dirA = false;
+		// }
+			
+		// if(act_time_2_A < act_time_2_B){
+		// 	interrupts[1] = (double)(act_time_2_A - prev_time_2_A)/1'000'000.0;
+		// 	dirB = true;
+		// }
+		// else{
+		// 	dirB = false;
+		// }
+
 		act_time = esp_timer_get_time();
-		if ((act_time - send_time) > 1000) { //1kHz
+		if ((act_time - send_time) > 1'000) { //1kHz
             meas.enc.dir_A = dirA;
             meas.enc.dir_B = dirB;
-            printf("Motor A dir: %s, Motor B dir: %s\n", meas.enc.dir_A ? "Front" : "Reverse", meas.enc.dir_B ? "Front" : "Reverse");
-			meas.enc.encoder1 = interrupts[0];
-			meas.enc.encoder2 = interrupts[1];
-			// printf("ENC1_m = %llu, ENC2_m = %llu\n", interrupts[0], interrupts[1]);
+            //printf("Motor A dir: %s, Motor B dir: %s\n", meas.enc.dir_A ? "Front" : "Reverse", meas.enc.dir_B ? "Front" : "Reverse");
+			meas.enc.encoder1 = (int64_t)round(interrupts[0]/250.0); //(int64_t)interrupts[0];
+			meas.enc.encoder2 = (int64_t)round(interrupts[1]/250.0); //(int64_t)interrupts[1];
+			
+			// meas.enc.encoder2 = (uint64_t)round(interrupts[1]/500.0); //(int64_t)interrupts[1];
+			encoderStates[0].A_channel = false;
+			encoderStates[1].A_channel = false;
+
+			// meas.enc.dir_A = dirs[0];
+			// meas.enc.dir_B = dirs[1];
+			// printf("ENC1_m = %.2lf, ENC2_m = %.2lf\n states %d %d %lld %lld\n", interrupts[0], interrupts[1], encoderStates[0].A_channel, encoderStates[1].A_channel, prev_time_1_A, prev_time_2_A);
 
 			int64_t time = esp_timer_get_time();
 			meas.enc.time_diff = time - last_time;

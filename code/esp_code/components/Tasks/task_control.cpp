@@ -65,15 +65,15 @@ extern "C" void task_control(void *arg)
 		if (val.log.button_start && (curr_time - prev_time)/1000 > 1) { // capped at 1 kHz
 			
 			//printf("ENC1 = %llu, ENC2 = %llu\n", val.enc.encoder1, val.enc.encoder2); 
-			set_speed_dir(20,100); // 20 min____150 max
-			motor_update_current_speed(&val.enc, &motor_speed_left, &motor_speed_right);
+			set_speed_dir(100,-100); // 20 min____150 max
+			// motor_update_current_speed(&val.enc, &motor_speed_left, &motor_speed_right);
 			
-
-			//calculate_odometry(&val.enc,&position);
+			calculate_odometry(&val.enc,&position);
 
 			if((double)(curr_time - printTime)/1000.0 > 100.0){
-				//printf("Pos X: %1.2lf, Pos Y: %1.2lf, Theta: %1.2lf\n", position.x, position.y, position.theta);
-				//printf("GYRO: %1.2f\n",val.orient.heading);
+				//printf("Pos X: %1.2lf,  Enc1Ticks: %lld, Enc2Ticks: %lld\n", position.x/10.0, val.enc.encoder1, val.enc.encoder2);
+				//printf("Motor A dir %s, Motor B dir %s\n",val.enc.dir_A ? "Forward" : "Revers", val.enc.dir_B ? "Forward" : "Revers");
+				//printf("H: %1.2f, P: %1.2f, R: %1.2f\n",val.orient.heading, val.orient.pitch, val.orient.roll);
 				printTime = curr_time;
 			}
 			
