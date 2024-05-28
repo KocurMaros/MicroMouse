@@ -2,6 +2,80 @@
 
 \section{Hardware}
 \label{sec:hardware}
+Z hárdverovej stránky sme potrebovali v tomto projekte vytvoriť dosku plošných spojov (PCB - Printed Circuit Boards) a návrh držiakov motorov, gyroskopu a kolies, ktorých výroba prebiehala pomocou 3D tlače.
+\subsection{PCB}
+\begin{itemize}
+    \item \textbf{Senzory ToF (VL53L1X)}: Prepojenie s ESP32 cez I2C alebo UART rozhranie.
+    \item \textbf{Gyroskop s akcelerometrom (MPU9250)}: Prepojenie s ESP32 cez I2C rozhranie.
+    \item \textbf{Driver na motor (TB6612FNG)}: Umiestnený blízko motorov, prepojenie s ESP32 cez PWM signály.
+    \item \textbf{MCU (ESP32)}: Centrálny riadiaci prvok PCB.
+    \item \textbf{Step-up menič na 5V}: Zabezpečenie stabilných 5V pre logické obvody a enkodéry.
+    \item \textbf{Logic shifter}: Prekladanie signálov medzi 3,3V a 5V úrovňami.
+    \item \textbf{Ochrana batérie}: Meranie napätia batérie a prúdové ochrany.
+    \item \textbf{Batéria (Li-ion 1000mAh)}: Umiestnená na PCB s prístupnými napájacími konektormi a ochrannými obvodmi.
+\end{itemize}
+
+\textbf{Proces tvorby PCB}
+\begin{itemize}
+
+\item \textbf{Návrh schémy}\\
+Vytvorili sme detailný návrh elektrickej schémy s prepojeniami všetkých komponentov, pričom sme zabezpečili správne napäťové úrovne a prepojenia medzi jednotlivými časťami.
+
+\item \textbf{Rozmiestnenie komponentov}\\
+Strategicky sme umiestnili všetky komponenty na PCB tak, aby boli minimalizované rušenia a zohľadnené fyzické rozmery a montážne obmedzenia.
+
+\item \textbf{Vedenie ciest}\\
+Navrhnli sme cesty (trasy) pre prepojenie komponentov, s dôrazom na minimalizáciu kríženia ciest a optimalizáciu pre rušenie (napr. použitie samostatných zemných a napájacích rovín).
+
+\item \textbf{Napájanie a ochrany}\\
+Implementovali sme obvody na stabilizáciu napätia (3,3V a 5V), ochrany batérie, a zabezpečili, aby boli všetky komponenty správne napájané a chránené.
+ 
+\end{itemize}
+
+\textbf{Taktiež sme museli myslieť na nasledovné:}
+\begin{itemize}
+    \item Udržanie minimálnej dĺžky kritických signálových trás (I2C, PWM).
+    \item Oddelenie silových a signálových ciest na PCB, aby sa minimalizovalo rušenie.
+    \item Zabezpečenie dostatočnej kapacity a filtrácie na napájacích cestách.
+    \item Implementácia ochranných obvodov pre batériu a citlivé komponenty.
+\end{itemize}
+
+\begin{figure}[!htpb]
+    \centering
+    \includegraphics[width=1\linewidth]{includes//images/PCB.png}
+    \caption{Návrh PCB dosky použitej vo finálnej verzii.}
+    \label{fig:PCB}
+\end{figure}
+
+\clearpage\subsection{CAD}
+Pri návrhu ako aj pri postupnom iterovaní sme zohľadňovali mnohé aspekty spojené s procesom pri prototypizovaní. Mnohé verzie boli navrhnuté rovnako no v konečnom dôsledku nám ich proces tlače zmenil a museli sme sa s tým vysporiadať, pretože presnosť pri našom návrhu zohrávala kľúčovú úlohu. Pri tlači sme používali dva typy 3D tlače, klasickú FDA no aj živicovú SLA tlač.
+\begin{itemize}
+\item \textbf{3D návrh kolies}\\
+Kolesá pre Micro Mouse boli navrhnuté na základe existujúcich modelov, ktoré poskytli osvedčený základ pre dizajn. Použitie osvedčených modelov umožnilo urýchliť návrhový proces a zaručilo, že výsledné kolesá budú spĺňať požadované špecifikácie.
+
+\item \textbf{Výber modelu}\\
+Pre návrh kolies sme vybrali modely, ktoré sú už overené v praxi. Tento prístup minimalizoval riziko návrhových chýb a zabezpečil, že kolesá budú mať vhodné mechanické vlastnosti a správne rozmery.
+
+\item \textbf{Návrh gumy na kolesá}\\
+Gumy na kolesá boli použité z existujúceho modelu, čo zabezpečilo optimálnu trakciu a odolnosť. Tento krok eliminoval potrebu vlastného návrhu gumy a umožnil nám sústrediť sa na integráciu kolies do celkového návrhu Micro Mouse.
+
+\item \textbf{3D návrh úchytov}\\
+Pre návrh úchytov sme využili iteratívny proces, ktorý umožnil presné prispôsobenie vzdialeností kolies a ich optimálne umiestnenie na Micro Mouse.
+
+\item \textbf{Iteratívny proces návrhu}\\
+Návrh úchytov prebiehal v niekoľkých iteráciách, pričom sme upravovali vzdialenosti kolies a ich polohu, aby sme dosiahli najlepšiu možnú stabilitu a pohyblivosť Micro Mouse. Tento proces zahŕňal testovanie rôznych konfigurácií a úpravou návrhu na základe výsledkov týchto testov.
+
+\item \textbf{Optimalizácia vzdialeností}\\
+Upravovanie vzdialeností kolies bolo kľúčové pre dosiahnutie optimálnej manévrovateľnosti. Iteratívne úpravy umožnili presné doladenie návrhu, čo viedlo k zlepšeniu celkového výkonu Micro Mouse.
+\end{itemize}
+\clearpage Návrh a výroba 3D komponentov pre Micro Mouse zahŕňala použitie existujúcich modelov kolies a gumy, ako aj iteratívny návrh úchytov. Tento prístup umožnil efektívne vytvorenie funkčných a spoľahlivých komponentov, ktoré prispievajú k optimálnemu výkonu Micro Mouse.
+
+\begin{figure}[!htpb]
+    \centering
+    \includegraphics[width=1\linewidth]{includes//images/main_board.jpg}
+    \caption{Konečná verzia návrhu všetkých komponentov vyrábaných pomocou 3D tlače usporiadaných na PCB.}
+    \label{fig:MainBoard}
+\end{figure}
 
 \section{Software}
 \label{sec:software}
