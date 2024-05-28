@@ -172,9 +172,11 @@ void MainWindow::updateChart()
 
 	std::scoped_lock lock(mut);
 
-	motorSeriesA->append(timestampArray.back(), motorArrayA.back());
-	motorSeriesB->append(timestampArray.back(), motorArrayB.back());
-	motorChart->axes(Qt::Horizontal).first()->setRange(qMax<qreal>(0, timestampArray.back() - 100), timestampArray.back());
+	double timestamp = timestampArray.back() / 1'000'000.;
+
+	motorSeriesA->append(timestamp, motorArrayA.back());
+	motorSeriesB->append(timestamp, motorArrayB.back());
+	motorChart->axes(Qt::Horizontal).first()->setRange(qMax<qreal>(0, timestamp - 0.1), timestamp);
 
 	// Update bar motorChart
 	for (int i = 0; i < tofChart->count(); ++i) {
