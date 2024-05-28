@@ -22,6 +22,8 @@ typedef struct encoders
 {
 	uint64_t encoder1;
 	uint64_t encoder2;
+    bool dir_A;
+    bool dir_B;
 	uint64_t time_diff;
 } encoders;
 typedef struct logging

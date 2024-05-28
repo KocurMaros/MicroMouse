@@ -112,7 +112,7 @@ Encoder_channel encoderStates[2] = {{.A_channel = 0, .B_channel = 0},
 										 {.A_channel = 0, .B_channel = 0}};
 
 int64_t interrupts[2] = { 0, 0 };
-
+bool dirA = false, dirB = false;
 static void change_encoder_value()
 {
 	for (uint8_t i = 0; i < 2; i++)
@@ -161,50 +161,21 @@ void encoder_isr_handler(void *arg)
 	uint32_t gpio_num = (uint32_t)arg;
 	switch (gpio_num) {
 	case ENCODER_1_A:
+        if(gpio_get_level(ENCODER_1_B) == 1)
+            dirA = true;
+        else
+            dirA = false;
 		interrupts[0]++;
-		// encoderStates[0].A_channel = 1;
-		// encoderStates[0].B_channel = (uint8_t)gpio_get_level(ENCODER_1_B);
-		
-		// change_encoder_value();
-
-		// prev_encoderStates[0].A_channel = encoderStates[0].A_channel;
-		// prev_encoderStates[0].B_channel = encoderStates[0].B_channel;
-		break;
-
-	case ENCODER_1_B:
-		// encoderStates[0].B_channel = 1;
-		// encoderStates[0].A_channel = (uint8_t)gpio_get_level(ENCODER_1_A);
-		
-		// change_encoder_value();
-
-		// prev_encoderStates[0].B_channel = encoderStates[0].B_channel;
-		// prev_encoderStates[0].A_channel = encoderStates[0].A_channel;
 		break;
 
 	case ENCODER_2_A:
-		interrupts[1]++;
-		// encoderStates[1].A_channel = 1;
-		// encoderStates[1].B_channel = (uint8_t)gpio_get_level(ENCODER_2_B);
-		
-		// change_encoder_value();
-
-		// prev_encoderStates[1].A_channel = encoderStates[1].A_channel;
-		// prev_encoderStates[1].B_channel = encoderStates[1].B_channel;
+        if(gpio_get_level(ENCODER_2_B) == 1)
+            dirB = true;
+        else
+            dirB = false;
+    	interrupts[1]++;
 		break;
 	
-	case ENCODER_2_B:
-		// encoderStates[1].B_channel = 1;
-		// encoderStates[1].A_channel = (uint8_t)gpio_get_level(ENCODER_2_A);
-		
-		// change_encoder_value();
-
-		// prev_encoderStates[1].B_channel = encoderStates[1].B_channel;
-		// prev_encoderStates[1].A_channel = encoderStates[1].A_channel;
-		break;
-
-	default:
-		break;
-	}
 }
 
 
@@ -319,6 +290,9 @@ extern "C" void task_meas(void *arg)
 		}
 		act_time = esp_timer_get_time();
 		if ((act_time - send_time) > 1000) { //1kHz
+            meas.enc.dir_A = dirA;
+            meas.enc.dir_B = dirB;
+            printf("Motor A dir: %s, Motor B dir: %s\n", meas.enc.dir_A ? "Front" : "Reverse", meas.enc.dir_B ? "Front" : "Reverse");
 			meas.enc.encoder1 = interrupts[0];
 			meas.enc.encoder2 = interrupts[1];
 			// printf("ENC1_m = %llu, ENC2_m = %llu\n", interrupts[0], interrupts[1]);
