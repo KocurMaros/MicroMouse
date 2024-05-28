@@ -12,16 +12,16 @@
 #include <stdio.h>
 
 MainWindow::MainWindow(QWidget *parent)
-	: QMainWindow(parent),
-	motorChart(new QChart()),
-	motorSeriesA(new QLineSeries()),
-	motorSeriesB(new QLineSeries()),
-	tofSeries(new QBarSeries()),
-	tofChart(new QBarSet("BarSet")),
-	gyroChart(new QPolarChart()),
-	gyroSeries(new QLineSeries()),
-	timer(new QTimer(this)),
-	x(0)
+	: QMainWindow(parent)
+	, motorChart(new QChart())
+	, motorSeriesA(new QLineSeries())
+	, motorSeriesB(new QLineSeries())
+	, tofSeries(new QBarSeries())
+	, tofChart(new QBarSet("BarSet"))
+	, gyroChart(new QPolarChart())
+	, gyroSeries(new QLineSeries())
+	, timer(new QTimer(this))
+	, x(0)
 {
 	setWindowTitle("Real-Time Plot");
 	//initalize arrays to 0
@@ -65,7 +65,7 @@ MainWindow::MainWindow(QWidget *parent)
 	motorSeriesB->setColor(Qt::red);
 
 	// Setup bar chart
-	tofChart->append({0, 0, 0, 0}); // Initialize with 4 values
+	tofChart->append({ 0, 0, 0, 0 }); // Initialize with 4 values
 	tofSeries->append(tofChart);
 
 	QChart *tofChart = new QChart();
@@ -74,7 +74,10 @@ MainWindow::MainWindow(QWidget *parent)
 	tofChart->setTitle("TOF 1, 2, 3, 4");
 
 	QStringList categories;
-	categories << "1" << "2" << "3" << "4";
+	categories << "1"
+			   << "2"
+			   << "3"
+			   << "4";
 	QBarCategoryAxis *axisXBar = new QBarCategoryAxis();
 	axisXBar->append(categories);
 	tofChart->addAxis(axisXBar, Qt::AlignBottom);
@@ -123,46 +126,47 @@ MainWindow::MainWindow(QWidget *parent)
 	setCentralWidget(centralWidget);
 
 	connect(timer, &QTimer::timeout, this, &MainWindow::updateChart);
-	timer->start(50);  // Update every 100 ms
+	timer->start(50); // Update every 100 ms
 }
 
 MainWindow::~MainWindow()
 {
 }
 
-void MainWindow::readPendingDatagrams() {
-		while (udpSocket->hasPendingDatagrams()) {
-			QByteArray datagram;
-			datagram.resize(udpSocket->pendingDatagramSize());
-			QHostAddress sender;
-			quint16 senderPort;
+void MainWindow::readPendingDatagrams()
+{
+	while (udpSocket->hasPendingDatagrams()) {
+		QByteArray datagram;
+		datagram.resize(udpSocket->pendingDatagramSize());
+		QHostAddress sender;
+		quint16 senderPort;
 
-			udpSocket->readDatagram(datagram.data(), datagram.size(), &sender, &senderPort);
+		udpSocket->readDatagram(datagram.data(), datagram.size(), &sender, &senderPort);
 
-			QList<QByteArray> values = datagram.split(',');
+		QList<QByteArray> values = datagram.split(',');
 
-			double timestamp = values[0].toDouble();
-			double tofY_1 = values[1].toDouble();
-			double tofY_2 = values[2].toDouble();
-			double tofY_3 = values[3].toDouble();
-			double tofY_4 = values[4].toDouble();
-			double gyroZ = values[5].toDouble();
-			double motorA = values[6].toDouble();
-			double motorB = values[7].toDouble();
-			{
+		double timestamp = values[0].toDouble();
+		double tofY_1 = values[1].toDouble();
+		double tofY_2 = values[2].toDouble();
+		double tofY_3 = values[3].toDouble();
+		double tofY_4 = values[4].toDouble();
+		double gyroZ = values[5].toDouble();
+		double motorA = values[6].toDouble();
+		double motorB = values[7].toDouble();
+		{
 			std::scoped_lock lock(mut);
 			timestampArray.append(timestamp);
 			motorArrayA.append(motorA);
 			motorArrayB.append(motorB);
-			tofArray.append(QVector<double>({tofY_1, tofY_2, tofY_3, tofY_4}));
+			tofArray.append(QVector<double>({ tofY_1, tofY_2, tofY_3, tofY_4 }));
 			gyroZArray.append(gyroZ);
-			}
 		}
 	}
+}
 
 void MainWindow::updateChart()
 {
-	if(tofArray.isEmpty()) {
+	if (tofArray.isEmpty()) {
 		return;
 	}
 
@@ -179,7 +183,7 @@ void MainWindow::updateChart()
 
 	// Update compass motorChart
 	gyroSeries->clear();
-	gyroSeries->append(gyroZArray.back(), 100);  // Point on the perimeter of the compass
+	gyroSeries->append(gyroZArray.back(), 100); // Point on the perimeter of the compass
 	gyroSeries->append(gyroZArray.back(), 0);	// Center of the compass
 
 	if (motorSeriesA->count() > 100) {
