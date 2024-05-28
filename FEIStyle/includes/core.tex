@@ -1,6 +1,7 @@
 % !TEX root = ../example_paper.tex
 
 \section{Hardware}
+\subsection{Model}
 \label{sec:hardware}
 Kolesá a ozubené koliečko pre hriadeľ motora boli vytlačené v 3D tlačiarni s resinovou náplňou \textbf{FabPro 1000 Resin Cartridge Tough BLK}. Na obrázkoch \ref{fig:gear} a \ref{fig:wheel_w_gear} môžeme vidieť návrhy ozubeého koliečka pre hriadeľ a kolesa. 
 
@@ -17,6 +18,20 @@ Kolesá a ozubené koliečko pre hriadeľ motora boli vytlačené v 3D tlačiarn
         \caption{Koleso s ozubenými kolesami}
         \label{fig:wheel_w_gear}
 \end{figure}
+
+\subsection{ToF}
+Ako vzdialenostný senzor sme zvolili VL53L1X. Je to Time-of-Flight (doba trvania letu) laserový merací modul poskytujúci presné meranie vzdialenosti bez ohľadu na farbu alebo odrazivosť cieľa.
+
+Tento kompaktný modul, ktorý môžeme vidieť na obrázku  \ref{fig:vl53l1x} dokáže spoľahlivo a rýchlo merať vzdialenosť až do 400cm s frekvecnciou do 50Hz. Jeho zorné pole je štandardne 27°, avšak je možnosť zmenšiť ho podľa potreby. Okrem pinov na napájanie a komunikáciu, taktiež obsahuje aj pin na prerušenie a pin na shutdown (vyradenie). Komunikácia so senzorom prebieha prostredníctvom protokolu $I^2 C$.
+
+\begin{figure}[!htpb]
+    \centering
+    \includegraphics[width=7cm]{includes/images/vl53l1x.jpg}
+    \caption{Vzdialenostný senzor VL53L1X}
+    \label{fig:vl53l1x}
+\end{figure}
+
+Na meranie vzdialenosti sme využili štyri takéto moduly pripevnené na dosku vyosené relatívne od dopredného smeru myši o 45° a 10°.
 
 \section{Software}
 \label{sec:software}
@@ -40,6 +55,11 @@ Postup na~inicializáciu ESP IDF a~následné spustenie projektu je nasledovný:
 
 Alternatívne spustenie je možné pomocou platformy \textbf{Visual Studio Code} s~nainštalovaným rozšírením
 \textbf{ESP-IDF}~\cite{espIDF}.
+
+\subsection{Senzory}
+
+\subsubsection{VL53L1X}
+Pre snímanie vzdialenosti bola vytvorená knižnica na kalibráciu a vyčítavanie dát zo senzora VL53L1X. Komunikácia prebieha prostredníctvom komunikačného protokolu $I^2 C$. Knižnica je nadstavbou nad voľne dostupným rozhraním od STMicroelectronics.
 
 \subsection{Odometria}
 \label{subsec:odometria}
