@@ -161,43 +161,45 @@ void encoder_isr_handler(void *arg)
 	uint32_t gpio_num = (uint32_t)arg;
 	switch (gpio_num) {
 	case ENCODER_1_A:
-		encoderStates[0].A_channel = 1;
-		encoderStates[0].B_channel = (uint8_t)gpio_get_level(ENCODER_1_B);
+		interrupts[0]++;
+		// encoderStates[0].A_channel = 1;
+		// encoderStates[0].B_channel = (uint8_t)gpio_get_level(ENCODER_1_B);
 		
-		change_encoder_value();
+		// change_encoder_value();
 
-		prev_encoderStates[0].A_channel = encoderStates[0].A_channel;
-		prev_encoderStates[0].B_channel = encoderStates[0].B_channel;
+		// prev_encoderStates[0].A_channel = encoderStates[0].A_channel;
+		// prev_encoderStates[0].B_channel = encoderStates[0].B_channel;
 		break;
 
 	case ENCODER_1_B:
-		encoderStates[0].B_channel = 1;
-		encoderStates[0].A_channel = (uint8_t)gpio_get_level(ENCODER_1_A);
+		// encoderStates[0].B_channel = 1;
+		// encoderStates[0].A_channel = (uint8_t)gpio_get_level(ENCODER_1_A);
 		
-		change_encoder_value();
+		// change_encoder_value();
 
-		prev_encoderStates[0].B_channel = encoderStates[0].B_channel;
-		prev_encoderStates[0].A_channel = encoderStates[0].A_channel;
+		// prev_encoderStates[0].B_channel = encoderStates[0].B_channel;
+		// prev_encoderStates[0].A_channel = encoderStates[0].A_channel;
 		break;
 
 	case ENCODER_2_A:
-		encoderStates[1].A_channel = 1;
-		encoderStates[1].B_channel = (uint8_t)gpio_get_level(ENCODER_2_B);
+		interrupts[1]++;
+		// encoderStates[1].A_channel = 1;
+		// encoderStates[1].B_channel = (uint8_t)gpio_get_level(ENCODER_2_B);
 		
-		change_encoder_value();
+		// change_encoder_value();
 
-		prev_encoderStates[1].A_channel = encoderStates[1].A_channel;
-		prev_encoderStates[1].B_channel = encoderStates[1].B_channel;
+		// prev_encoderStates[1].A_channel = encoderStates[1].A_channel;
+		// prev_encoderStates[1].B_channel = encoderStates[1].B_channel;
 		break;
 	
 	case ENCODER_2_B:
-		encoderStates[1].B_channel = 1;
-		encoderStates[1].A_channel = (uint8_t)gpio_get_level(ENCODER_2_A);
+		// encoderStates[1].B_channel = 1;
+		// encoderStates[1].A_channel = (uint8_t)gpio_get_level(ENCODER_2_A);
 		
-		change_encoder_value();
+		// change_encoder_value();
 
-		prev_encoderStates[1].B_channel = encoderStates[1].B_channel;
-		prev_encoderStates[1].A_channel = encoderStates[1].A_channel;
+		// prev_encoderStates[1].B_channel = encoderStates[1].B_channel;
+		// prev_encoderStates[1].A_channel = encoderStates[1].A_channel;
 		break;
 
 	default:

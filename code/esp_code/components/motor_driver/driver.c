@@ -200,7 +200,7 @@ uint16_t pid_control(PID *pid, double reference)
 	//printf("Reference: %1.2lf \t Feedback: %1.2lf \t ERROR = %1.2lf\n",reference,  pid->feedback, error);
 	if ((double)(esp_timer_get_time() - start_time) / 1000.0 > 100.0)
 	{
-		printf("ERROR: %1.5lf, SPEED: %1.5lf\n", error, pid->feedback);
+		//printf("ERROR: %1.5lf, SPEED: %1.5lf\n", error, pid->feedback);
 		start_time = esp_timer_get_time();
 	}
 	
