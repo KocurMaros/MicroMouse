@@ -11,45 +11,47 @@
 #include <QTimer>
 #include <mutex>
 
+#ifdef win32
 QT_CHARTS_USE_NAMESPACE
+#endif
 
-    class MainWindow : public QMainWindow
+class MainWindow : public QMainWindow
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    MainWindow(QWidget *parent = nullptr);
-    ~MainWindow();
+	MainWindow(QWidget *parent = nullptr);
+	~MainWindow();
 
 private slots:
-    void updateChart();
-    void readPendingDatagrams();
+	void updateChart();
+	void readPendingDatagrams();
 
 private:
-    QChart *motorChart;
-    QBarSeries *barSeries;
-    QBarSet *tofChart;
-    QPolarChart *gyroChart;
-    QTimer *timer;
-    QWidget *centralWidget;
-    QChartView *plotMotor;
-    QChartView *plotTof;
-    QChartView *plotGyro;
-    QLineSeries *motorSeriesA;
-    QLineSeries *motorSeriesB;
-    QBarSeries *tofSeries;
-    QLineSeries *gyroSeries;
-    QUdpSocket *udpSocket;
-    QString localIP;
-    quint16 localPort;
-    QVector<double> timestampArray;
-    QVector<double> motorArrayA;
-    QVector<double> motorArrayB;
-    QVector<QVector<double>> tofArray;
-    QVector<double> gyroZArray;
-    std::mutex mut;
-    int bufferSize;
-    int x;
+	QChart *motorChart;
+	QBarSeries *barSeries;
+	QBarSet *tofChart;
+	QPolarChart *gyroChart;
+	QTimer *timer;
+	QWidget *centralWidget;
+	QChartView *plotMotor;
+	QChartView *plotTof;
+	QChartView *plotGyro;
+	QLineSeries *motorSeriesA;
+	QLineSeries *motorSeriesB;
+	QBarSeries *tofSeries;
+	QLineSeries *gyroSeries;
+	QUdpSocket *udpSocket;
+	QString localIP;
+	quint16 localPort;
+	QVector<double> timestampArray;
+	QVector<double> motorArrayA;
+	QVector<double> motorArrayB;
+	QVector<QVector<double>> tofArray;
+	QVector<double> gyroZArray;
+	std::mutex mut;
+	int bufferSize;
+	int x;
 };
 
 #endif // MAINWINDOW_H
