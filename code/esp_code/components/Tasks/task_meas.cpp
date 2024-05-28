@@ -31,7 +31,6 @@ extern "C" {
 #include "mpu9250.h"
 #include "calibrate.h"
 #include "common.h"
-#include "udp_client.h"
 #include "driver.h"
 }
 
@@ -99,16 +98,16 @@ static void transform_accel_gyro(vector_t *v)
 	v->z = -z;
 }
 
-#define PCNT_H_LIM_VAL      4096
+#define PCNT_H_LIM_VAL      16
 #define PCNT_L_LIM_VAL      0
-#define PCNT_THRESH1_VAL    2048
+#define PCNT_THRESH1_VAL    4096
 
 #define PCNT_INPUT_SIG_IO   ENCODER_1_A  // Pulse Input GPIO
-#define PCNT_INPUT_CTRL_IO  ENCODER_1_B  // Control GPIO HIGH=count up, LOW=count down
+#define PCNT_INPUT_CTRL_IO  0  // Control GPIO HIGH=count up, LOW=count down
 
 
-xQueueHandle pcnt_evt_queue;   // A queue to handle pulse counter events
-
+xQueueHandle pcnt_evt_queue_motA;   // A queue to handle pulse counter events
+xQueueHandle pcnt_evt_queue_motB;
 /* A sample structure to pass events from the PCNT
  * interrupt handler to the main program.
  */
@@ -121,25 +120,41 @@ typedef struct {
  * and pass this information together with the event type
  * the main program using a queue.
  */
+int64_t left_motor_rot = 0, right_motor_rot = 0;
 
-static void IRAM_ATTR pcnt_example_intr_handler(void *arg)
+/**
+ * @brief HANDLERS FOR HALF TURN OF MOTOR SO ONE EIGHTH OF A TURN
+ * 
+ * @param arg 
+ */
+static void IRAM_ATTR pcnt_example_intr_handler_motA(void *arg)
 {
-    pcnt_unit_t pcnt_unit = (pcnt_unit_t)((int)arg);
-    pcnt_evt_t evt;
-    evt.unit = pcnt_unit;
+    // pcnt_unit_t pcnt_unit = (pcnt_unit_t)((int)arg);
+    // pcnt_evt_t evt;
+    // evt.unit = pcnt_unit;
     /* Save the PCNT event type that caused an interrupt
        to pass it to the main program */
-    pcnt_get_event_status(pcnt_unit, &evt.status);
-    xQueueSendFromISR(pcnt_evt_queue, &evt, NULL);
+    // pcnt_get_event_status(pcnt_unit, &evt.status);
+    left_motor_rot++;   
+    // xQueueSendFromISR(pcnt_evt_queue_motA, &evt, NULL);
+}
+static void IRAM_ATTR pcnt_example_intr_handler_motB(void *arg)
+{
+    // pcnt_unit_t pcnt_unit = (pcnt_unit_t)((int)arg);
+    // pcnt_evt_t evt;
+    // evt.unit = pcnt_unit;
+    /* Save the PCNT event type that caused an interrupt
+       to pass it to the main program */
+    // pcnt_get_event_status(pcnt_unit, &evt.status);
+    right_motor_rot++;
+    // xQueueSendFromISR(pcnt_evt_queue_motB, &evt, NULL);
 }
 
-
-static void pcnt_example_init(pcnt_unit_t unit)
-{
+static void pcnt_example_init(pcnt_unit_t unit_motA, pcnt_unit_t unit_motB){
     /* Prepare configuration for the PCNT unit */
-    pcnt_config_t pcnt_config = {
+    pcnt_config_t pcnt_config_motA = {
         // Set PCNT input signal and control GPIOs
-        .pulse_gpio_num = PCNT_INPUT_SIG_IO,
+        .pulse_gpio_num = ENCODER_1_A,
         .ctrl_gpio_num = PCNT_INPUT_CTRL_IO,
         .lctrl_mode = PCNT_MODE_REVERSE, // Reverse counting direction if low
         .hctrl_mode = PCNT_MODE_KEEP,    // Keep the primary counter mode if high
@@ -150,37 +165,68 @@ static void pcnt_example_init(pcnt_unit_t unit)
         // Set the maximum and minimum limit values to watch
         .counter_h_lim = PCNT_H_LIM_VAL,
         .counter_l_lim = PCNT_L_LIM_VAL,
-        .unit = unit,
+        .unit = unit_motA,
         .channel = PCNT_CHANNEL_0,
     };
 
     /* Initialize PCNT unit */
-    pcnt_unit_config(&pcnt_config);
+    pcnt_unit_config(&pcnt_config_motA);
+
+
 
     /* Configure and enable the input filter */
-    pcnt_set_filter_value(unit, 100);
-    pcnt_filter_enable(unit);
+    pcnt_set_filter_value(unit_motA, 100);
+    pcnt_filter_enable(unit_motA);
 
     /* Set threshold 0 and 1 values and enable events to watch */
-    pcnt_set_event_value(unit, PCNT_EVT_THRES_1, PCNT_THRESH1_VAL);
-    pcnt_event_enable(unit, PCNT_EVT_THRES_1);
-    // pcnt_set_event_value(unit, PCNT_EVT_THRES_0, PCNT_THRESH0_VAL);
-    // pcnt_event_enable(unit, PCNT_EVT_THRES_0);
-    /* Enable events on zero, maximum and minimum limit values */
-    // pcnt_event_enable(unit, PCNT_EVT_ZERO);
-    pcnt_event_enable(unit, PCNT_EVT_H_LIM);
-    // pcnt_event_enable(unit, PCNT_EVT_L_LIM);
+    // pcnt_set_event_value(unit_motA, PCNT_EVT_THRES_1, PCNT_THRESH1_VAL);
+    // pcnt_event_enable(unit_motA, PCNT_EVT_THRES_1);
 
+    pcnt_event_enable(unit_motA, PCNT_EVT_H_LIM);
     /* Initialize PCNT's counter */
-    pcnt_counter_pause(unit);
-    pcnt_counter_clear(unit);
+    pcnt_counter_pause(unit_motA);
+    pcnt_counter_clear(unit_motA);
 
     /* Install interrupt service and add isr callback handler */
-    pcnt_isr_service_install(0);
-    pcnt_isr_handler_add(unit, pcnt_example_intr_handler, (void *)unit);
+    
+    pcnt_config_t pcnt_config_motB = {
+        // Set PCNT input signal and control GPIOs
+        .pulse_gpio_num = ENCODER_2_A,
+        .ctrl_gpio_num = PCNT_INPUT_CTRL_IO,
+        .lctrl_mode = PCNT_MODE_REVERSE, // Reverse counting direction if low
+        .hctrl_mode = PCNT_MODE_KEEP,    // Keep the primary counter mode if high
+        .pos_mode = PCNT_COUNT_INC,   // Count up on the positive edge
+        .neg_mode = PCNT_COUNT_DIS,   // Keep the counter value on the negative edge
+        // What to do on the positive / negative edge of pulse input?
+        // What to do when control input is low or high?
+        // Set the maximum and minimum limit values to watch
+        .counter_h_lim = PCNT_H_LIM_VAL,
+        .counter_l_lim = PCNT_L_LIM_VAL,
+        .unit = unit_motB,
+        .channel = PCNT_CHANNEL_1,
+    };
+    pcnt_unit_config(&pcnt_config_motB);
+    
+    /* Configure and enable the input filter */
+    pcnt_set_filter_value(unit_motB, 100);
+    pcnt_filter_enable(unit_motB);
 
+    /* Set threshold 0 and 1 values and enable events to watch */
+    // pcnt_set_event_value(unit_motB, PCNT_EVT_THRES_1, PCNT_THRESH1_VAL);
+    // pcnt_event_enable(unit_motB, PCNT_EVT_THRES_1);
+
+    pcnt_event_enable(unit_motB, PCNT_EVT_H_LIM);
+    /* Initialize PCNT's counter */
+    pcnt_counter_pause(unit_motB);
+    pcnt_counter_clear(unit_motB);
+
+    pcnt_isr_service_install(0);
+    pcnt_isr_handler_add(unit_motA, pcnt_example_intr_handler_motA, (void *)unit_motA);
+    pcnt_isr_handler_add(unit_motB, pcnt_example_intr_handler_motB, (void *)unit_motB);
+    
     /* Everything is set up, now go to counting */
-    pcnt_counter_resume(unit);
+    pcnt_counter_resume(unit_motA);
+    pcnt_counter_resume(unit_motB);
 }
 
 Encoder_channel encoderStates[2] = {{.A_channel = 0, .B_channel = 0}, 
@@ -236,7 +282,7 @@ extern "C" void task_meas(void *arg)
 	uint64_t cycle_time = esp_timer_get_time();
 	uint64_t act_time, send_time = 0;
 
-	vector_t va, vg, vm;
+	vector_t va, vg;
 	float roll, pitch, heading;
 	
 
@@ -249,20 +295,20 @@ extern "C" void task_meas(void *arg)
      * Encoder
     */
 	
-	gpio_set_direction(ENCODER_1_A, GPIO_MODE_INPUT);
-	gpio_set_direction(ENCODER_2_A, GPIO_MODE_INPUT);
-	gpio_set_direction(ENCODER_1_B, GPIO_MODE_INPUT);
-	gpio_set_direction(ENCODER_2_B, GPIO_MODE_INPUT);
+	// gpio_set_direction(ENCODER_1_A, GPIO_MODE_INPUT);
+	// gpio_set_direction(ENCODER_2_A, GPIO_MODE_INPUT);
+	// gpio_set_direction(ENCODER_1_B, GPIO_MODE_INPUT);
+	// gpio_set_direction(ENCODER_2_B, GPIO_MODE_INPUT);
 
-	gpio_set_intr_type(ENCODER_1_A, GPIO_INTR_NEGEDGE /*GPIO_INTR_POSEDGE*/);
-	gpio_set_intr_type(ENCODER_2_A, GPIO_INTR_NEGEDGE /*GPIO_INTR_POSEDGE*/);
+	// gpio_set_intr_type(ENCODER_1_A, GPIO_INTR_NEGEDGE /*GPIO_INTR_POSEDGE*/);
+	// gpio_set_intr_type(ENCODER_2_A, GPIO_INTR_NEGEDGE /*GPIO_INTR_POSEDGE*/);
 	// gpio_set_intr_type(ENCODER_1_B, GPIO_INTR_NEGEDGE);
 	// gpio_set_intr_type(ENCODER_2_B, GPIO_INTR_NEGEDGE);
 	
-	gpio_install_isr_service(0);
+	// gpio_install_isr_service(0);
 	
-	gpio_isr_handler_add(ENCODER_1_A, dir_isr_handler, (void *)ENCODER_1_A);
-	gpio_isr_handler_add(ENCODER_2_A, dir_isr_handler, (void *)ENCODER_2_A);
+	// gpio_isr_handler_add(ENCODER_1_A, dir_isr_handler, (void *)ENCODER_1_A);
+	// gpio_isr_handler_add(ENCODER_2_A, dir_isr_handler, (void *)ENCODER_2_A);
 	// gpio_isr_handler_add(ENCODER_1_B, dir2_isr_handler, (void *)ENCODER_1_B);
 	// gpio_isr_handler_add(ENCODER_2_B, dir2_isr_handler, (void *)ENCODER_2_B);
 
@@ -345,11 +391,15 @@ extern "C" void task_meas(void *arg)
      * @brief PCNT
      * 
      */
-    pcnt_unit_t pcnt_unit = PCNT_UNIT_0;
-    pcnt_evt_queue = xQueueCreate(10, sizeof(pcnt_evt_t));
-    pcnt_example_init(pcnt_unit);
+    pcnt_unit_t pcnt_unit_motA = PCNT_UNIT_0;
+    pcnt_unit_t pcnt_unit_motB = PCNT_UNIT_1;
 
-    int16_t count = 0;
+    pcnt_evt_queue_motA = xQueueCreate(10, sizeof(pcnt_evt_t));
+    pcnt_evt_queue_motB = xQueueCreate(10, sizeof(pcnt_evt_t));
+
+    pcnt_example_init(pcnt_unit_motA, pcnt_unit_motB);
+
+    int16_t count = 0, count1 = 0, count2 = 0;
     pcnt_evt_t evt;
     portBASE_TYPE res;
 
@@ -359,7 +409,6 @@ extern "C" void task_meas(void *arg)
      */
 	double prev_inter1 = 0, prev_inter2 = 0;
     int64_t curr_time = 0, printTime = 0;
-
 	double motor_speed_left = 0, motor_speed_right = 0;
 	memset(message_buff,'\0', MESSAGE_BUFF_LEN);
 
@@ -368,7 +417,11 @@ extern "C" void task_meas(void *arg)
 	for (;;) {
 		// Get the Accelerometer, Gyroscope and Magnetometer values.
 		meas.log.voltage = esp_adc_cal_raw_to_voltage(adc1_get_raw(ADC1_CHANNEL_3), adc_chars) * 2.0;
-
+        while(meas.log.voltage < 3400.0){
+            meas.log.voltage = esp_adc_cal_raw_to_voltage(adc1_get_raw(ADC1_CHANNEL_3), adc_chars) * 2.0;
+            set_speed_dir(0, 0); // 20 min____150 max
+            printf("Voltage: %1.2f\n", meas.log.voltage);
+        }
 		act_time = esp_timer_get_time();
 		if ((act_time - end_time) > 5000) { //200Hz
 			// ahrs_init(1'000'000/(act_time - end_time), 0.8); 
@@ -383,36 +436,7 @@ extern "C" void task_meas(void *arg)
 
 		act_time = esp_timer_get_time();
 		if ((act_time - send_time) > 1'000) { //1kHz
-            //printf("Motor A dir: %s, Motor B dir: %s\n", meas.enc.dir_A ? "Front" : "Reverse", meas.enc.dir_B ? "Front" : "Reverse");
-			double inter1 = (int64_t)round(interrupts[0]/250.0);
-			double inter2 = (int64_t)round(interrupts[1]/250.0);
-
-			if (inter1 != 0 || abs(inter1 - prev_inter1) < 10) {
-				meas.enc.encoder1 = (int64_t)round(interrupts[0]/250.0);
-				
-			}
-
-			if(inter2 != 0 || abs(inter1 - prev_inter1) < 10){
-				meas.enc.encoder2 = (int64_t)round(interrupts[1]/250.0);
-			}
-
-			prev_inter1 = inter1;
-			prev_inter2 = inter2;
-			
-			// printf("Inter0: %lld, \tInter0: %lld\n",meas.enc.encoder1, meas.enc.encoder2);
-			// meas.enc.encoder2 = (uint64_t)round(interrupts[1]/500.0); //(int64_t)interrupts[1];
-			encoderStates[0].A_channel = false;
-			encoderStates[1].A_channel = false;
-			// printf("ENC1_m = %.2lf, ENC2_m = %.2lf\n states %d %d %lld %lld\n", interrupts[0], interrupts[1], encoderStates[0].A_channel, encoderStates[1].A_channel, prev_time_1_A, prev_time_2_A);
-
-			int64_t time = esp_timer_get_time();
-			meas.enc.time_diff = time - last_time;
-			last_time = time;
-			//printf("dt = %llu\n", meas.enc.time_diff);
-
-			for (size_t i = 0; i < 2; i++)
-				interrupts[i] = 0;
-
+        
 			meas.tof.tof1 = vl53l1_read(tof_sensors[0]) / 1000.0;
 			meas.tof.tof2 = vl53l1_read(tof_sensors[1]) / 1000.0;
 			meas.tof.tof3 = vl53l1_read(tof_sensors[2]) / 1000.0;
@@ -427,7 +451,14 @@ extern "C" void task_meas(void *arg)
              * @brief TASK CONTROL old code
              * 
              */
-            set_speed_dir(100,-100); // 20 min____150 max
+            set_speed_dir(100, 100); // 20 min____150 max
+            meas.enc.encoder1 = left_motor_rot *4096/256;
+            meas.enc.encoder2 = right_motor_rot*4096/256;
+			// int64_t time = esp_timer_get_time();
+			meas.enc.time_diff = esp_timer_get_time() - last_time;
+			last_time = esp_timer_get_time();
+            left_motor_rot = 0;
+            right_motor_rot = 0;
             calculate_odometry(&meas.enc,&position);
             if((double)(curr_time - printTime)/1000.0 > 100.0){
 				//printf("Pos X: %1.2lf,  Enc1Ticks: %lld, Enc2Ticks: %lld\n", position.x/10.0, meas.enc.encoder1, meas.enc.encoder2);
@@ -438,29 +469,32 @@ extern "C" void task_meas(void *arg)
 
 			send_time = esp_timer_get_time();
 		}
-        res = xQueueReceive(pcnt_evt_queue, &evt, 1000 / portTICK_PERIOD_MS);
-        if (res == pdTRUE) {
-            pcnt_get_counter_value(pcnt_unit, &count);
-            ESP_LOGI(TAG, "Event PCNT unit[%d]; cnt: %d", evt.unit, count);
-            if (evt.status & PCNT_EVT_THRES_1) {
-                ESP_LOGI(TAG, "THRES1 EVT");
-            }
-            if (evt.status & PCNT_EVT_THRES_0) {
-                ESP_LOGI(TAG, "THRES0 EVT");
-            }
-            if (evt.status & PCNT_EVT_L_LIM) {
-                ESP_LOGI(TAG, "L_LIM EVT");
-            }
-            if (evt.status & PCNT_EVT_H_LIM) {
-                ESP_LOGI(TAG, "H_LIM EVT");
-            }
-            if (evt.status & PCNT_EVT_ZERO) {
-                ESP_LOGI(TAG, "ZERO EVT");
-            }
-        } else {
-            pcnt_get_counter_value(pcnt_unit, &count);
-            ESP_LOGI(TAG, "Current counter value :%d", count);
-        }
+        // printf("Motor A turns %lld, Motor B turns %lld\n", left_motor_rot, right_motor_rot);
+        // pcnt_get_counter_value(pcnt_unit_motA, &count1);
+        // pcnt_get_counter_value(pcnt_unit_motB, &count2);
+        // printf("Count A: %d, Count B: %d\n",count1,count2);
+        // res = xQueueReceive(pcnt_evt_queue_motA, &evt, 1000 / portTICK_PERIOD_MS);
+        // if (res == pdTRUE) {
+        //     pcnt_get_counter_value(pcnt_unit_motA, &count);
+        //     ESP_LOGI(TAG, "Event PCNT unit[%d]; cnt: %d", evt.unit, count);
+        //     if (evt.status & PCNT_EVT_H_LIM) {
+        //         ESP_LOGI(TAG, "H_LIM EVT A");
+        //         left_motor_rot++;
+        //     }if (evt.status & PCNT_EVT_THRES_1) {
+        //         ESP_LOGI(TAG, "THRES0 EVT");
+        //     }
+        // }
+        // res = xQueueReceive(pcnt_evt_queue_motB, &evt, 1000 / portTICK_PERIOD_MS);
+        // if (res == pdTRUE) {
+        //     pcnt_get_counter_value(pcnt_unit_motB, &count);
+        //     ESP_LOGI(TAG, "Event PCNT unit[%d]; cnt: %d", evt.unit, count);
+        //     if (evt.status & PCNT_EVT_H_LIM) {
+        //         ESP_LOGI(TAG, "H_LIM EVT B");
+        //         right_motor_rot++;
+        //     }if (evt.status & PCNT_EVT_THRES_1) {
+        //         ESP_LOGI(TAG, "THRES0 EVT");
+        //     }
+        // }
 		act_time = esp_timer_get_time();
 		if (cycle_time > act_time) // ak pretecie act_time, vyresetuj cycle_time
 			cycle_time = act_time;

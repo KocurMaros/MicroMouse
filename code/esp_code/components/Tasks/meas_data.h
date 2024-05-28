@@ -20,11 +20,9 @@ typedef struct orientation
 /// @brief Encoder data, where encoder 1/2 are ticks and time_diff is the time difference in us
 typedef struct encoders
 {
-	int64_t encoder1;
-	int64_t encoder2;
-    bool dir_A;
-    bool dir_B;
-	uint64_t time_diff;
+	int32_t encoder1;
+	int32_t encoder2;
+    int64_t time_diff;
 } encoders;
 typedef struct logging
 {
