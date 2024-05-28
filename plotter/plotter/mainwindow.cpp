@@ -7,6 +7,8 @@
 #include <QRandomGenerator>
 #include <QVBoxLayout>
 #include <QWidget>
+#include <iostream>
+#include <stdio.h>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent),
@@ -21,6 +23,12 @@ MainWindow::MainWindow(QWidget *parent)
     x(0)
 {
     setWindowTitle("Real-Time Plot");
+    //initalize arrays to 0
+    timestampArray.reserve(100);
+    motorArrayA.reserve(100);
+    motorArrayB.reserve(100);
+    gyroZArray.reserve(100);
+
 
     // Set up UDP server
     localIP = "192.168.137.1";
@@ -140,47 +148,38 @@ void MainWindow::readPendingDatagrams() {
             double gyroZ = values[5].toDouble();
             double motorA = values[6].toDouble();
             double motorB = values[7].toDouble();
-
+            {
+            std::scoped_lock lock(mut);
             timestampArray.append(timestamp);
             motorArrayA.append(motorA);
             motorArrayB.append(motorB);
             tofArray.append(QVector<double>({tofY_1, tofY_2, tofY_3, tofY_4}));
             gyroZArray.append(gyroZ);
+            }
         }
-        //print current values
-        qDebug() << "timestamp: " << timestampArray.last();
-        qDebug() << "motorA: " << motorArrayA.last();
-        qDebug() << "motorB: " << motorArrayB.last();
-        qDebug() << "tofY_1: " << tofArray.last()[0];
-        qDebug() << "tofY_2: " << tofArray.last()[1];
-        qDebug() << "tofY_3: " << tofArray.last()[2];
-        qDebug() << "tofY_4: " << tofArray.last()[3];
-        qDebug() << "gyroZ: " << gyroZArray.last();
     }
 
 void MainWindow::updateChart()
-{
-    qreal y1 = QRandomGenerator::global()->bounded(-50, 50);
-    qreal y2 = QRandomGenerator::global()->bounded(-50, 50);
-    motorSeriesA->append(x, y1);
-    motorSeriesB->append(x, y2);
-    x++;
+{   
+    {
+        std::scoped_lock lock(mut);
+        motorSeriesA->append(timestampArray.back(), motorArrayA.back());
+        motorSeriesB->append(timestampArray.back(), motorArrayB.back());
+        motorChart->axes(Qt::Horizontal).first()->setRange(qMax<qreal>(0, timestampArray.back() - 100), timestampArray.back());
 
+        // Update bar motorChart
+        for (int i = 0; i < tofChart->count(); ++i) {
+            if(!tofArray.isEmpty())
+            tofChart->replace(i, tofArray[i].back());
+        }
+
+        // Update compass motorChart
+        gyroSeries->clear();
+        gyroSeries->append(gyroZArray.back(), 100);  // Point on the perimeter of the compass
+        gyroSeries->append(gyroZArray.back(), 0);    // Center of the compass
+    }
     if (motorSeriesA->count() > 100) {
         motorSeriesA->remove(0);
         motorSeriesB->remove(0);
     }
-
-    motorChart->axes(Qt::Horizontal).first()->setRange(qMax(0, x - 100), x);
-
-    // Update bar motorChart
-    for (int i = 0; i < tofChart->count(); ++i) {
-        tofChart->replace(i, QRandomGenerator::global()->bounded(0, 100));
-    }
-
-    // Update compass motorChart
-    gyroSeries->clear();
-    qreal angle = QRandomGenerator::global()->bounded(0, 360);
-    gyroSeries->append(angle, 100);  // Point on the perimeter of the compass
-    gyroSeries->append(angle, 0);    // Center of the compass
 }
