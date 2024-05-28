@@ -7,6 +7,7 @@
 #include <QtCharts/QBarSeries>
 #include <QtCharts/QBarSet>
 #include <QtCharts/QPolarChart>
+#include <QUdpSocket>
 #include <QTimer>
 
 QT_CHARTS_USE_NAMESPACE
@@ -21,16 +22,31 @@ public:
 
 private slots:
     void updateChart();
+    void readPendingDatagrams();
 
 private:
-    QChart *chart;
-    QLineSeries *series1;
-    QLineSeries *series2;
+    QChart *motorChart;
     QBarSeries *barSeries;
-    QBarSet *barSet;
-    QPolarChart *compassChart;
-    QLineSeries *compassSeries;
+    QBarSet *tofChart;
+    QPolarChart *gyroChart;
     QTimer *timer;
+    QWidget *centralWidget;
+    QChartView *plotMotor;
+    QChartView *plotTof;
+    QChartView *plotGyro;
+    QLineSeries *motorSeriesA;
+    QLineSeries *motorSeriesB;
+    QBarSeries *tofSeries;
+    QLineSeries *gyroSeries;
+    QUdpSocket *udpSocket;
+    QString localIP;
+    quint16 localPort;
+    QVector<double> timestampArray;
+    QVector<double> motorArrayA;
+    QVector<double> motorArrayB;
+    QVector<QVector<double>> tofArray;
+    QVector<double> gyroZArray;
+    int bufferSize;
     int x;
 };
 
