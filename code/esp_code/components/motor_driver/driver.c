@@ -238,6 +238,8 @@ void motor_update_current_speed(const encoders *enc, double *left, double *right
 	left_speed = left_speed < 0 ? -left_speed : left_speed;
 	right_speed = right_speed < 0 ? -right_speed : right_speed;
 	printf("LEFT_SPD = %1.2lf, RIGHT_SPD = %1.2lf , dt = %lf\n", left_speed, right_speed, dt);
+	//printf("LEFT_SPD = %1.2lf, RIGHT_SPD = %1.2lf , dt = %lf\n", left_speed, right_speed, dt);
+    printf("encoder1: %d, encoder2: %d\n", enc->encoder1, enc->encoder2);
 	
 	pid_left->feedback = left_speed;
 	left_feed = left_speed;
