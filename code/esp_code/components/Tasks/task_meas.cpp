@@ -326,14 +326,14 @@ extern "C" void task_meas(void *arg)
 			double inter1 = (int64_t)round(interrupts[0]/250.0);
 			double inter2 = (int64_t)round(interrupts[1]/250.0);
 
-			if (inter1 != 0 || abs(inter1 - prev_inter1) < 10) {
+			//if (inter1 != 0 || abs(inter1 - prev_inter1) < 10) {
 				meas.enc.encoder1 = (int64_t)round(interrupts[0]/250.0);
 				
-			}
+			//}
 
-			if(inter2 != 0 || abs(inter1 - prev_inter1) < 10){
+			//if(inter2 != 0 || abs(inter1 - prev_inter1) < 10){
 				meas.enc.encoder2 = (int64_t)round(interrupts[1]/250.0);
-			}
+			//}
 
 			prev_inter1 = inter1;
 			prev_inter2 = inter2;
@@ -362,14 +362,20 @@ extern "C" void task_meas(void *arg)
 			meas.orient.pitch = pitch;
 			meas.orient.heading = heading;
 
+			
+
             /**
              * @brief TASK CONTROL old code
              * 
              */
-            set_speed_dir(100,-100); // 20 min____150 max
+            set_speed_dir(50,50); // 20 min____150 max
             calculate_odometry(&meas.enc,&position);
+			sprintf(message_buff, "%lld, %1.3f, %1.3f, %1.3f, %1.3f, %1.2f, %1.2lf, %1.2lf", 
+								   esp_timer_get_time(), meas.tof.tof1, meas.tof.tof2, meas.tof.tof3, meas.tof.tof4, heading, get_pid_left(), get_pid_right());
+			send_message(message_buff);
+			memset(message_buff, '\0', MESSAGE_BUFF_LEN);
             if((double)(curr_time - printTime)/1000.0 > 100.0){
-				//printf("Pos X: %1.2lf,  Enc1Ticks: %lld, Enc2Ticks: %lld\n", position.x/10.0, meas.enc.encoder1, meas.enc.encoder2);
+				//printf("Pos X: %1.2lf, Pos Y: %1.2lf\n", position.x/10.0, position.y/10.0);
 				//printf("Motor A dir %s, Motor B dir %s\n",meas.enc.dir_A ? "Forward" : "Revers", meas.enc.dir_B ? "Forward" : "Revers");
 				//printf("H: %1.2f, P: %1.2f, R: %1.2f\n",meas.orient.heading, meas.orient.pitch, meas.orient.roll);
 				printTime = curr_time;

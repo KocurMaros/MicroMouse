@@ -1,0 +1,9 @@
+# ninja log v5
+13	695	7386249471839802	plotter_autogen/timestamp	6e4e8a53bedff1bc
+13	695	7386249471839802	plotter_autogen/mocs_compilation.cpp	6e4e8a53bedff1bc
+13	695	7386249471839802	C:/Users/timip/Desktop/schuul/1.Ing/MicroMouse/plotter/build-plotter-Desktop_Qt_5_15_2_MSVC2019_64bit-Release/plotter_autogen/timestamp	6e4e8a53bedff1bc
+13	695	7386249471839802	C:/Users/timip/Desktop/schuul/1.Ing/MicroMouse/plotter/build-plotter-Desktop_Qt_5_15_2_MSVC2019_64bit-Release/plotter_autogen/mocs_compilation.cpp	6e4e8a53bedff1bc
+709	2850	7386249494529805	CMakeFiles/plotter.dir/main.cpp.obj	7d84fd6d26890a6e
+696	2854	7386249494539790	CMakeFiles/plotter.dir/plotter_autogen/mocs_compilation.cpp.obj	ea96b03b7296b86
+720	3382	7386249499830172	CMakeFiles/plotter.dir/mainwindow.cpp.obj	2acc3cdce5e2c750
+3382	3571	7386249501619826	plotter.exe	a3e7b54f71cde6c2

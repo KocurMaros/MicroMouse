@@ -36,6 +36,10 @@
 
 PID *pid_left;
 PID *pid_right;
+
+double left_feed;
+double right_feed;
+
 Direction dir;
 
 void cap_pwm(int *currentPwm)
@@ -86,8 +90,8 @@ void init_motor_driver()
 	pwm_init(MOTOR_A_PWM, MOTOR_A_PWM_CHANNEL);
 	pwm_init(MOTOR_B_PWM, MOTOR_B_PWM_CHANNEL);
 
-	pid_left = init_pid(12.5, 0.15, 0, 1023);
-	pid_right = init_pid(12.5, 0.15, 0, 1023); //cc timo chod dopice pls dik
+	pid_left = init_pid(15, 0.25, 0, 1023);
+	pid_right = init_pid(15, 0.25, 0, 1023); //cc timo chod dopice pls dik
 }
 
 void move_forward()
@@ -233,10 +237,12 @@ void motor_update_current_speed(const encoders *enc, double *left, double *right
 
 	left_speed = left_speed < 0 ? -left_speed : left_speed;
 	right_speed = right_speed < 0 ? -right_speed : right_speed;
-	//printf("LEFT_SPD = %1.2lf, RIGHT_SPD = %1.2lf , dt = %lf\n", left_speed, right_speed, dt);
+	printf("LEFT_SPD = %1.2lf, RIGHT_SPD = %1.2lf , dt = %lf\n", left_speed, right_speed, dt);
 	
 	pid_left->feedback = left_speed;
+	left_feed = left_speed;
 	pid_right->feedback = right_speed;
+	right_feed = right_speed;
 
 	if(left != NULL)
 		*left = left_speed;
@@ -304,3 +310,10 @@ void calculate_odometry(encoders *enc, Position *pos)
 	pos->y = pos->y + distance * sin(pos->theta);
 }
 
+double get_pid_left(){
+	return left_feed;
+}
+
+double get_pid_right(){
+	return right_feed;
+}

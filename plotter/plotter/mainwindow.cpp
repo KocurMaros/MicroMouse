@@ -160,26 +160,26 @@ void MainWindow::readPendingDatagrams() {
     }
 
 void MainWindow::updateChart()
-{   
-    {
+{
+    if(!tofArray.isEmpty()) {
         std::scoped_lock lock(mut);
         motorSeriesA->append(timestampArray.back(), motorArrayA.back());
         motorSeriesB->append(timestampArray.back(), motorArrayB.back());
         motorChart->axes(Qt::Horizontal).first()->setRange(qMax<qreal>(0, timestampArray.back() - 100), timestampArray.back());
 
         // Update bar motorChart
-        for (int i = 0; i < tofChart->count(); ++i) {
-            if(!tofArray.isEmpty())
-            tofChart->replace(i, tofArray[i].back());
-        }
+            for (int i = 0; i < tofChart->count(); ++i) {
+                tofChart->replace(i, tofArray.back()[i]);
+            }
 
         // Update compass motorChart
         gyroSeries->clear();
         gyroSeries->append(gyroZArray.back(), 100);  // Point on the perimeter of the compass
         gyroSeries->append(gyroZArray.back(), 0);    // Center of the compass
-    }
-    if (motorSeriesA->count() > 100) {
-        motorSeriesA->remove(0);
-        motorSeriesB->remove(0);
+
+        if (motorSeriesA->count() > 100) {
+            motorSeriesA->remove(0);
+            motorSeriesB->remove(0);
+        }
     }
 }

@@ -132,4 +132,12 @@ void motor_update_current_speed(const encoders *enc, double *left, double *right
  */
 void calculate_odometry(encoders *enc, Position *pos);
 
+/// @brief Returns an instance of the left wheel PID controller
+/// @return The left wheel PID instance
+double get_pid_left();
+
+/// @brief Returns an instance of the right wheel PID controller
+/// @return The tight wheel PID instance 
+double get_pid_right();
+
 #endif // DRIVER_H
