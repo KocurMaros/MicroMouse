@@ -1,0 +1,9 @@
+no
+
+grafz
+
+1 oba motory rychlosti
+
+2 tof stlpcovy graf
+
+3 gyro - kompas??? proste 360 graph
