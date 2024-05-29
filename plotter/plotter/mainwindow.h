@@ -28,9 +28,6 @@ public:
 	~MainWindow();
 
 private slots:
-	void bufferSizeChanged();
-
-private slots:
 	void updateChart();
 	void readPendingDatagrams();
 
@@ -71,6 +68,7 @@ private:
 	int bufferSize;
 	int x;
 	std::atomic<int> motorBufferSize;
+	std::atomic<int> motorBufferSizeLast;
 };
 
 #endif // MAINWINDOW_H

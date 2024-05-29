@@ -226,6 +226,7 @@ void MainWindow::readPendingDatagrams()
 		double tofY_3 = values[3].toDouble();
 		double tofY_4 = values[4].toDouble();
 		double gyroZ = values[5].toDouble();
+		motorBufferSizeLast.store(motorBufferSize.load());
 		motorBufferSize++;
 
 		{
@@ -248,6 +249,10 @@ void MainWindow::readPendingDatagrams()
 void MainWindow::updateChart()
 {
 	if (tofArray.isEmpty()) {
+		return;
+	}
+
+	if (motorBufferSize == motorBufferSizeLast) {
 		return;
 	}
 
