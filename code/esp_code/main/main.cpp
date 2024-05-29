@@ -50,6 +50,7 @@ void app_main()
 
     FIFO_Meas_to_Cont = xQueueCreate(2, sizeof(MeasData));
     init_udp();
+    send_message("micromouse");
 
     xTaskCreatePinnedToCore(task_meas,   /* Function to implement the task */
                             "meas data from sensosors", /* Name of the task */
@@ -57,7 +58,7 @@ void app_main()
                             NULL,       /* Task input parameter */
                             100,          /* Priority of the task */
                             &xTaskMeasHandle,       /* Task handle. */
-                            0);  /* Core where the task should run */
+                            1);  /* Core where the task should run */
   
-    xTaskCreatePinnedToCore(task_udp, "Control motors and algorithm", 4096, NULL, 100, &xTaskControlHandle, 1);
+    xTaskCreatePinnedToCore(task_udp, "Control motors and algorithm", 4096, NULL, 100, &xTaskControlHandle, 0);
 }
