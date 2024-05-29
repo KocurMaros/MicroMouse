@@ -10,7 +10,7 @@
 #include <qglobal.h>
 #include <stdio.h>
 
-#define MOTOR_AXIS_LIMIT 6'000
+#define MOTOR_AXIS_LIMIT 3'000
 #define BATTERY_VOLTAGE_MAX 4200
 #define BATTERY_VOLTAGE_MIN 3300
 
@@ -257,7 +257,8 @@ void MainWindow::updateChart()
 	gyroSeries->append(gyroZArray.back(), 100); // Point on the perimeter of the compass
 	gyroSeries->append(gyroZArray.back(), 0);	// Center of the compass
 
-	if (motorSeriesA->count() > MOTOR_AXIS_LIMIT) {
+	qDebug() << "Series size: " << motorSeriesA->count();
+	if (motorSeriesA->count() > MOTOR_AXIS_LIMIT/100.) {
 		motorSeriesA->remove(0);
 		motorSeriesB->remove(0);
 	}
