@@ -2,7 +2,6 @@
 #include <QtCharts/QValueAxis>
 #include <QtCharts/QBarSet>
 #include <QtCharts/QBarSeries>
-#include <QtCharts/QBarCategoryAxis>
 #include <QtCharts/QCategoryAxis>
 #include <QRandomGenerator>
 #include <QVBoxLayout>
@@ -83,18 +82,19 @@ MainWindow::MainWindow(QWidget *parent)
 	// Setup bar chart
 	tofChart->append({ 0, 0, 0, 0 }); // Initialize with 4 values
 	tofSeries->append(tofChart);
+	tofSeries->setLabelsAngle(20);
+
 
 	QChart *tofChart = new QChart();
 	tofChart->addSeries(tofSeries);
 	tofChart->legend()->hide();
 	tofChart->setTitle("TOF 1, 2, 3, 4");
 
-	QStringList categories;
 	categories << "1"
 			   << "2"
 			   << "3"
 			   << "4";
-	QBarCategoryAxis *axisXBar = new QBarCategoryAxis();
+	axisXBar = new QBarCategoryAxis();
 	axisXBar->append(categories);
 	tofChart->addAxis(axisXBar, Qt::AlignBottom);
 	tofSeries->attachAxis(axisXBar);
@@ -141,7 +141,7 @@ MainWindow::MainWindow(QWidget *parent)
 	gyroFrequencyLineEdit->setText(GYRO_TEXT(0));
 	gyroFrequencyLineEdit->setReadOnly(true);
 
-	clearMotorChartButton = new QPushButton("Clear Motor Chart", this);
+	clearMotorChartButton = new QPushButton("Clear Motor Chart");
 	connect(clearMotorChartButton, &QPushButton::clicked, [this]() {
 		motorSeriesA->clear();
 		motorSeriesB->clear();
@@ -173,6 +173,7 @@ MainWindow::~MainWindow()
 	tofChart->deleteLater();
 	gyroChart->deleteLater();
 	gyroSeries->deleteLater();
+	clearMotorChartButton->deleteLater();
 }
 
 void MainWindow::readPendingDatagrams()
@@ -205,8 +206,8 @@ void MainWindow::readPendingDatagrams()
 			gyroZArray.append(gyroZ);
 			batteryVoltage = values[8].toDouble();
 			batteryLineEdit->setText(BATTERY_TEXT(batteryVoltage));
-			gyroFrequencyLineEdit->setText(BATTERY_TEXT(batteryVoltage));
 			gyroFrequency = values[9].toDouble();
+			gyroFrequencyLineEdit->setText(GYRO_TEXT(gyroFrequency));
 		}
 	}
 }
@@ -226,9 +227,12 @@ void MainWindow::updateChart()
 	motorChart->axes(Qt::Horizontal).first()->setRange(qMax<qreal>(0, timestamp - 0.1), timestamp);
 
 	// Update bar motorChart
+	categories.clear();
 	for (int i = 0; i < tofChart->count(); ++i) {
 		tofChart->replace(i, tofArray.back()[i]);
+		categories << QString::number(tofArray.back()[i]);
 	}
+	axisXBar->setCategories(categories);
 
 	// Update compass motorChart
 	gyroSeries->clear();

@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QtCharts/QChartView>
+#include <QtCharts/QBarCategoryAxis>
 #include <QtCharts/QLineSeries>
 #include <QtCharts/QBarSeries>
 #include <QtCharts/QBarSet>
@@ -33,6 +34,8 @@ private:
 	QChart *motorChart;
 	QBarSeries *barSeries;
 	QBarSet *tofChart;
+	QStringList categories;
+	QBarCategoryAxis *axisXBar;
 	QPolarChart *gyroChart;
 	QTimer *timer;
 	QWidget *centralWidget;
