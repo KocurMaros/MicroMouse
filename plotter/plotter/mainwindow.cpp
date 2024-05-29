@@ -63,24 +63,43 @@ MainWindow::MainWindow(QWidget *parent)
 	udpSocket->bind(QHostAddress(localIP), localPort);
 	connect(udpSocket, &QUdpSocket::readyRead, this, &MainWindow::readPendingDatagrams);
 
-	// Setup line motorChart
-	motorChart->legend()->hide();
-	motorChart->addSeries(motorSeriesA);
-	motorChart->addSeries(motorSeriesB);
-	motorChart->createDefaultAxes();
+	{
+		// Setup line motorChart
+		motorChart->legend()->hide();
+		motorChart->addSeries(motorSeriesA);
+		motorChart->addSeries(motorSeriesB);
+		motorChart->createDefaultAxes();
 
-	auto *axisX = new QValueAxis;
-	axisX->setRange(0, MOTOR_AXIS_LIMIT);
-	axisX->setLabelFormat("%i");
-	motorChart->setAxisX(axisX, motorSeriesA);
-	motorChart->setAxisX(axisX, motorSeriesB);
+		auto *axisX = new QValueAxis;
+		axisX->setRange(0, MOTOR_AXIS_LIMIT);
+		axisX->setLabelFormat("%i");
+		motorChart->setAxisX(axisX, motorSeriesA);
+		motorChart->setAxisX(axisX, motorSeriesB);
 
-	auto *axisY = new QValueAxis;
-	axisY->setRange(-200, 200);
-	axisY->setLabelFormat("%i");
-	motorChart->setAxisY(axisY, motorSeriesA);
-	motorChart->setAxisY(axisY, motorSeriesB);
-	motorChart->setTitle("Motor 1 and 2");
+		auto *axisY = new QValueAxis;
+		axisY->setRange(-200, 200);
+		axisY->setLabelFormat("%i");
+		motorChart->setAxisY(axisY, motorSeriesA);
+		motorChart->setAxisY(axisY, motorSeriesB);
+		motorChart->setTitle("Motor 1 and 2");
+	}
+
+	{
+		controlSignalChart->legend()->hide();
+		controlSignalChart->addSeries(controlSeries);
+		controlSignalChart->createDefaultAxes();
+
+		auto *axisX = new QValueAxis;
+		axisX->setRange(0, MOTOR_AXIS_LIMIT);
+		axisX->setLabelFormat("%i");
+		controlSignalChart->setAxisX(axisX, controlSeries);
+
+		auto *axisY = new QValueAxis;
+		axisY->setRange(-200, 200);
+		axisY->setLabelFormat("%i");
+		controlSignalChart->setAxisY(axisY, controlSeries);
+		controlSignalChart->setTitle("Control signal");
+	}
 
 	batteryLineEdit = new QLineEdit(this);
 	batteryLineEdit->setText(BATTERY_TEXT(0));
@@ -142,6 +161,9 @@ MainWindow::MainWindow(QWidget *parent)
 	plotMotor = new QChartView(motorChart);
 	plotMotor->setRenderHint(QPainter::Antialiasing);
 
+	plotControl = new QChartView(controlSignalChart);
+	plotControl->setRenderHint(QPainter::Antialiasing);
+
 	plotTof = new QChartView(tofChart);
 	plotTof->setRenderHint(QPainter::Antialiasing);
 
@@ -176,6 +198,7 @@ MainWindow::MainWindow(QWidget *parent)
 	centralWidget = new QWidget(this);
 	QVBoxLayout *layout = new QVBoxLayout(centralWidget);
 	layout->addWidget(plotMotor);
+	layout->addWidget(plotControl);
 	layout->addWidget(plotTof);
 	layout->addWidget(plotGyro);
 	layout->addWidget(batteryLineEdit);
@@ -239,10 +262,10 @@ void MainWindow::readPendingDatagrams()
 
 		if (datagram == CONNECT_MESSAGE) {
 			setWindowTitle("Connected");
-            motorSeriesA->clear();
-            motorSeriesB->clear();
-            motorBufferSize = 0;
-            motorBufferSizeLast = 0;
+			motorSeriesA->clear();
+			motorSeriesB->clear();
+			motorBufferSize = 0;
+			motorBufferSizeLast = 0;
 			continue;
 		}
 
