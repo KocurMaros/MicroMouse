@@ -37,9 +37,14 @@ extern "C" void task_udp(void *arg)
         xTaskNotifyWait(0x00, ULONG_MAX, &ulNotifiedValue, portMAX_DELAY);
 		if (ulNotifiedValue == COMM_OK) {
 			(void)xQueueReceive(FIFO_Meas_to_Cont, &val, (100/portTICK_PERIOD_MS)); // wait longer than 10 ms 
+            if(position.x < 1000.)
+            {
+                set_speed_dir(100, 100); // 20 min____150 max
+                calculate_odometry(&val.enc, &position, &val.orient);
+            }
+            else
+                set_speed_dir(0,0);  
             
-            set_speed_dir(100, 100); // 20 min____150 max
-            calculate_odometry(&val.enc, &position, &val.orient);
         }
         core_time = esp_timer_get_time();
         if(core_time - send_time > 100'000){
