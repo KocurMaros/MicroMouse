@@ -415,13 +415,14 @@ extern "C" void task_meas(void *arg)
     init_motor_driver();
 
 	for (;;) {
+		curr_time = esp_timer_get_time();
 		// Get the Accelerometer, Gyroscope and Magnetometer values.
 		meas.log.voltage = esp_adc_cal_raw_to_voltage(adc1_get_raw(ADC1_CHANNEL_3), adc_chars) * 2.0;
-        while(meas.log.voltage < 3400.0){
-            meas.log.voltage = esp_adc_cal_raw_to_voltage(adc1_get_raw(ADC1_CHANNEL_3), adc_chars) * 2.0;
-            set_speed_dir(0, 0); // 20 min____150 max
-            printf("Voltage: %1.2f\n", meas.log.voltage);
-        }
+        // while(meas.log.voltage < 3400.0){
+        //     meas.log.voltage = esp_adc_cal_raw_to_voltage(adc1_get_raw(ADC1_CHANNEL_3), adc_chars) * 2.0;
+        //     set_speed_dir(0, 0); // 20 min____150 max
+        //     printf("Voltage: %1.2f\n", meas.log.voltage);
+        // }
 		act_time = esp_timer_get_time();
 		if ((act_time - end_time) > 5000) { //200Hz
 			// ahrs_init(1'000'000/(act_time - end_time), 0.8); 
@@ -451,7 +452,7 @@ extern "C" void task_meas(void *arg)
              * @brief TASK CONTROL old code
              * 
              */
-            set_speed_dir(100, 100); // 20 min____150 max
+            //set_speed_dir(100, 100); // 20 min____150 max
             meas.enc.encoder1 = left_motor_rot *4096/256;
             meas.enc.encoder2 = right_motor_rot*4096/256;
 			// int64_t time = esp_timer_get_time();
@@ -464,6 +465,7 @@ extern "C" void task_meas(void *arg)
 				//printf("Pos X: %1.2lf,  Enc1Ticks: %lld, Enc2Ticks: %lld\n", position.x/10.0, meas.enc.encoder1, meas.enc.encoder2);
 				//printf("Motor A dir %s, Motor B dir %s\n",meas.enc.dir_A ? "Forward" : "Revers", meas.enc.dir_B ? "Forward" : "Revers");
 				//printf("H: %1.2f, P: %1.2f, R: %1.2f\n",meas.orient.heading, meas.orient.pitch, meas.orient.roll);
+				printf("TOF1: %1.2f, \t TOF2: %1.2f, \t TOF3: %1.2f, \t TOF4: %1.2f\n", meas.tof.tof1, meas.tof.tof2, meas.tof.tof3, meas.tof.tof4);
 				printTime = curr_time;
 			}
 
