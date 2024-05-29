@@ -37,7 +37,6 @@ MainWindow::MainWindow(QWidget *parent)
 {
 	setWindowTitle("Real-Time Plot");
 	//initalize arrays to 0
-	timestampArray.reserve(MOTOR_AXIS_LIMIT);
 	gyroZArray.reserve(100);
 
 
@@ -205,7 +204,6 @@ void MainWindow::readPendingDatagrams()
 
 		QList<QByteArray> values = datagram.split(',');
 
-		double timestamp = values[0].toDouble();
 		double tofY_1 = values[1].toDouble();
 		double tofY_2 = values[2].toDouble();
 		double tofY_3 = values[3].toDouble();
@@ -214,7 +212,7 @@ void MainWindow::readPendingDatagrams()
 
 		{
 			std::scoped_lock lock(mut);
-			timestampArray.append(timestamp);
+			timeStamp = values[0].toDouble();
 			motorA = values[6].toDouble();
 			motorB = values[7].toDouble();
 			tofArray.append(QVector<double>({ tofY_1, tofY_2, tofY_3, tofY_4 }));
@@ -235,11 +233,13 @@ void MainWindow::updateChart()
 
 	std::scoped_lock lock(mut);
 
-	double timestamp = timestampArray.back() / 1'000'000.;
+	double timestamp = timeStamp / 1'000'000.;
+	qDebug() << "Timestamp: " << timestamp;
 
 	motorSeriesA->append(timestamp, motorA);
 	motorSeriesB->append(timestamp, motorB);
-	motorChart->axes(Qt::Horizontal).first()->setRange(timestamp, timestamp + 60);
+	auto start = motorSeriesA->at(0).x();
+	motorChart->axes(Qt::Horizontal).first()->setRange(start, timestamp);
 
 	// Update bar motorChart
 	QStringList cat;
