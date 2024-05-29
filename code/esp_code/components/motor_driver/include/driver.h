@@ -4,6 +4,8 @@
 #include <stdbool.h>
 #include "meas_data.h"
 
+#define TRACK_WIDTH 94.5 //[mm]
+
 typedef enum Direction {
 	Forward,
 	Backward,

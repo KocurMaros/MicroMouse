@@ -21,8 +21,7 @@
 #define LEDC_FREQUENCY (8000)			// Frequency in Hertz. Set frequency at 5 kHz
 
 #define WHEEL_DIAMETER 24				// 24 mm
-#define IMPULZS_PER_ROTATION 4096		// 4096 impulzes per rotation
-#define TRACK_WIDTH 94.5				// 915 mm
+#define IMPULZS_PER_ROTATION 4096		// 4096 impulzes per rotation				// 915 mm
 #define PI 3.14159265359
 #define GEAR_RATIO 4					// The motor does 4 rotations per one wheel rotation.
 #define MAX_MOTOR_RPM 11000				// The max unloaded RPM of the motor

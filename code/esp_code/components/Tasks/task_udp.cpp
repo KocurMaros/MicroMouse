@@ -23,6 +23,8 @@ static MeasData val;
 static char message_buff[MESSAGE_BUFF_LEN];
 static Position position;
 
+int speed_left = 100, speed_right = 100;
+
 extern "C" void task_udp(void *arg)
 {
 	printf("Task control run on core: %d\n", xPortGetCoreID());
@@ -31,20 +33,17 @@ extern "C" void task_udp(void *arg)
     int64_t core_time = 0;
     int64_t send_time = 0;
     init_motor_driver();
+    init_controller();
 
     uint32_t ulNotifiedValue;
     for (;;) {
         xTaskNotifyWait(0x00, ULONG_MAX, &ulNotifiedValue, portMAX_DELAY);
 		if (ulNotifiedValue == COMM_OK) {
 			(void)xQueueReceive(FIFO_Meas_to_Cont, &val, (100/portTICK_PERIOD_MS)); // wait longer than 10 ms 
-            // if(position.x < 50.)
-            // {
-            //     set_speed_dir(100, 80); // 20 min____150 max
-            //     calculate_odometry(&val.enc, &position, &val.orient);
-            // }
-            // else
-            set_speed_dir(0,0);  
-            
+
+            control_braitenberg_fear(&val, &speed_left, &speed_right);
+            set_speed_dir(speed_left, speed_right);  
+            calculate_odometry(&val.enc, &position, &val.orient);
         }
         core_time = esp_timer_get_time();
         if(core_time - send_time > 100'000){
