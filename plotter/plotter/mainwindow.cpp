@@ -320,6 +320,7 @@ void MainWindow::updateChart()
 	controlSeries->append(timestamp, control);
 	auto start = motorSeriesA->at(0).x();
 	motorChart->axes(Qt::Horizontal).first()->setRange(start, timestamp);
+	controlSignalChart->axes(Qt::Horizontal).first()->setRange(start, timestamp);
 
 	// Update bar motorChart
 	QStringList cat;
