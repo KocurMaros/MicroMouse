@@ -13,6 +13,7 @@
 #include <QTimer>
 #include <QLineEdit>
 #include <mutex>
+#include <atomic>
 
 #ifdef WIN32
 QT_CHARTS_USE_NAMESPACE
@@ -25,6 +26,9 @@ class MainWindow : public QMainWindow
 public:
 	MainWindow(QWidget *parent = nullptr);
 	~MainWindow();
+
+private slots:
+	void bufferSizeChanged();
 
 private slots:
 	void updateChart();
@@ -50,6 +54,8 @@ private:
 	// 4.2 - 3.3
 	QLineEdit *batteryLineEdit;
 	QLineEdit *gyroFrequencyLineEdit;
+	QLineEdit *posXLineEdit;
+	QLineEdit *posYLineEdit;
 	QPushButton *clearMotorChartButton;
 	QPushButton *pauseButton;
 	QString localIP;
@@ -64,6 +70,7 @@ private:
 	std::mutex mut;
 	int bufferSize;
 	int x;
+	std::atomic<int> motorBufferSize;
 };
 
 #endif // MAINWINDOW_H

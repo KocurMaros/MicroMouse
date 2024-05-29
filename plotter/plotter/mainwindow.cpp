@@ -10,6 +10,7 @@
 #include <qglobal.h>
 #include <stdio.h>
 
+#define BUFFER_SIZE 1024
 #define MOTOR_AXIS_LIMIT 600
 #define BATTERY_VOLTAGE_MAX 4200
 #define BATTERY_VOLTAGE_MIN 3300
@@ -18,6 +19,12 @@
 #define BATTERY_TEXT(voltage) "Battery: " + QString::number(BATTERY_PERCENTAGE(voltage)) + "%"
 
 #define GYRO_TEXT(frequency) "Gyro frequency: " + QString::number(frequency) + "Hz"
+
+#define POS_X_TXT(x) "X: " + QString::number(x)
+#define POS_Y_TXT(y) "Y: " + QString::number(y)
+
+#define DEG2RAD(angle) (angle * M_PI / 180)
+#define RAD2DEG(angle) (angle * 180 / M_PI)
 
 MainWindow::MainWindow(QWidget *parent)
 	: QMainWindow(parent)
@@ -34,6 +41,7 @@ MainWindow::MainWindow(QWidget *parent)
 	, gyroFrequency(0)
 	, motorA(0)
 	, motorB(0)
+	, motorBufferSize(0)
 {
 	setWindowTitle("Real-Time Plot");
 	//initalize arrays to 0
@@ -43,7 +51,6 @@ MainWindow::MainWindow(QWidget *parent)
 	// Set up UDP server
 	localIP = "192.168.137.1";
 	localPort = 3333;
-	bufferSize = 1024;
 	udpSocket = new QUdpSocket(this);
 	udpSocket->bind(QHostAddress(localIP), localPort);
 	connect(udpSocket, &QUdpSocket::readyRead, this, &MainWindow::readPendingDatagrams);
@@ -141,6 +148,14 @@ MainWindow::MainWindow(QWidget *parent)
 	gyroFrequencyLineEdit->setText(GYRO_TEXT(0));
 	gyroFrequencyLineEdit->setReadOnly(true);
 
+	posXLineEdit = new QLineEdit(this);
+	posXLineEdit->setText(POS_X_TXT(0));
+	posXLineEdit->setReadOnly(true);
+
+	posYLineEdit = new QLineEdit(this);
+	posYLineEdit->setText(POS_Y_TXT(0));
+	posYLineEdit->setReadOnly(true);
+
 	clearMotorChartButton = new QPushButton("Clear Motor Chart");
 	connect(clearMotorChartButton, &QPushButton::clicked, [this]() {
 		motorSeriesA->clear();
@@ -155,6 +170,8 @@ MainWindow::MainWindow(QWidget *parent)
 	layout->addWidget(plotGyro);
 	layout->addWidget(batteryLineEdit);
 	layout->addWidget(gyroFrequencyLineEdit);
+	layout->addWidget(posXLineEdit);
+	layout->addWidget(posYLineEdit);
 	layout->addWidget(clearMotorChartButton);
 	layout->addWidget(pauseButton);
 
@@ -209,7 +226,8 @@ void MainWindow::readPendingDatagrams()
 		double tofY_3 = values[3].toDouble();
 		double tofY_4 = values[4].toDouble();
 		double gyroZ = values[5].toDouble();
-        qDebug() << values[6].toDouble();
+		motorBufferSize++;
+
 		{
 			std::scoped_lock lock(mut);
 			timeStamp = values[0].toDouble();
@@ -221,6 +239,8 @@ void MainWindow::readPendingDatagrams()
 			batteryLineEdit->setText(BATTERY_TEXT(batteryVoltage));
 			gyroFrequency = values[9].toDouble();
 			gyroFrequencyLineEdit->setText(GYRO_TEXT(gyroFrequency));
+			posXLineEdit->setText(POS_X_TXT(values[10].toDouble()));
+			posXLineEdit->setText(POS_X_TXT(values[11].toDouble()));
 		}
 	}
 }
@@ -234,7 +254,6 @@ void MainWindow::updateChart()
 	std::scoped_lock lock(mut);
 
 	double timestamp = timeStamp / 1'000'000.;
-    //qDebug() << "Timestamp: " << timestamp;
 
 	motorSeriesA->append(timestamp, motorA);
 	motorSeriesB->append(timestamp, motorB);
@@ -254,12 +273,13 @@ void MainWindow::updateChart()
 
 	// Update compass motorChart
 	gyroSeries->clear();
-	gyroSeries->append(gyroZArray.back(), 100); // Point on the perimeter of the compass
-	gyroSeries->append(gyroZArray.back(), 0);	// Center of the compass
+	gyroSeries->append(RAD2DEG(gyroZArray.back()), 100); // Point on the perimeter of the compass
+	gyroSeries->append(RAD2DEG(gyroZArray.back()), 0);	// Center of the compass
 
-    //qDebug() << "Series size: " << motorSeriesA->count();
-	if (motorSeriesA->count() > MOTOR_AXIS_LIMIT) {
+	qDebug() << "Series size: " << motorSeriesA->count();
+	if (motorBufferSize > MOTOR_AXIS_LIMIT) {
 		motorSeriesA->remove(0);
 		motorSeriesB->remove(0);
+		motorBufferSize--;
 	}
 }
