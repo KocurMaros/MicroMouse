@@ -36,7 +36,7 @@ extern "C" void task_udp(void *arg)
 		if (prev_random_flag < random_flag) {
 			(void)xQueueReceive(FIFO_Meas_to_Cont, &val, (100/portTICK_PERIOD_MS)); // wait longer than 10 ms 
             
-            set_speed_dir(0, 0); // 20 min____150 max
+            set_speed_dir(100, 100); // 20 min____150 max
             calculate_odometry(&val.enc,&position);            
 		    prev_random_flag = random_flag;
         }
