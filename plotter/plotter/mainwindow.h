@@ -28,9 +28,6 @@ public:
 	~MainWindow();
 
 private slots:
-	void bufferSizeChanged();
-
-private slots:
 	void updateChart();
 	void readPendingDatagrams();
 

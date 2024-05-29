@@ -23,8 +23,14 @@
 #define POS_X_TXT(x) "X: " + QString::number(x)
 #define POS_Y_TXT(y) "Y: " + QString::number(y)
 
+#ifdef WIN32
+#define M_PI 3.14159
+#endif
+
+
 #define DEG2RAD(angle) (angle * M_PI / 180)
 #define RAD2DEG(angle) (angle * 180 / M_PI)
+
 
 MainWindow::MainWindow(QWidget *parent)
 	: QMainWindow(parent)
