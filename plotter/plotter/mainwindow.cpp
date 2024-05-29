@@ -10,8 +10,8 @@
 #include <qglobal.h>
 #include <stdio.h>
 
-#define BATTERY_VOLTAGE_MAX 4.2
-#define BATTERY_VOLTAGE_MIN 3.3
+#define BATTERY_VOLTAGE_MAX 4200
+#define BATTERY_VOLTAGE_MIN 3300
 
 #define BATTERY_PERCENTAGE(voltage) (voltage - BATTERY_VOLTAGE_MIN) / (BATTERY_VOLTAGE_MAX - BATTERY_VOLTAGE_MIN) *100
 #define BATTERY_TEXT(voltage) "Battery: " + QString::number(BATTERY_PERCENTAGE(voltage)) + "%"
