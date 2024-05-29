@@ -10,6 +10,7 @@
 #include <qglobal.h>
 #include <stdio.h>
 
+#define BUFFER_SIZE 1024
 #define MOTOR_AXIS_LIMIT 600
 #define BATTERY_VOLTAGE_MAX 4200
 #define BATTERY_VOLTAGE_MIN 3300
@@ -34,6 +35,7 @@ MainWindow::MainWindow(QWidget *parent)
 	, gyroFrequency(0)
 	, motorA(0)
 	, motorB(0)
+	, motorBufferSize(0)
 {
 	setWindowTitle("Real-Time Plot");
 	//initalize arrays to 0
@@ -43,7 +45,6 @@ MainWindow::MainWindow(QWidget *parent)
 	// Set up UDP server
 	localIP = "192.168.137.1";
 	localPort = 3333;
-	bufferSize = 1024;
 	udpSocket = new QUdpSocket(this);
 	udpSocket->bind(QHostAddress(localIP), localPort);
 	connect(udpSocket, &QUdpSocket::readyRead, this, &MainWindow::readPendingDatagrams);
@@ -209,6 +210,7 @@ void MainWindow::readPendingDatagrams()
 		double tofY_3 = values[3].toDouble();
 		double tofY_4 = values[4].toDouble();
 		double gyroZ = values[5].toDouble();
+		motorBufferSize++;
 
 		{
 			std::scoped_lock lock(mut);
@@ -234,7 +236,6 @@ void MainWindow::updateChart()
 	std::scoped_lock lock(mut);
 
 	double timestamp = timeStamp / 1'000'000.;
-	qDebug() << "Timestamp: " << timestamp;
 
 	motorSeriesA->append(timestamp, motorA);
 	motorSeriesB->append(timestamp, motorB);
@@ -258,8 +259,9 @@ void MainWindow::updateChart()
 	gyroSeries->append(gyroZArray.back(), 0);	// Center of the compass
 
 	qDebug() << "Series size: " << motorSeriesA->count();
-	if (motorSeriesA->count() > MOTOR_AXIS_LIMIT) {
+	if (motorBufferSize > MOTOR_AXIS_LIMIT) {
 		motorSeriesA->remove(0);
 		motorSeriesB->remove(0);
+		motorBufferSize--;
 	}
 }
