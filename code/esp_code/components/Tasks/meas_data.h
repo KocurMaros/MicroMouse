@@ -28,6 +28,9 @@ typedef struct logging
 {
 	float voltage;
 	bool button_start;
+    int hz_gyro;
+    float gyro_freq;
+    
 } logging;
 typedef struct MeasData
 {

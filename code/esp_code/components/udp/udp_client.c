@@ -25,7 +25,7 @@
 #include <lwip/netdb.h>
 #include "sdkconfig.h"
 
-#define HOST_IP_ADDR "192.168.137.1"        //set here you ip address
+#define HOST_IP_ADDR "10.42.0.1"        //set here you ip address
 #define PORT 3333
 
 static const char *TAG = "udp_client";

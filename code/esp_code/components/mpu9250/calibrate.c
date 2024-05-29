@@ -70,7 +70,7 @@ static void init_imu(void)
  *
  */
 
-const int NUM_GYRO_READS = 5000;
+const int NUM_GYRO_READS = 15000;
 
 void calibrate_gyro(void)
 {
@@ -122,7 +122,7 @@ void calibrate_gyro(void)
  * this calibration process outputs those values.
  */
 
-#define NUM_ACCEL_READS (1000.0)
+#define NUM_ACCEL_READS (10000.0)
 
 #define X_AXIS (0)
 #define Y_AXIS (1)
