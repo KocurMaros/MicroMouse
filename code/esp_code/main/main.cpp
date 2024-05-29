@@ -50,6 +50,9 @@ void app_main()
 
     FIFO_Meas_to_Cont = xQueueCreate(2, sizeof(MeasData));
     init_udp();
+
+    vTaskDelay(250 / portTICK_PERIOD_MS); // Wait for the sensors to start
+
     send_message("micromouse");
 
     xTaskCreatePinnedToCore(task_meas,   /* Function to implement the task */
