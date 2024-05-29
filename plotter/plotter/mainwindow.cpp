@@ -168,6 +168,7 @@ MainWindow::MainWindow(QWidget *parent)
 	layout->addWidget(batteryLineEdit);
 	layout->addWidget(gyroFrequencyLineEdit);
 	layout->addWidget(clearMotorChartButton);
+	layout->addWidget(pauseButton);
 
 	setCentralWidget(centralWidget);
 
