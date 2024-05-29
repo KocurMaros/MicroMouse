@@ -31,7 +31,8 @@ typedef struct picontrol {
 	double feedback;
 	double virginOutput;
 	double clampedOutput;
-	double limit;
+	double lower_limit;
+	double upper_limit;
 } PID;
 
 
@@ -66,11 +67,12 @@ void set_speed_dir(int speed_left, int speed_right);
  * @param kp [in] Proportional gain.
  * @param ki [in] Integral gain.
  * @param kd [in] Derivative gain.
- * @param limit [in] The limit of the output.
+ * @param lower_limit [in] The lower limit of the output.
+ * @param upper_limit [in] The upper limit of the output.
  *
  * @return The PID controller @c PID.
  */
-PID *init_pid(double kp, double ki, double kd, double limit);
+PID *init_pid(double kp, double ki, double kd, double lower_limit, double upper_limit);
 
 /**
  * @brief Deinitialize a PID controller.

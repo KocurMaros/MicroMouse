@@ -86,8 +86,8 @@ void init_motor_driver()
 	pwm_init(MOTOR_A_PWM, MOTOR_A_PWM_CHANNEL);
 	pwm_init(MOTOR_B_PWM, MOTOR_B_PWM_CHANNEL);
 
-	pid_left = init_pid(10, 0.03, 0, 1023);
-	pid_right = init_pid(10, 0.03, 0, 1023); //cc timo chod dopice pls dik
+	pid_left = init_pid(10, 0.03, 0, 0, 1023);
+	pid_right = init_pid(10, 0.03, 0, 0, 1023); //cc timo chod dopice pls dik
 }
 
 void move_forward()
@@ -162,7 +162,7 @@ void set_speed_dir(int speed_left, int speed_right)
 	pwm_change_duty_raw(MOTOR_B_PWM_CHANNEL, pid_control(pid_right, speed_right));
 }
 
-PID *init_pid(double kp, double ki, double kd, double limit)
+PID *init_pid(double kp, double ki, double kd, double lower_limit, double upper_limit)
 {
 	PID *pid = (PID*)calloc(1, sizeof(PID));
 
@@ -175,7 +175,8 @@ PID *init_pid(double kp, double ki, double kd, double limit)
 	pid->reference = 0;
 	pid->virginOutput = 0;
 	pid->clampedOutput = 0;
-	pid->limit = limit;
+	pid->lower_limit = lower_limit;
+	pid->upper_limit = upper_limit;
 
 	return pid;
 }
@@ -192,10 +193,10 @@ uint16_t pid_control(PID *pid, double reference)
 	reference = reference < 0 ? -reference : reference;
 	
 	reference = TO_PWM_FROM_MM_PER_SECOND(reference);
-	reference = reference > pid->limit ? pid->limit : (reference < -pid->limit ? -pid->limit : reference);
+	reference = reference > pid->upper_limit ? pid->upper_limit : (reference < -pid->lower_limit ? -pid->lower_limit : reference);
 
 	double tmp = TO_PWM_FROM_MM_PER_SECOND(pid->feedback);
-	tmp = tmp> pid->limit ? pid->limit : (tmp< -pid->limit ? -pid->limit : tmp);
+	tmp = tmp > pid->upper_limit ? pid->upper_limit : (tmp< -pid->lower_limit ? -pid->lower_limit : tmp);
 
 	double error = reference - tmp;
 	//printf("Reference: %1.2lf \t Feedback: %1.2lf \t ERROR = %1.2lf\n",reference,  pid->feedback, error);
@@ -216,7 +217,7 @@ uint16_t pid_control_from_error(PID *pid, double error)
 
 	double tmp = pid->kp * error + pid->ki * pid->integral + pid->kd * derivative;
 	pid->virginOutput = tmp;
-	pid->clampedOutput = pid->virginOutput < 0 ? 0 : (pid->virginOutput > pid->limit ? pid->limit : pid->virginOutput);
+	pid->clampedOutput = pid->virginOutput < pid->lower_limit ? pid->lower_limit : (pid->virginOutput > pid->upper_limit ? pid->upper_limit : pid->virginOutput);
 	//printf("PID_TMP: %1.2lf \t PID OUT: %1.2lf \t PID_ACTUAL: %1.2lf \t ERROR: %1.2lf\n", tmp, pid->virginOutput, pid->clampedOutput, error);
 
 	pid->last_error = error;
