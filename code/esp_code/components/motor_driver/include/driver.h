@@ -114,6 +114,7 @@ uint16_t pid_control(PID *pid, double reference);
  * @return The output of the PID controller [PWM].
  */
 uint16_t pid_control_from_error(PID *pid, double error);
+double pid_control_from_error_d(PID *pid, double error);
 
 /**
  * @brief Calculate the current speed of the whees in mm/s.

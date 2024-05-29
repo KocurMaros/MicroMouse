@@ -38,23 +38,28 @@ typedef enum Wall_dir_t{
 
 PID *controller;
 
-void control_braitenberg_fear(const MeasData *_current_sensor_data, int *speed_left_, int *speed_right_){
+double control_braitenberg_fear(const MeasData *_current_sensor_data, int *speed_left_, int *speed_right_){
     //Wall_dir_t currrentWall = NONE;
     
+    //static double control_sig;
     double left_error = _current_sensor_data->tof.tof2 - TOF_2_REFERENCE;
     //double right_error = _current_sensor_data->tof.tof3 - TOF_3_REFERENCE;
 
-    uint16_t control_signal_left = pid_control_from_error(controller, left_error);
+    double control_signal_left = pid_control_from_error_d(controller, left_error);
 
-    if (control_signal_left > 0) {
-        *speed_right_ += control_signal_left;
+    //control_sig -= left_error;
+
+    if (control_signal_left > 0.1) {
+        *speed_left_ -= abs(control_signal_left);
     }
-    else {
-        *speed_left_ -= control_signal_left;
+    else if (control_signal_left < -0.1) {
+        *speed_right_ -= abs(control_signal_left);
     }
+
+    return control_signal_left;
 }
 
 void init_controller()
 {
-    controller = init_pid(1, 0, 0, -MAX_SPEED, MAX_SPEED);
+    controller = init_pid(40, 0.01, 0, -MAX_SPEED, MAX_SPEED);
 }

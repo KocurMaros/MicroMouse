@@ -198,7 +198,7 @@ MainWindow::MainWindow(QWidget *parent)
 		}
 		else {
 			timer->start();
-			pauseButton->setText("Pause");
+            pauseButton->setText("Pause");
 			std::cout << "Paused" << std::endl;
 		}
 	});
@@ -239,6 +239,10 @@ void MainWindow::readPendingDatagrams()
 
 		if (datagram == CONNECT_MESSAGE) {
 			setWindowTitle("Connected");
+            motorSeriesA->clear();
+            motorSeriesB->clear();
+            motorBufferSize = 0;
+            motorBufferSizeLast = 0;
 			continue;
 		}
 

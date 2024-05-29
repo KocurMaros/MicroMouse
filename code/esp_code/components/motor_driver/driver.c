@@ -225,6 +225,23 @@ uint16_t pid_control_from_error(PID *pid, double error)
 	return (uint16_t)round(pid->clampedOutput);
 }
 
+double pid_control_from_error_d(PID *pid, double error)
+{
+	pid->integral += error;
+
+	double derivative = error - pid->last_error;
+
+	double tmp = pid->kp * error + pid->ki * pid->integral + pid->kd * derivative;
+	pid->virginOutput = tmp;
+	pid->clampedOutput = pid->virginOutput < pid->lower_limit ? pid->lower_limit : (pid->virginOutput > pid->upper_limit ? pid->upper_limit : pid->virginOutput);
+	//printf("PID_TMP: %1.2lf \t PID OUT: %1.2lf \t PID_ACTUAL: %1.2lf \t ERROR: %1.2lf\n", tmp, pid->virginOutput, pid->clampedOutput, error);
+
+	pid->last_error = error;
+
+	//printf("Calculated AZ: %lf\n", pid->clampedOutput);
+	return pid->clampedOutput;
+}
+
 void motor_update_current_speed(const encoders *enc, double *left, double *right)
 {
 	double dt = (double)enc->time_diff / 1000000.0;
