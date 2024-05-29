@@ -229,7 +229,7 @@ void MainWindow::updateChart()
 
 	// Update bar motorChart
 	QStringList cat;
-	for (int i = 0; i < tofChart->count(); ++i) {
+	for (int i = 0; i < 4; ++i) {
 		const auto val = tofArray.back()[i] * 100;
 		tofChart->replace(i, val);
 		// Set the distance from metres to centimetres.
