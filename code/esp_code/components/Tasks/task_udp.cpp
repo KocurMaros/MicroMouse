@@ -49,7 +49,7 @@ extern "C" void task_udp(void *arg)
         core_time = esp_timer_get_time();
         if(core_time - send_time > 100'000){
             sprintf(message_buff,"%llu, %1.3f, %1.3f, %1.3f, %1.3f, "
-                                 "%1.3f, %1.3lf, %1.3lf, %1.3f, %1.3f, %1.3lf, %1.3lf", 
+                                 "%1.3f, %1.3lf, %1.3lf, %1.3f, %1.3f, %1.6lf, %1.6lf", 
 								esp_timer_get_time(), val.tof.tof1, val.tof.tof2, val.tof.tof3, val.tof.tof4, 
                                 val.orient.heading, get_pid_left_feedback(), get_pid_right_feedback(), val.log.voltage, val.log.gyro_freq, position.x, position.y);
 			// printf("Message: %s\n", message_buff);
