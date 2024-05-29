@@ -69,6 +69,8 @@ private:
 	int x;
 	std::atomic<int> motorBufferSize;
 	std::atomic<int> motorBufferSizeLast;
+	bool connected;
+	QTimer *disconnectedTimer;
 };
 
 #endif // MAINWINDOW_H

@@ -15,6 +15,8 @@
 #define BATTERY_VOLTAGE_MAX 4200
 #define BATTERY_VOLTAGE_MIN 3300
 
+#define CONNECT_MESSAGE QString("micromouse")
+
 #define BATTERY_PERCENTAGE(voltage) (voltage - BATTERY_VOLTAGE_MIN) / (BATTERY_VOLTAGE_MAX - BATTERY_VOLTAGE_MIN) *100
 #define BATTERY_TEXT(voltage) "Battery: " + QString::number(BATTERY_PERCENTAGE(voltage)) + "%"
 
@@ -201,6 +203,14 @@ MainWindow::MainWindow(QWidget *parent)
 		}
 	});
 
+	disconnectedTimer = new QTimer(this);
+	disconnectedTimer->setSingleShot(true);
+
+	connect(disconnectedTimer, &QTimer::timeout, [this]() {
+		setWindowTitle("Disconnected");
+		disconnectedTimer->stop();
+	});
+
 	QSize winSize(1000,800);
 	this->setMinimumSize(winSize);
 }
@@ -227,6 +237,11 @@ void MainWindow::readPendingDatagrams()
 
 		udpSocket->readDatagram(datagram.data(), datagram.size(), &sender, &senderPort);
 
+		if (datagram == CONNECT_MESSAGE) {
+			setWindowTitle("Connected");
+			continue;
+		}
+
 		QList<QByteArray> values = datagram.split(',');
 
 		double tofY_1 = values[1].toDouble();
@@ -251,6 +266,7 @@ void MainWindow::readPendingDatagrams()
 			posXLineEdit->setText(POS_X_TXT(values[10].toDouble()));
 			posXLineEdit->setText(POS_X_TXT(values[11].toDouble()));
 		}
+		disconnectedTimer->start(2000);
 	}
 }
 
