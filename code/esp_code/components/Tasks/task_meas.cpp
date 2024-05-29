@@ -447,8 +447,6 @@ extern "C" void task_meas(void *arg)
 			meas.orient.pitch = pitch;
 			meas.orient.heading = heading;
 
-			
-
             /**
              * @brief TASK CONTROL old code
              * 
@@ -462,12 +460,8 @@ extern "C" void task_meas(void *arg)
             left_motor_rot = 0;
             right_motor_rot = 0;
             calculate_odometry(&meas.enc,&position);
-			sprintf(message_buff, "%lld, %1.3f, %1.3f, %1.3f, %1.3f, %1.2f, %1.2lf, %1.2lf", 
-								   esp_timer_get_time(), meas.tof.tof1, meas.tof.tof2, meas.tof.tof3, meas.tof.tof4, heading, get_pid_left(), get_pid_right());
-			send_message(message_buff);
-			memset(message_buff, '\0', MESSAGE_BUFF_LEN);
             if((double)(curr_time - printTime)/1000.0 > 100.0){
-				//printf("Pos X: %1.2lf, Pos Y: %1.2lf\n", position.x/10.0, position.y/10.0);
+				//printf("Pos X: %1.2lf,  Enc1Ticks: %lld, Enc2Ticks: %lld\n", position.x/10.0, meas.enc.encoder1, meas.enc.encoder2);
 				//printf("Motor A dir %s, Motor B dir %s\n",meas.enc.dir_A ? "Forward" : "Revers", meas.enc.dir_B ? "Forward" : "Revers");
 				//printf("H: %1.2f, P: %1.2f, R: %1.2f\n",meas.orient.heading, meas.orient.pitch, meas.orient.roll);
 				printTime = curr_time;
