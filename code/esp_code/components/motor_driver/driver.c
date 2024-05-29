@@ -86,8 +86,8 @@ void init_motor_driver()
 	pwm_init(MOTOR_A_PWM, MOTOR_A_PWM_CHANNEL);
 	pwm_init(MOTOR_B_PWM, MOTOR_B_PWM_CHANNEL);
 
-	pid_left = init_pid(15, 0, 0, 1023);
-	pid_right = init_pid(15, 0, 0, 1023); //cc timo chod dopice pls dik
+	pid_left = init_pid(10, 0.03, 0, 1023);
+	pid_right = init_pid(10, 0.03, 0, 1023); //cc timo chod dopice pls dik
 }
 
 void move_forward()
@@ -278,7 +278,7 @@ void update_encoders(encoders *enc)
 	}
 }
 
-void calculate_odometry(encoders *enc, Position *pos)
+void calculate_odometry(encoders *enc, Position *pos, const orientation *gyro)
 {
 	double left_speed = 0;
 	double right_speed = 0;
@@ -297,7 +297,7 @@ void calculate_odometry(encoders *enc, Position *pos)
 
 	// Calculate the angle the robot has turned
 	//todo: calculate angle from gyro cuz of the skid
-	double angle = (TO_M_FROM_MM(right_distance) - TO_M_FROM_MM(left_distance)) / TO_M_FROM_MM(TRACK_WIDTH);
+	double angle = gyro->heading;
 
 	// Calculate the new position of the robot
 	pos->theta = wrap_angle(pos->theta + angle);

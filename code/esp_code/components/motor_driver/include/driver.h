@@ -130,7 +130,7 @@ void motor_update_current_speed(const encoders *enc, double *left, double *right
  * @param enc [in] Encoder structure containting the current encoder values.
  * @param pos [out] The current position of the robot.
  */
-void calculate_odometry(encoders *enc, Position *pos);
+void calculate_odometry(encoders *enc, Position *pos, const orientation *gyroData);
 
 
 double get_pid_left_feedback();

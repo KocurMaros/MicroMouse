@@ -263,8 +263,20 @@ extern "C" void task_meas(void *arg)
      * MPU9250 init
     */
 
-	(void)gpio_set_level(GPIO_NUM_13, 1);
 
+ 
+	//start after presing button
+	gpio_pad_select_gpio(GPIO_NUM_0);
+	(void)gpio_set_pull_mode(GPIO_NUM_0, GPIO_PULLUP_ONLY);
+	(void)gpio_set_direction(GPIO_NUM_0, GPIO_MODE_INPUT);
+
+	while (gpio_get_level(GPIO_NUM_0) != 0) {
+		// continue reading GPIO_NUM_0
+	}
+	meas.log.button_start = true;
+
+	(void)gpio_set_level(GPIO_NUM_13, 1);
+	
 	//////////////  CALIBRATION ROUTINE ////////////////
 
 	// printf("Calib starts in a sec\n");
@@ -275,21 +287,9 @@ extern "C" void task_meas(void *arg)
 	// vTaskDelay(5000 / portTICK_PERIOD_MS);
 
 	/////////////////////////////////////////////////////
- 
+	
 	i2c_mpu9250_init(&cal);
 	ahrs_init(200, 0.8); // 200 Hz, 0.8 beta
-
-	//start after presing button
-
-	gpio_pad_select_gpio(GPIO_NUM_0);
-	(void)gpio_set_pull_mode(GPIO_NUM_0, GPIO_PULLUP_ONLY);
-	(void)gpio_set_direction(GPIO_NUM_0, GPIO_MODE_INPUT);
-
-	while (gpio_get_level(GPIO_NUM_0) != 0) {
-		// continue reading GPIO_NUM_0
-	}
-
-	meas.log.button_start = true;
 
 	(void)adc1_config_width(ADC_WIDTH_BIT_12);
 	(void)adc1_config_channel_atten(ADC1_CHANNEL_3, ADC_ATTEN_DB_11);
@@ -354,7 +354,7 @@ extern "C" void task_meas(void *arg)
 			meas.tof.tof3 = vl53l1_read(tof_sensors[2]) / 1000.0;
 			meas.tof.tof4 = vl53l1_read(tof_sensors[3]) / 1000.0;
 
-			ahrs_get_euler_in_degrees(&heading, &pitch, &roll);
+			MadgwickGetEulerAngles(&heading, &pitch, &roll);
 			meas.orient.roll = roll;
 			meas.orient.pitch = pitch;
 			meas.orient.heading = heading;

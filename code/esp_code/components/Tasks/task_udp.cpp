@@ -38,13 +38,15 @@ extern "C" void task_udp(void *arg)
 		if (ulNotifiedValue == COMM_OK) {
 			(void)xQueueReceive(FIFO_Meas_to_Cont, &val, (100/portTICK_PERIOD_MS)); // wait longer than 10 ms 
             
-            set_speed_dir(0, 0); // 20 min____150 max
-            calculate_odometry(&val.enc,&position);
+            set_speed_dir(100, 100); // 20 min____150 max
+            calculate_odometry(&val.enc, &position, &val.orient);
         }
         core_time = esp_timer_get_time();
         if(core_time - send_time > 100'000){
-            sprintf(message_buff,"%llu, %1.3f, %1.3f, %1.3f, %1.3f, %1.3f, %1.3lf, %1.3lf, %1.3f, %1.3f, ", 
-								esp_timer_get_time(), val.tof.tof1, val.tof.tof2, val.tof.tof3, val.tof.tof4, val.orient.heading, get_pid_left_feedback(), get_pid_right_feedback(), val.log.voltage, val.log.gyro_freq);
+            sprintf(message_buff,"%llu, %1.3f, %1.3f, %1.3f, %1.3f, "
+                                 "%1.3f, %1.3lf, %1.3lf, %1.3f, %1.3f, %1.3lf, %1.3lf", 
+								esp_timer_get_time(), val.tof.tof1, val.tof.tof2, val.tof.tof3, val.tof.tof4, 
+                                val.orient.heading, get_pid_left_feedback(), get_pid_right_feedback(), val.log.voltage, val.log.gyro_freq, position.x, position.y);
 			// printf("Message: %s\n", message_buff);
             // printf("It took: %d\n", val.log.hz_gyro);
             // printf("Voltage: %f\n", val.log.voltage);
@@ -53,12 +55,6 @@ extern "C" void task_udp(void *arg)
 			memset(message_buff,'\0', MESSAGE_BUFF_LEN);
             send_time = core_time;
         }
-        
-        if(prev_random_flag > random_flag){
-            printf("Error: Random flag is smaller than previous\n");
-            prev_random_flag = random_flag;
-        }
-     
 	}
     deinit_pid(pid_left);
 	deinit_pid(pid_right);

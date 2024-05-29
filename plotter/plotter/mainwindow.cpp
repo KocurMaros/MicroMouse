@@ -209,7 +209,7 @@ void MainWindow::readPendingDatagrams()
 		double tofY_3 = values[3].toDouble();
 		double tofY_4 = values[4].toDouble();
 		double gyroZ = values[5].toDouble();
-
+        qDebug() << values[6].toDouble();
 		{
 			std::scoped_lock lock(mut);
 			timeStamp = values[0].toDouble();
@@ -234,7 +234,7 @@ void MainWindow::updateChart()
 	std::scoped_lock lock(mut);
 
 	double timestamp = timeStamp / 1'000'000.;
-	qDebug() << "Timestamp: " << timestamp;
+    //qDebug() << "Timestamp: " << timestamp;
 
 	motorSeriesA->append(timestamp, motorA);
 	motorSeriesB->append(timestamp, motorB);
@@ -257,7 +257,7 @@ void MainWindow::updateChart()
 	gyroSeries->append(gyroZArray.back(), 100); // Point on the perimeter of the compass
 	gyroSeries->append(gyroZArray.back(), 0);	// Center of the compass
 
-	qDebug() << "Series size: " << motorSeriesA->count();
+    //qDebug() << "Series size: " << motorSeriesA->count();
 	if (motorSeriesA->count() > MOTOR_AXIS_LIMIT) {
 		motorSeriesA->remove(0);
 		motorSeriesB->remove(0);
