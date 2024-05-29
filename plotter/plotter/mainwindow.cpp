@@ -148,6 +148,11 @@ MainWindow::MainWindow(QWidget *parent)
 		motorSeriesB->clear();
 	});
 
+	pauseButton = new QPushButton("Pause");
+	connect(pauseButton, &QPushButton::clicked, [this]() {
+		timer->stop();
+	});
+
 	centralWidget = new QWidget(this);
 	QVBoxLayout *layout = new QVBoxLayout(centralWidget);
 	layout->addWidget(plotMotor);
