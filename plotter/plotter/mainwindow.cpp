@@ -133,6 +133,14 @@ MainWindow::MainWindow(QWidget *parent)
 	plotGyro = new QChartView(gyroChart);
 	plotGyro->setRenderHint(QPainter::Antialiasing);
 
+	batteryLineEdit = new QLineEdit(this);
+	batteryLineEdit->setText(BATTERY_TEXT(0));
+	batteryLineEdit->setReadOnly(true);
+
+	gyroFrequencyLineEdit = new QLineEdit(this);
+	gyroFrequencyLineEdit->setText(GYRO_TEXT(0));
+	gyroFrequencyLineEdit->setReadOnly(true);
+
 	clearMotorChartButton = new QPushButton("Clear Motor Chart", this);
 	connect(clearMotorChartButton, &QPushButton::clicked, [this]() {
 		motorSeriesA->clear();
@@ -146,6 +154,7 @@ MainWindow::MainWindow(QWidget *parent)
 	layout->addWidget(plotGyro);
 	layout->addWidget(batteryLineEdit);
 	layout->addWidget(gyroFrequencyLineEdit);
+	layout->addWidget(clearMotorChartButton);
 
 	setCentralWidget(centralWidget);
 
