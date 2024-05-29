@@ -51,6 +51,7 @@ private:
 	QLineEdit *batteryLineEdit;
 	QLineEdit *gyroFrequencyLineEdit;
 	QPushButton *clearMotorChartButton;
+	QPushButton *pauseButton;
 	QString localIP;
 	quint16 localPort;
 	QVector<double> timestampArray;
