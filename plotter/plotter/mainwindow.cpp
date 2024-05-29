@@ -10,6 +10,7 @@
 #include <qglobal.h>
 #include <stdio.h>
 
+#define MOTOR_AXIS_LIMIT 6'000
 #define BATTERY_VOLTAGE_MAX 4200
 #define BATTERY_VOLTAGE_MIN 3300
 
@@ -55,13 +56,13 @@ MainWindow::MainWindow(QWidget *parent)
 	motorChart->createDefaultAxes();
 
 	auto *axisX = new QValueAxis;
-	axisX->setRange(0, 100);
+	axisX->setRange(0, MOTOR_AXIS_LIMIT);
 	axisX->setLabelFormat("%i");
 	motorChart->setAxisX(axisX, motorSeriesA);
 	motorChart->setAxisX(axisX, motorSeriesB);
 
 	auto *axisY = new QValueAxis;
-	axisY->setRange(-50, 50);
+	axisY->setRange(-200, 200);
 	axisY->setLabelFormat("%i");
 	motorChart->setAxisY(axisY, motorSeriesA);
 	motorChart->setAxisY(axisY, motorSeriesB);
@@ -242,7 +243,7 @@ void MainWindow::updateChart()
 	gyroSeries->append(gyroZArray.back(), 100); // Point on the perimeter of the compass
 	gyroSeries->append(gyroZArray.back(), 0);	// Center of the compass
 
-	if (motorSeriesA->count() > 100) {
+	if (motorSeriesA->count() > MOTOR_AXIS_LIMIT) {
 		motorSeriesA->remove(0);
 		motorSeriesB->remove(0);
 	}
