@@ -79,7 +79,7 @@ MainWindow::MainWindow(QWidget *parent)
 		motorChart->setAxisX(axisX, motorSeriesB);
 
 		auto *axisY = new QValueAxis;
-		axisY->setRange(-200, 200);
+		axisY->setRange(-25, 25);
 		axisY->setLabelFormat("%i");
 		motorChart->setAxisY(axisY, motorSeriesA);
 		motorChart->setAxisY(axisY, motorSeriesB);
