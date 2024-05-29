@@ -11,7 +11,7 @@
 #include <QTimer>
 #include <mutex>
 
-#ifdef win32
+#ifdef WIN32
 QT_CHARTS_USE_NAMESPACE
 #endif
 
