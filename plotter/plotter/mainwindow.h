@@ -55,8 +55,8 @@ private:
 	QString localIP;
 	quint16 localPort;
 	QVector<double> timestampArray;
-	QVector<double> motorArrayA;
-	QVector<double> motorArrayB;
+	double motorA;
+	double motorB;
 	QVector<QVector<double>> tofArray;
 	QVector<double> gyroZArray;
 	double batteryVoltage;

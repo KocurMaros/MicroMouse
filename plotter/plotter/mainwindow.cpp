@@ -32,12 +32,12 @@ MainWindow::MainWindow(QWidget *parent)
 	, x(0)
 	, batteryVoltage(0)
 	, gyroFrequency(0)
+	, motorA(0)
+	, motorB(0)
 {
 	setWindowTitle("Real-Time Plot");
 	//initalize arrays to 0
 	timestampArray.reserve(MOTOR_AXIS_LIMIT);
-	motorArrayA.reserve(MOTOR_AXIS_LIMIT);
-	motorArrayB.reserve(MOTOR_AXIS_LIMIT);
 	gyroZArray.reserve(100);
 
 
@@ -56,7 +56,7 @@ MainWindow::MainWindow(QWidget *parent)
 	motorChart->createDefaultAxes();
 
 	auto *axisX = new QValueAxis;
-	axisX->setRange(0, MOTOR_AXIS_LIMIT);
+	axisX->setRange(0, MOTOR_AXIS_LIMIT/100.);
 	axisX->setLabelFormat("%i");
 	motorChart->setAxisX(axisX, motorSeriesA);
 	motorChart->setAxisX(axisX, motorSeriesB);
@@ -211,14 +211,12 @@ void MainWindow::readPendingDatagrams()
 		double tofY_3 = values[3].toDouble();
 		double tofY_4 = values[4].toDouble();
 		double gyroZ = values[5].toDouble();
-		double motorA = values[6].toDouble();
-		double motorB = values[7].toDouble();
 
 		{
 			std::scoped_lock lock(mut);
 			timestampArray.append(timestamp);
-			motorArrayA.append(motorA);
-			motorArrayB.append(motorB);
+			motorA = values[6].toDouble();
+			motorB = values[7].toDouble();
 			tofArray.append(QVector<double>({ tofY_1, tofY_2, tofY_3, tofY_4 }));
 			gyroZArray.append(gyroZ);
 			batteryVoltage = values[8].toDouble();
@@ -239,10 +237,9 @@ void MainWindow::updateChart()
 
 	double timestamp = timestampArray.back() / 1'000'000.;
 
-	motorSeriesA->append(timestamp, motorArrayA.back());
-	motorSeriesB->append(timestamp, motorArrayB.back());
-	auto start = qMax<qreal>(0, timestamp - 0.1);
-	motorChart->axes(Qt::Horizontal).first()->setRange(start, start+60);
+	motorSeriesA->append(timestamp, motorA);
+	motorSeriesB->append(timestamp, motorB);
+	motorChart->axes(Qt::Horizontal).first()->setRange(timestamp, timestamp + 60);
 
 	// Update bar motorChart
 	QStringList cat;
