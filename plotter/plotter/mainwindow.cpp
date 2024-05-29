@@ -37,8 +37,10 @@
 MainWindow::MainWindow(QWidget *parent)
 	: QMainWindow(parent)
 	, motorChart(new QChart())
+	, controlSignalChart(new QChart())
 	, motorSeriesA(new QLineSeries())
 	, motorSeriesB(new QLineSeries())
+	, controlSeries(new QLineSeries())
 	, tofSeries(new QBarSeries())
 	, tofChart(new QBarSet("BarSet"))
 	, gyroChart(new QPolarChart())
@@ -264,6 +266,7 @@ void MainWindow::readPendingDatagrams()
 			setWindowTitle("Connected");
 			motorSeriesA->clear();
 			motorSeriesB->clear();
+			controlSeries->clear();
 			motorBufferSize = 0;
 			motorBufferSizeLast = 0;
 			continue;
@@ -292,6 +295,7 @@ void MainWindow::readPendingDatagrams()
 			gyroFrequencyLineEdit->setText(GYRO_TEXT(gyroFrequency));
 			posXLineEdit->setText(POS_X_TXT(values[10].toDouble()));
 			posXLineEdit->setText(POS_X_TXT(values[11].toDouble()));
+			control = values[12].toDouble();
 		}
 	}
 	disconnectedTimer->start(2000);
@@ -313,6 +317,7 @@ void MainWindow::updateChart()
 
 	motorSeriesA->append(timestamp, motorA);
 	motorSeriesB->append(timestamp, motorB);
+	controlSeries->append(timestamp, control);
 	auto start = motorSeriesA->at(0).x();
 	motorChart->axes(Qt::Horizontal).first()->setRange(start, timestamp);
 
@@ -336,6 +341,7 @@ void MainWindow::updateChart()
 	if (motorBufferSize > MOTOR_AXIS_LIMIT) {
 		motorSeriesA->remove(0);
 		motorSeriesB->remove(0);
+		controlSeries->remove(0);
 		motorBufferSize--;
 	}
 }

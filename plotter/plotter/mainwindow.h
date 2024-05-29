@@ -62,6 +62,7 @@ private:
 	quint16 localPort;
 	double timeStamp;
 	double motorA;
+	double control;
 	double motorB;
 	QVector<QVector<double>> tofArray;
 	QVector<double> gyroZArray;
