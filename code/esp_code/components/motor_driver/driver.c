@@ -86,8 +86,8 @@ void init_motor_driver()
 	pwm_init(MOTOR_A_PWM, MOTOR_A_PWM_CHANNEL);
 	pwm_init(MOTOR_B_PWM, MOTOR_B_PWM_CHANNEL);
 
-	pid_left = init_pid(12.5, 0.15, 0, 1023);
-	pid_right = init_pid(12.5, 0.15, 0, 1023); //cc timo chod dopice pls dik
+	pid_left = init_pid(20, 0, 0, 1023);
+	pid_right = init_pid(20, 0, 0, 1023); //cc timo chod dopice pls dik
 }
 
 void move_forward()
