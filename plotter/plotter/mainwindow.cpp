@@ -100,7 +100,7 @@ MainWindow::MainWindow(QWidget *parent)
 	tofSeries->attachAxis(axisXBar);
 
 	auto *axisYBar = new QValueAxis;
-	axisYBar->setRange(0, 100);
+	axisYBar->setRange(0, 40);
 	tofChart->addAxis(axisYBar, Qt::AlignLeft);
 	tofSeries->attachAxis(axisYBar);
 
@@ -230,7 +230,8 @@ void MainWindow::updateChart()
 	QStringList cat;
 	for (int i = 0; i < tofChart->count(); ++i) {
 		tofChart->replace(i, tofArray.back()[i]);
-		cat << QString::number(tofArray.back()[i]);
+		// Set the distance from metres to centimetres.
+		cat << QString::number(tofArray.back()[i] * 100);
 	}
 	categories = cat;
 	axisXBar->setCategories(categories);
