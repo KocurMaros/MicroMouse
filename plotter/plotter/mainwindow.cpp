@@ -11,6 +11,14 @@
 #include <qglobal.h>
 #include <stdio.h>
 
+#define BATTERY_VOLTAGE_MAX 4.2
+#define BATTERY_VOLTAGE_MIN 3.3
+
+#define BATTERY_PERCENTAGE(voltage) (voltage - BATTERY_VOLTAGE_MIN) / (BATTERY_VOLTAGE_MAX - BATTERY_VOLTAGE_MIN) *100
+#define BATTERY_TEXT(voltage) "Battery: " + QString::number(BATTERY_PERCENTAGE(voltage)) + "%"
+
+#define GYRO_TEXT(frequency) "Gyro frequency: " + QString::number(frequency) + "Hz"
+
 MainWindow::MainWindow(QWidget *parent)
 	: QMainWindow(parent)
 	, motorChart(new QChart())
@@ -22,6 +30,8 @@ MainWindow::MainWindow(QWidget *parent)
 	, gyroSeries(new QLineSeries())
 	, timer(new QTimer(this))
 	, x(0)
+	, batteryVoltage(0)
+	, gyroFrequency(0)
 {
 	setWindowTitle("Real-Time Plot");
 	//initalize arrays to 0
@@ -57,6 +67,12 @@ MainWindow::MainWindow(QWidget *parent)
 	motorChart->setAxisY(axisY, motorSeriesA);
 	motorChart->setAxisY(axisY, motorSeriesB);
 	motorChart->setTitle("Motor 1 and 2");
+
+	batteryLineEdit = new QLineEdit(this);
+	batteryLineEdit->setText(BATTERY_TEXT(0));
+
+	gyroFrequencyLineEdit = new QLineEdit(this);
+	gyroFrequencyLineEdit->setText(GYRO_TEXT(0));
 
 	motorSeriesA->setName("Tof 1 Series");
 	motorSeriesA->setColor(Qt::blue);
@@ -117,11 +133,19 @@ MainWindow::MainWindow(QWidget *parent)
 	plotGyro = new QChartView(gyroChart);
 	plotGyro->setRenderHint(QPainter::Antialiasing);
 
+	clearMotorChartButton = new QPushButton("Clear Motor Chart", this);
+	connect(clearMotorChartButton, &QPushButton::clicked, [this]() {
+		motorSeriesA->clear();
+		motorSeriesB->clear();
+	});
+
 	centralWidget = new QWidget(this);
 	QVBoxLayout *layout = new QVBoxLayout(centralWidget);
 	layout->addWidget(plotMotor);
 	layout->addWidget(plotTof);
 	layout->addWidget(plotGyro);
+	layout->addWidget(batteryLineEdit);
+	layout->addWidget(gyroFrequencyLineEdit);
 
 	setCentralWidget(centralWidget);
 
@@ -131,6 +155,13 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
+	motorChart->deleteLater();
+	motorSeriesA->deleteLater();
+	motorSeriesB->deleteLater();
+	tofSeries->deleteLater();
+	tofChart->deleteLater();
+	gyroChart->deleteLater();
+	gyroSeries->deleteLater();
 }
 
 void MainWindow::readPendingDatagrams()
@@ -153,6 +184,7 @@ void MainWindow::readPendingDatagrams()
 		double gyroZ = values[5].toDouble();
 		double motorA = values[6].toDouble();
 		double motorB = values[7].toDouble();
+
 		{
 			std::scoped_lock lock(mut);
 			timestampArray.append(timestamp);
@@ -160,6 +192,10 @@ void MainWindow::readPendingDatagrams()
 			motorArrayB.append(motorB);
 			tofArray.append(QVector<double>({ tofY_1, tofY_2, tofY_3, tofY_4 }));
 			gyroZArray.append(gyroZ);
+			batteryVoltage = values[8].toDouble();
+			batteryLineEdit->setText(BATTERY_TEXT(batteryVoltage));
+			gyroFrequencyLineEdit->setText(BATTERY_TEXT(batteryVoltage));
+			gyroFrequency = values[9].toDouble();
 		}
 	}
 }
