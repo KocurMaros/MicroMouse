@@ -54,6 +54,8 @@ private:
 	// 4.2 - 3.3
 	QLineEdit *batteryLineEdit;
 	QLineEdit *gyroFrequencyLineEdit;
+	QLineEdit *posXLineEdit;
+	QLineEdit *posYLineEdit;
 	QPushButton *clearMotorChartButton;
 	QPushButton *pauseButton;
 	QString localIP;

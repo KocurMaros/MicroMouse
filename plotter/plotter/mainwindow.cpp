@@ -20,6 +20,9 @@
 
 #define GYRO_TEXT(frequency) "Gyro frequency: " + QString::number(frequency) + "Hz"
 
+#define POS_X_TXT(x) "X: " + QString::number(x)
+#define POS_Y_TXT(y) "Y: " + QString::number(y)
+
 MainWindow::MainWindow(QWidget *parent)
 	: QMainWindow(parent)
 	, motorChart(new QChart())
@@ -142,6 +145,14 @@ MainWindow::MainWindow(QWidget *parent)
 	gyroFrequencyLineEdit->setText(GYRO_TEXT(0));
 	gyroFrequencyLineEdit->setReadOnly(true);
 
+	posXLineEdit = new QLineEdit(this);
+	posXLineEdit->setText(POS_X_TXT(0));
+	posXLineEdit->setReadOnly(true);
+
+	posYLineEdit = new QLineEdit(this);
+	posYLineEdit->setText(POS_Y_TXT(0));
+	posYLineEdit->setReadOnly(true);
+
 	clearMotorChartButton = new QPushButton("Clear Motor Chart");
 	connect(clearMotorChartButton, &QPushButton::clicked, [this]() {
 		motorSeriesA->clear();
@@ -156,6 +167,8 @@ MainWindow::MainWindow(QWidget *parent)
 	layout->addWidget(plotGyro);
 	layout->addWidget(batteryLineEdit);
 	layout->addWidget(gyroFrequencyLineEdit);
+	layout->addWidget(posXLineEdit);
+	layout->addWidget(posYLineEdit);
 	layout->addWidget(clearMotorChartButton);
 	layout->addWidget(pauseButton);
 
@@ -223,6 +236,8 @@ void MainWindow::readPendingDatagrams()
 			batteryLineEdit->setText(BATTERY_TEXT(batteryVoltage));
 			gyroFrequency = values[9].toDouble();
 			gyroFrequencyLineEdit->setText(GYRO_TEXT(gyroFrequency));
+			posXLineEdit->setText(POS_X_TXT(values[10].toDouble()));
+			posXLineEdit->setText(POS_X_TXT(values[11].toDouble()));
 		}
 	}
 }
