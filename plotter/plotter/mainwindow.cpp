@@ -227,11 +227,12 @@ void MainWindow::updateChart()
 	motorChart->axes(Qt::Horizontal).first()->setRange(qMax<qreal>(0, timestamp - 0.1), timestamp);
 
 	// Update bar motorChart
-	categories.clear();
+	QStringList cat;
 	for (int i = 0; i < tofChart->count(); ++i) {
 		tofChart->replace(i, tofArray.back()[i]);
-		categories << QString::number(tofArray.back()[i]);
+		cat << QString::number(tofArray.back()[i]);
 	}
+	categories = cat;
 	axisXBar->setCategories(categories);
 
 	// Update compass motorChart
