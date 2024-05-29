@@ -32,6 +32,7 @@ extern "C" {
 #include "calibrate.h"
 #include "common.h"
 #include "driver.h"
+#include "control.h"
 }
 
 
@@ -41,7 +42,6 @@ extern "C" {
 #define XSHUT2 GPIO_NUM_5
 #define XSHUT3 GPIO_NUM_25
 #define XSHUT4 GPIO_NUM_12
-
 
 #define ENCODER_1_A GPIO_NUM_34
 #define ENCODER_1_B GPIO_NUM_35
