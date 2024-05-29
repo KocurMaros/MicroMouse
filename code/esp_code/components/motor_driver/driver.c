@@ -86,8 +86,8 @@ void init_motor_driver()
 	pwm_init(MOTOR_A_PWM, MOTOR_A_PWM_CHANNEL);
 	pwm_init(MOTOR_B_PWM, MOTOR_B_PWM_CHANNEL);
 
-	pid_left = init_pid(6, 0, 0, 1023);
-	pid_right = init_pid(6, 0, 0, 1023); //cc timo chod dopice pls dik
+	pid_left = init_pid(15, 0, 0, 1023);
+	pid_right = init_pid(15, 0, 0, 1023); //cc timo chod dopice pls dik
 }
 
 void move_forward()
@@ -198,7 +198,7 @@ uint16_t pid_control(PID *pid, double reference)
 	tmp = tmp> pid->limit ? pid->limit : (tmp< -pid->limit ? -pid->limit : tmp);
 
 	double error = reference - tmp;
-	printf("Reference: %1.2lf \t Feedback: %1.2lf \t ERROR = %1.2lf\n",reference,  pid->feedback, error);
+	//printf("Reference: %1.2lf \t Feedback: %1.2lf \t ERROR = %1.2lf\n",reference,  pid->feedback, error);
 	if ((double)(esp_timer_get_time() - start_time) / 1000.0 > 100.0)
 	{
 		//printf("ERROR: %1.5lf, SPEED: %1.5lf\n", error, pid->feedback);

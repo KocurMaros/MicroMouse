@@ -372,7 +372,7 @@ extern "C" void task_meas(void *arg)
             it = 0;
             left_motor_rot = 0;
             right_motor_rot = 0;
-			process_controller_time = esp_timer_get_time();
+			process_controller_time = esp_boot_time;
 		}
 
 		if (process_controller_time > esp_boot_time) // ak pretecie esp_boot_time, vyresetuj cycle_time
