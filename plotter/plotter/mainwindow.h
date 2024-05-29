@@ -68,6 +68,7 @@ private:
 	int bufferSize;
 	int x;
 	std::atomic<int> motorBufferSize;
+	std::atomic<int> motorBufferSizeLast;
 };
 
 #endif // MAINWINDOW_H
