@@ -166,6 +166,8 @@ MainWindow::MainWindow(QWidget *parent)
 	connect(clearMotorChartButton, &QPushButton::clicked, [this]() {
 		motorSeriesA->clear();
 		motorSeriesB->clear();
+		motorBufferSize = 0;
+		motorBufferSizeLast = 0;
 	});
 
 	pauseButton = new QPushButton("Pause");
