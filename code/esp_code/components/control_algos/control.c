@@ -16,8 +16,12 @@
 #define TOF3_ANGLE -45
 #define TOF4_ANGLE -10
 
+#define TOF_2_DESIRED_MIN 11 //[cm]
+#define TOF_2_DESIRED_MAX 13
+#define TOF_3_DESIRED_MIN 12
+#define TOF_3_DESIRED_MAX 14
+
 #define TOF_MAX 40 // The sensor distance limit[cm]
-//108.5 X____ 75 Y
 
 typedef enum Wall_dir_t{
     WALL_LEFT = 0,
@@ -25,12 +29,12 @@ typedef enum Wall_dir_t{
     NONE
 }Wall_dir_t;
 
-void control_braitenberg_fear(const values_tof *_current_tof_data, int *speed_left_, int *speed_right_){
+void control_braitenberg_fear(const MeasData *_current_sensor_data, int *speed_left_, int *speed_right_){
     Wall_dir_t currrentWall = NONE;
 
-    if(_current_tof_data->tof1 * 100.0 <= TOF_MAX)
+    if(_current_sensor_data->tof.tof1 * 100.0 <= TOF_MAX)
         currrentWall = WALL_LEFT;
-    else if(_current_tof_data->tof4 * 100 <= TOF_MAX)
+    else if(_current_sensor_data->tof.tof4 * 100 <= TOF_MAX)
     {
         currrentWall = WALL_RIGHT;
     }

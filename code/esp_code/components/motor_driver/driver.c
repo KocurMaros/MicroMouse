@@ -301,8 +301,8 @@ void calculate_odometry(encoders *enc, Position *pos, const orientation *gyro)
 
 	// Calculate the new position of the robot
 	pos->theta = wrap_angle(pos->theta + angle);
-	pos->x = pos->x + distance /** cos(pos->theta)*/;
-	pos->y = pos->y + distance /** sin(pos->theta)*/;
+	pos->x = pos->x + distance * cos(pos->theta);
+	pos->y = pos->y + distance * sin(pos->theta);
 }
 
 double get_pid_left_feedback()
