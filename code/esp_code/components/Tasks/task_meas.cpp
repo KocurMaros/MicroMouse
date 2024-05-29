@@ -347,7 +347,7 @@ extern "C" void task_meas(void *arg)
      	}
 
 		esp_boot_time = esp_timer_get_time();
-		if ((esp_boot_time - process_controller_time) > 100'000) { //30Hz update second task
+		if ((esp_boot_time - process_controller_time) > 10'000) { //30Hz update second task
 
 			meas.tof.tof1 = vl53l1_read(tof_sensors[0]) / 1000.0;
 			meas.tof.tof2 = vl53l1_read(tof_sensors[1]) / 1000.0;
