@@ -25,7 +25,6 @@ QueueHandle_t FIFO_Meas_to_Cont;
 TaskHandle_t xTaskControlHandle;
 TaskHandle_t xTaskMeasHandle;
 
-uint64_t random_flag = 0;
 
 extern "C" 
 { 
@@ -34,6 +33,7 @@ extern "C"
 	void task_meas(void * arg);
     void task_udp(void * arg);  
 } 
+
 void app_main()
 {
     //* Initialize Components

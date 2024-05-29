@@ -367,7 +367,7 @@ extern "C" void task_meas(void *arg)
             meas.log.gyro_freq = freq;
 
             xQueueSend(FIFO_Meas_to_Cont, &meas, 50 / portTICK_RATE_MS);
-            random_flag++;
+            xTaskNotify(xTaskControlHandle, COMM_OK, eSetBits); // Notify the other task
             
             it = 0;
             left_motor_rot = 0;
