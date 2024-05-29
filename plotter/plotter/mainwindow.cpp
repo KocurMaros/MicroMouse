@@ -35,9 +35,9 @@ MainWindow::MainWindow(QWidget *parent)
 {
 	setWindowTitle("Real-Time Plot");
 	//initalize arrays to 0
-	timestampArray.reserve(100);
-	motorArrayA.reserve(100);
-	motorArrayB.reserve(100);
+	timestampArray.reserve(MOTOR_AXIS_LIMIT);
+	motorArrayA.reserve(MOTOR_AXIS_LIMIT);
+	motorArrayB.reserve(MOTOR_AXIS_LIMIT);
 	gyroZArray.reserve(100);
 
 
