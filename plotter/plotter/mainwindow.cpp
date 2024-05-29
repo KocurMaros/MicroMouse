@@ -151,12 +151,12 @@ MainWindow::MainWindow(QWidget *parent)
 	pauseButton = new QPushButton("Pause");
 	connect(pauseButton, &QPushButton::clicked, [this]() {
 		if (timer->isActive()) {
-			timer->start();
-			pauseButton->setText("Pause");
-		}
-		else {
 			timer->stop();
 			pauseButton->setText("Continue");
+		}
+		else {
+			timer->start();
+			pauseButton->setText("Pause");
 		}
 	});
 
@@ -168,6 +168,7 @@ MainWindow::MainWindow(QWidget *parent)
 	layout->addWidget(batteryLineEdit);
 	layout->addWidget(gyroFrequencyLineEdit);
 	layout->addWidget(clearMotorChartButton);
+	layout->addWidget(pauseButton);
 
 	setCentralWidget(centralWidget);
 
