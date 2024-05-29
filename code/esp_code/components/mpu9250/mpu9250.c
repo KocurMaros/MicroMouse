@@ -221,6 +221,7 @@ esp_err_t get_gyro(vector_t *v)
 	uint8_t bytes[6];
 	ret = i2c_read_bytes(I2C_MASTER_NUM, MPU9250_I2C_ADDR, MPU9250_GYRO_XOUT_H, bytes, 6);
 	if (ret != ESP_OK) {
+    //   ESP_ERROR_CHECK(get_tempera
 		return ret;
 	}
 

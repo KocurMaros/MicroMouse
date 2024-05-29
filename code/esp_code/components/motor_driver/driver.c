@@ -198,7 +198,7 @@ uint16_t pid_control(PID *pid, double reference)
 	tmp = tmp> pid->limit ? pid->limit : (tmp< -pid->limit ? -pid->limit : tmp);
 
 	double error = reference - tmp;
-	printf("Reference: %1.2lf \t Feedback: %1.2lf \t ERROR = %1.2lf\n",reference,  pid->feedback, error);
+	// printf("Reference: %1.2lf \t Feedback: %1.2lf \t ERROR = %1.2lf\n",reference,  pid->feedback, error);
 	if ((double)(esp_timer_get_time() - start_time) / 1000.0 > 100.0)
 	{
 		//printf("ERROR: %1.5lf, SPEED: %1.5lf\n", error, pid->feedback);
@@ -234,7 +234,7 @@ void motor_update_current_speed(const encoders *enc, double *left, double *right
 	left_speed = left_speed < 0 ? -left_speed : left_speed;
 	right_speed = right_speed < 0 ? -right_speed : right_speed;
 	//printf("LEFT_SPD = %1.2lf, RIGHT_SPD = %1.2lf , dt = %lf\n", left_speed, right_speed, dt);
-    printf("encoder1: %d, encoder2: %d\n", enc->encoder1, enc->encoder2);
+    // printf("encoder1: %d, encoder2: %d\n", enc->encoder1, enc->encoder2);
 	
 	pid_left->feedback = left_speed;
 	pid_right->feedback = right_speed;

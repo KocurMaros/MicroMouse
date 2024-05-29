@@ -205,7 +205,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Connector_PinSocket_2.54mm:PinSocket_1x06_P2.54mm_Vertical"
 			(at 0 0 100)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -512,7 +512,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Resistor_SMD:R_0603_1608Metric"
 			(at 0 0 -90)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -721,7 +721,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Capacitor_SMD:C_0603_1608Metric"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -968,7 +968,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "MountingHole:MountingHole_2.7mm_M2.5_DIN965_Pad"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -1077,7 +1077,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Connector_PinSocket_2.54mm:PinSocket_1x06_P2.54mm_Vertical"
 			(at 0 0 80)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -1384,7 +1384,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Capacitor_SMD:C_0603_1608Metric"
 			(at 0 0 -10)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -1593,7 +1593,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Resistor_SMD:R_0603_1608Metric"
 			(at 0 0 90)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -1840,7 +1840,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Capacitor_Tantalum_SMD:CP_EIA-7343-15_Kemet-W"
 			(at 0 0 90)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -2105,7 +2105,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Connector_PinSocket_2.54mm:PinSocket_1x02_P2.54mm_Vertical"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -2368,7 +2368,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "MountingHole:MountingHole_2.7mm_M2.5_DIN965_Pad"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -2477,7 +2477,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Capacitor_SMD:C_0603_1608Metric"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -2686,7 +2686,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "RF_Module:ESP32-WROOM-32U"
 			(at 0 0 90)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -3318,7 +3318,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Resistor_SMD:R_0603_1608Metric"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -3565,7 +3565,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Capacitor_SMD:C_0603_1608Metric"
 			(at 0 0 -90)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -3812,7 +3812,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Package_SO:MSOP-10-1EP_3x3mm_P0.5mm_EP1.68x1.88mm"
 			(at 0 0 -90)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -4206,7 +4206,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Connector_PinSocket_2.54mm:PinSocket_1x06_P2.54mm_Vertical"
 			(at 0 0 -45)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -4513,7 +4513,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Connector_PinSocket_2.54mm:PinSocket_1x06_P2.54mm_Vertical"
 			(at 0 0 45)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -4820,7 +4820,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Capacitor_SMD:C_0603_1608Metric"
 			(at 0 0 135)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -5029,7 +5029,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Capacitor_SMD:C_0603_1608Metric"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -5276,7 +5276,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Connector_PinSocket_2.54mm:PinSocket_1x02_P2.54mm_Vertical"
 			(at 0 0 -90)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -5539,7 +5539,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "MountingHole:MountingHole_2.7mm_M2.5_DIN965_Pad"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -5648,7 +5648,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Resistor_SMD:R_0603_1608Metric"
 			(at 0 0 90)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -5895,7 +5895,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "MountingHole:MountingHole_2.7mm_M2.5_DIN965_Pad"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -6004,7 +6004,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Connector_PinSocket_2.54mm:PinSocket_1x02_P2.54mm_Vertical"
 			(at 0 0 90)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -6267,7 +6267,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "MountingHole:MountingHole_2.7mm_M2.5_DIN965_Pad"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -6376,7 +6376,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Capacitor_SMD:C_0603_1608Metric"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -6585,7 +6585,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "MountingHole:MountingHole_2.7mm_M2.5_DIN965_Pad"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -6694,7 +6694,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "MountingHole:MountingHole_2.7mm_M2.5_DIN965_Pad"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -6803,7 +6803,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Connector_PinSocket_1.27mm:PinSocket_1x04_P1.27mm_Vertical"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -7108,7 +7108,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "MountingHole:MountingHole_2.7mm_M2.5_DIN965_Pad"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -7217,7 +7217,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "MountingHole:MountingHole_2.7mm_M2.5_DIN965_Pad"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -7326,7 +7326,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "MountingHole:MountingHole_2.7mm_M2.5_DIN965_Pad"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -7435,7 +7435,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Connector_PinSocket_1.27mm:PinSocket_1x04_P1.27mm_Vertical"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -7740,7 +7740,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "MountingHole:MountingHole_2.7mm_M2.5_DIN965_Pad"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -7849,7 +7849,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "MountingHole:MountingHole_2.7mm_M2.5_DIN965_Pad"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -7958,7 +7958,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Inductor_SMD:L_1210_3225Metric"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -8205,7 +8205,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "MountingHole:MountingHole_2.7mm_M2.5_DIN965_Pad"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -8314,7 +8314,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Capacitor_SMD:C_0603_1608Metric"
 			(at 0 0 10)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -8523,7 +8523,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Connector_Molex:Molex_SPOX_5267-06A_1x06_P2.50mm_Vertical"
 			(at 0 0 90)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -8870,7 +8870,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Resistor_SMD:R_0603_1608Metric"
 			(at 0 0 90)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -9117,7 +9117,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "MountingHole:MountingHole_2.7mm_M2.5_DIN965_Pad"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -9226,7 +9226,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "MountingHole:MountingHole_2.7mm_M2.5_DIN965_Pad"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -9335,7 +9335,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Capacitor_SMD:C_0603_1608Metric"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -9544,7 +9544,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "MountingHole:MountingHole_2.7mm_M2.5_DIN965_Pad"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -9653,7 +9653,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Package_SO:SSOP-24_5.3x8.2mm_P0.65mm"
 			(at 0 0 90)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -10132,7 +10132,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Connector_PinSocket_2.54mm:PinSocket_1x05_P2.54mm_Vertical"
 			(at 0 0 -90)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -10428,7 +10428,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Capacitor_SMD:C_1206_3216Metric"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -10675,7 +10675,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Capacitor_SMD:C_0603_1608Metric"
 			(at 0 0 -90)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -10922,7 +10922,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Capacitor_SMD:C_0603_1608Metric"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -11131,7 +11131,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "MountingHole:MountingHole_2.7mm_M2.5_DIN965_Pad"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -11240,7 +11240,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Capacitor_SMD:C_0603_1608Metric"
 			(at 0 0 -135)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -11449,7 +11449,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "MountingHole:MountingHole_2.7mm_M2.5_DIN965_Pad"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -11558,7 +11558,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "MountingHole:MountingHole_2.7mm_M2.5_DIN965_Pad"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -11667,7 +11667,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "MountingHole:MountingHole_2.7mm_M2.5_DIN965_Pad"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -11894,6 +11894,16 @@
 		(uuid "0572f925-5127-4bc1-b49e-1b1930757aad")
 	)
 	(gr_line
+		(start 180.6 54.2)
+		(end 182.6 49.7)
+		(stroke
+			(width 0.15)
+			(type default)
+		)
+		(layer "User.9")
+		(uuid "09030b0b-ae73-4abb-8f2b-57f9a0e0d826")
+	)
+	(gr_line
 		(start 104 124)
 		(end 122 124)
 		(stroke
@@ -11902,6 +11912,16 @@
 		)
 		(layer "User.9")
 		(uuid "150441a6-fa5b-4cd7-a305-280e38cdd34a")
+	)
+	(gr_line
+		(start 172.8 70.4)
+		(end 219.5 78.6)
+		(stroke
+			(width 0.15)
+			(type default)
+		)
+		(layer "User.9")
+		(uuid "16f6b648-91bc-4b9b-9c54-bc651b653ec5")
 	)
 	(gr_line
 		(start 104 118)
@@ -11964,6 +11984,16 @@
 		(uuid "47cf5084-58ed-46a6-8c6f-69c1bb27695d")
 	)
 	(gr_line
+		(start 214.7 70.6)
+		(end 171.4 78.2)
+		(stroke
+			(width 0.15)
+			(type default)
+		)
+		(layer "User.9")
+		(uuid "4851a4b5-5a61-4445-a99c-50996fd9075d")
+	)
+	(gr_line
 		(start 165 106)
 		(end 79 106)
 		(stroke
@@ -11984,6 +12014,16 @@
 		(uuid "4da44383-86c6-4fa6-995a-74580f497ff4")
 	)
 	(gr_line
+		(start 194.3 74.2)
+		(end 194.3 50.1)
+		(stroke
+			(width 0.15)
+			(type default)
+		)
+		(layer "User.9")
+		(uuid "547ebe79-7be2-43aa-ae78-06696bd86e54")
+	)
+	(gr_line
 		(start 122 124)
 		(end 119 124)
 		(stroke
@@ -11992,6 +12032,16 @@
 		)
 		(layer "User.9")
 		(uuid "63c171d0-aa11-4d32-89ff-10baaad24032")
+	)
+	(gr_line
+		(start 176.2 74.1)
+		(end 194.2 56.1)
+		(stroke
+			(width 0.15)
+			(type default)
+		)
+		(layer "User.9")
+		(uuid "644d05b1-1039-4960-98ec-12f4259b3bee")
 	)
 	(gr_line
 		(start 78 146)
@@ -12053,6 +12103,17 @@
 		(layer "User.9")
 		(uuid "8288bc96-efb0-4761-816a-5bf4a1b711db")
 	)
+	(gr_circle
+		(center 194.3 74.2)
+		(end 194.3 50.1)
+		(stroke
+			(width 0.15)
+			(type default)
+		)
+		(fill none)
+		(layer "User.9")
+		(uuid "83727f06-52cc-433f-a8de-367a089e2535")
+	)
 	(gr_line
 		(start 104 118)
 		(end 104 124)
@@ -12074,6 +12135,16 @@
 		(uuid "870756f1-c700-48f6-a083-1f067c35a674")
 	)
 	(gr_line
+		(start 180.6 54.2)
+		(end 185.3 54.1)
+		(stroke
+			(width 0.15)
+			(type default)
+		)
+		(layer "User.9")
+		(uuid "88b4798e-c53d-43d6-8804-bb9dbb7eba77")
+	)
+	(gr_line
 		(start 79 106)
 		(end 79 96)
 		(stroke
@@ -12092,6 +12163,26 @@
 		)
 		(layer "User.9")
 		(uuid "95864d75-5e49-493e-8ae9-e965a933337e")
+	)
+	(gr_line
+		(start 223.9 74.1)
+		(end 166.9 74.1)
+		(stroke
+			(width 0.15)
+			(type default)
+		)
+		(layer "User.9")
+		(uuid "95cd01e7-a74d-4963-8472-559513c5f20b")
+	)
+	(gr_line
+		(start 194.3 74.2)
+		(end 172.8 70.4)
+		(stroke
+			(width 0.15)
+			(type default)
+		)
+		(layer "User.9")
+		(uuid "a3d18a6f-b3dd-441e-8fb3-e4f309257c60")
 	)
 	(gr_line
 		(start 171 90)
@@ -12132,6 +12223,16 @@
 		)
 		(layer "User.9")
 		(uuid "b742e792-b207-411a-92fb-d668c611f7b9")
+	)
+	(gr_line
+		(start 211.9 73.8)
+		(end 194.7 56.6)
+		(stroke
+			(width 0.15)
+			(type default)
+		)
+		(layer "User.9")
+		(uuid "bc70a7e2-13f8-4bb5-b690-7ef859ed7160")
 	)
 	(gr_line
 		(start 141 120)
@@ -12245,6 +12346,16 @@
 		(uuid "f4f1f520-ba69-4ea2-af49-d8e447518764")
 	)
 	(gr_line
+		(start 194.3 74.2)
+		(end 214.7 70.6)
+		(stroke
+			(width 0.15)
+			(type default)
+		)
+		(layer "User.9")
+		(uuid "fa5ff226-f48d-45d5-b86e-f7c297cea7b1")
+	)
+	(gr_line
 		(start 141 124)
 		(end 126 124)
 		(stroke
@@ -12263,6 +12374,102 @@
 		)
 		(layer "User.9")
 		(uuid "fff1f203-150e-4361-ab31-1bff04b59eb3")
+	)
+	(gr_text "45"
+		(at 201.5 63 0)
+		(layer "User.9")
+		(uuid "1eb6cb20-09e6-4433-93d6-b728e344d0e0")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+			(justify left bottom)
+		)
+	)
+	(gr_text "<-- Y+"
+		(at 164.7 75.7 0)
+		(layer "User.9")
+		(uuid "454c2aa7-f7d1-4732-87aa-a58bf9813881")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+			(justify left bottom)
+		)
+	)
+	(gr_text "^\n| x+"
+		(at 195.3 51.9 0)
+		(layer "User.9")
+		(uuid "4860f609-ccc6-460a-bbb5-870863bbec0b")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+			(justify left bottom)
+		)
+	)
+	(gr_text "100"
+		(at 171.9 76.9 0)
+		(layer "User.9")
+		(uuid "902f2d85-484d-4b5e-a799-489f5804b0a0")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+			(justify left bottom)
+		)
+	)
+	(gr_text "++\n"
+		(at 182.6 49.7 0)
+		(layer "User.9")
+		(uuid "a12221c5-456d-4813-81dd-debca312cac7")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+			(justify left bottom)
+		)
+	)
+	(gr_text "260"
+		(at 220.3 77.5 0)
+		(layer "User.9")
+		(uuid "b54ea1a3-6cc3-4d8b-bd63-414ed00b6fee")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+			(justify left bottom)
+		)
+	)
+	(gr_text "0\n"
+		(at 167.1 73.2 0)
+		(layer "User.9")
+		(uuid "bf0ec179-daa9-4f55-aa4a-b4e596dc7248")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+			(justify left bottom)
+		)
+	)
+	(gr_text "315"
+		(at 183.2 63.1 0)
+		(layer "User.9")
+		(uuid "e2217a84-ed3b-4c53-b1c0-afc86b7656e3")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+			(justify left bottom)
+		)
 	)
 	(dimension
 		(type aligned)
