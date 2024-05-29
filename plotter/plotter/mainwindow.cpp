@@ -150,7 +150,14 @@ MainWindow::MainWindow(QWidget *parent)
 
 	pauseButton = new QPushButton("Pause");
 	connect(pauseButton, &QPushButton::clicked, [this]() {
-		timer->stop();
+		if (timer->isActive()) {
+			timer->start();
+			pauseButton->setText("Pause");
+		}
+		else {
+			timer->stop();
+			pauseButton->setText("Continue");
+		}
 	});
 
 	centralWidget = new QWidget(this);
