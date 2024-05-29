@@ -1,8 +1,0 @@
-C:/Users/timip/Desktop/schuul/1.Ing/MicroMouse/plotter/build-plotter-Desktop_Qt_5_15_2_MSVC2019_64bit-Release/CMakeFiles/plotter.dir
-C:/Users/timip/Desktop/schuul/1.Ing/MicroMouse/plotter/build-plotter-Desktop_Qt_5_15_2_MSVC2019_64bit-Release/CMakeFiles/edit_cache.dir
-C:/Users/timip/Desktop/schuul/1.Ing/MicroMouse/plotter/build-plotter-Desktop_Qt_5_15_2_MSVC2019_64bit-Release/CMakeFiles/rebuild_cache.dir
-C:/Users/timip/Desktop/schuul/1.Ing/MicroMouse/plotter/build-plotter-Desktop_Qt_5_15_2_MSVC2019_64bit-Release/CMakeFiles/list_install_components.dir
-C:/Users/timip/Desktop/schuul/1.Ing/MicroMouse/plotter/build-plotter-Desktop_Qt_5_15_2_MSVC2019_64bit-Release/CMakeFiles/install.dir
-C:/Users/timip/Desktop/schuul/1.Ing/MicroMouse/plotter/build-plotter-Desktop_Qt_5_15_2_MSVC2019_64bit-Release/CMakeFiles/install/local.dir
-C:/Users/timip/Desktop/schuul/1.Ing/MicroMouse/plotter/build-plotter-Desktop_Qt_5_15_2_MSVC2019_64bit-Release/CMakeFiles/plotter_autogen_timestamp_deps.dir
-C:/Users/timip/Desktop/schuul/1.Ing/MicroMouse/plotter/build-plotter-Desktop_Qt_5_15_2_MSVC2019_64bit-Release/CMakeFiles/plotter_autogen.dir
