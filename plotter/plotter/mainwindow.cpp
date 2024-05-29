@@ -160,6 +160,8 @@ MainWindow::MainWindow(QWidget *parent)
 
 	connect(timer, &QTimer::timeout, this, &MainWindow::updateChart);
 	timer->start(50); // Update every 100 ms
+    QSize winSize(1000,800);
+    this->setMinimumSize(winSize);
 }
 
 MainWindow::~MainWindow()
