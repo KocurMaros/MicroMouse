@@ -99,7 +99,7 @@ MainWindow::MainWindow(QWidget *parent)
 	tofChart->addAxis(axisXBar, Qt::AlignBottom);
 	tofSeries->attachAxis(axisXBar);
 
-	auto *axisYBar = new QValueAxis;
+	auto *axisYBar = new QValueAxis();
 	axisYBar->setRange(0, 40);
 	tofChart->addAxis(axisYBar, Qt::AlignLeft);
 	tofSeries->attachAxis(axisYBar);
