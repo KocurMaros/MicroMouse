@@ -54,7 +54,7 @@ private:
 	QPushButton *pauseButton;
 	QString localIP;
 	quint16 localPort;
-	QVector<double> timestampArray;
+	double timeStamp;
 	double motorA;
 	double motorB;
 	QVector<QVector<double>> tofArray;
