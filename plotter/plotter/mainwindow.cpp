@@ -241,7 +241,8 @@ void MainWindow::updateChart()
 
 	motorSeriesA->append(timestamp, motorArrayA.back());
 	motorSeriesB->append(timestamp, motorArrayB.back());
-	motorChart->axes(Qt::Horizontal).first()->setRange(qMax<qreal>(0, timestamp - 0.1), timestamp);
+	auto start = qMax<qreal>(0, timestamp - 0.1);
+	motorChart->axes(Qt::Horizontal).first()->setRange(start, start+60);
 
 	// Update bar motorChart
 	QStringList cat;
