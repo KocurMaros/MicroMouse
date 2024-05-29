@@ -23,6 +23,9 @@
 #define POS_X_TXT(x) "X: " + QString::number(x)
 #define POS_Y_TXT(y) "Y: " + QString::number(y)
 
+#define DEG2RAD(angle) (angle * M_PI / 180)
+#define RAD2DEG(angle) (angle * 180 / M_PI)
+
 MainWindow::MainWindow(QWidget *parent)
 	: QMainWindow(parent)
 	, motorChart(new QChart())
@@ -270,8 +273,8 @@ void MainWindow::updateChart()
 
 	// Update compass motorChart
 	gyroSeries->clear();
-	gyroSeries->append(gyroZArray.back(), 100); // Point on the perimeter of the compass
-	gyroSeries->append(gyroZArray.back(), 0);	// Center of the compass
+	gyroSeries->append(RAD2DEG(gyroZArray.back()), 100); // Point on the perimeter of the compass
+	gyroSeries->append(RAD2DEG(gyroZArray.back()), 0);	// Center of the compass
 
 	qDebug() << "Series size: " << motorSeriesA->count();
 	if (motorBufferSize > MOTOR_AXIS_LIMIT) {
