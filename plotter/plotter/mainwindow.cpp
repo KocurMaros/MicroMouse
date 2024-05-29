@@ -266,8 +266,8 @@ void MainWindow::readPendingDatagrams()
 			posXLineEdit->setText(POS_X_TXT(values[10].toDouble()));
 			posXLineEdit->setText(POS_X_TXT(values[11].toDouble()));
 		}
-		disconnectedTimer->start(2000);
 	}
+	disconnectedTimer->start(2000);
 }
 
 void MainWindow::updateChart()
