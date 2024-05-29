@@ -10,8 +10,8 @@
 #include <qglobal.h>
 #include <stdio.h>
 
-#define BATTERY_VOLTAGE_MAX 4.2
-#define BATTERY_VOLTAGE_MIN 3.3
+#define BATTERY_VOLTAGE_MAX 4200
+#define BATTERY_VOLTAGE_MIN 3300
 
 #define BATTERY_PERCENTAGE(voltage) (voltage - BATTERY_VOLTAGE_MIN) / (BATTERY_VOLTAGE_MAX - BATTERY_VOLTAGE_MIN) *100
 #define BATTERY_TEXT(voltage) "Battery: " + QString::number(BATTERY_PERCENTAGE(voltage)) + "%"
@@ -229,9 +229,10 @@ void MainWindow::updateChart()
 	// Update bar motorChart
 	QStringList cat;
 	for (int i = 0; i < tofChart->count(); ++i) {
-		tofChart->replace(i, tofArray.back()[i]);
+		const auto val = tofArray.back()[i] * 100;
+		tofChart->replace(i, val);
 		// Set the distance from metres to centimetres.
-		cat << QString::number(tofArray.back()[i] * 100);
+		cat << QString::number(val);
 	}
 	categories = cat;
 	axisXBar->setCategories(categories);
