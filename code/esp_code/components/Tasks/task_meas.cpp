@@ -31,7 +31,6 @@ extern "C" {
 #include "mpu9250.h"
 #include "calibrate.h"
 #include "common.h"
-#include "driver.h"
 }
 
 
@@ -52,7 +51,6 @@ extern "C" {
 
 #define MESSAGE_BUFF_LEN 512
 
-static Position position;
 static char message_buff[MESSAGE_BUFF_LEN];
 
 static esp_adc_cal_characteristics_t *adc_chars;
@@ -61,17 +59,15 @@ static const char *TAG = "task_meas.c";
 
 
 calibration_t cal = {
-	.mag_offset = {.x = 97.166016, .y = 289.740234, .z = 140.156250},
-    .mag_scale = {.x = 0.882882, .y = 1.107582, .z = 1.036830},
+	.mag_offset = {.x = 81.474609, .y = 263.013672, .z = 151.251953},
+    .mag_scale = {.x = 0.825025, .y = 1.174650, .z = 1.067693},
 
-    .gyro_bias_offset = {.x = -0.264158, .y = -0.483546, .z = -0.746560},
+    .gyro_bias_offset = {.x = -0.205422, .y = -0.542939, .z = -0.990540},
 
-	// .accel_offset = {.x = 0.001634, .y = 0.024676, .z = 0.050066},
-	// .accel_scale_lo = {.x = -0.995133, .y = -0.989244, .z = -1.002114},
-    // .accel_scale_hi = {.x = 1.003912, .y = 1.013656, .z = 1.015352},
-    .accel_offset = {.x = 0.004897, .y = 0.025831, .z = 0.048326},
-    .accel_scale_lo = {.x = 1.007639, .y = 1.011717, .z = 1.016182},
-    .accel_scale_hi = {.x = -0.988373, .y = -0.991530, .z = -0.998306},
+     .accel_offset = {.x = 0.011020, .y = 0.026382, .z = 0.060800},
+    .accel_scale_lo = {.x = 1.003300, .y = 1.013836, .z = 1.022332},
+    .accel_scale_hi = {.x = -0.989345, .y = -0.988584, .z = -0.989979},
+
 	};
 
 
@@ -92,6 +88,22 @@ static void transform_accel_gyro(vector_t *v)
 	v->y = -z;
 	v->z = -y;
 }
+/**
+ * Transformation: to get magnetometer aligned
+ * @param  {object} s {x,y,z} sensor
+ * @return {object}   {x,y,z} transformed
+ */
+static void transform_mag(vector_t *v)
+{
+  float x = v->x;
+  float y = v->y;
+  float z = v->z;
+
+  v->x = -y;
+  v->y = z;
+  v->z = -x;
+}
+
 
 #define PCNT_H_LIM_VAL      16
 #define PCNT_L_LIM_VAL      0
@@ -208,7 +220,7 @@ extern "C" void task_meas(void *arg)
     int64_t encoder_diff_time = 0;
 
 
-	vector_t va, vg;
+	vector_t va, vg, vm;
 	float roll, pitch, heading;	
 
 	VL53L1_Dev_t vl53l1_dev_1;
@@ -266,7 +278,7 @@ extern "C" void task_meas(void *arg)
 	/////////////////////////////////////////////////////
  
 	i2c_mpu9250_init(&cal);
-	ahrs_init(200, 0.9); // 200 Hz, 0.8 beta
+	ahrs_init(200, 0.8); // 200 Hz, 0.8 beta
 
 	//start after presing button
 
@@ -306,8 +318,8 @@ extern "C" void task_meas(void *arg)
     int64_t curr_time = 0, printTime = 0;
 	memset(message_buff,'\0', MESSAGE_BUFF_LEN);
 
-    init_motor_driver();
-
+    float freq = 0;
+    uint32_t it = 0;
 	for (;;) {
         //low voltage protection
         meas.log.voltage = esp_adc_cal_raw_to_voltage(adc1_get_raw(ADC1_CHANNEL_3), adc_chars) * 2.0;
@@ -321,19 +333,23 @@ extern "C" void task_meas(void *arg)
 
 		// Get the Accelerometer, Gyroscope and Magnetometer values.
 		esp_boot_time = esp_timer_get_time();
-		if ((esp_boot_time - update_rot_data_time) > 5000) { //200Hz
-			// ahrs_init(1'000'000/(esp_boot_time - update_rot_data_time), 0.8); 
-			ESP_ERROR_CHECK(get_accel_gyro(&va, &vg));
+		if ((esp_boot_time - update_rot_data_time) > 5'000) { //200Hz
+            freq = 1'000'000.0/(esp_boot_time - update_rot_data_time);
+			ahrs_init(freq, 0.8); 
+    		ESP_ERROR_CHECK(get_accel_gyro(&va, &vg));
 			transform_accel_gyro(&va);
 			transform_accel_gyro(&vg);
-		
-			ahrs_update_imu(DEG2RAD(vg.x), DEG2RAD(vg.y), DEG2RAD(vg.z), va.x, va.y, va.z);
-			update_rot_data_time = esp_timer_get_time();
-		}
+            // transform_mag(&vm);
+			
+            ahrs_update_imu(DEG2RAD(vg.x), DEG2RAD(vg.y), DEG2RAD(vg.z),
+                va.x, va.y, va.z);	
+            it++;
+            update_rot_data_time = esp_boot_time;
+     	}
 
 		esp_boot_time = esp_timer_get_time();
-		if ((esp_boot_time - process_controller_time) > 1'000) { //1kHz
-        
+		if ((esp_boot_time - process_controller_time) > 100'000) { //30Hz update second task
+
 			meas.tof.tof1 = vl53l1_read(tof_sensors[0]) / 1000.0;
 			meas.tof.tof2 = vl53l1_read(tof_sensors[1]) / 1000.0;
 			meas.tof.tof3 = vl53l1_read(tof_sensors[2]) / 1000.0;
@@ -344,37 +360,26 @@ extern "C" void task_meas(void *arg)
 			meas.orient.pitch = pitch;
 			meas.orient.heading = heading;
 
-            /**
-             * @brief TASK CONTROL old code
-             * 
-             */
-            set_speed_dir(0, 0); // 20 min____150 max
             meas.enc.encoder1 = left_motor_rot *4096/256;
             meas.enc.encoder2 = right_motor_rot*4096/256;
-			// int64_t time = esp_timer_get_time();
 			meas.enc.time_diff = esp_timer_get_time() - encoder_diff_time;
 			encoder_diff_time = esp_timer_get_time();
-            left_motor_rot = 0;
-            right_motor_rot = 0;
-            calculate_odometry(&meas.enc,&position);
-            if((double)(esp_timer_get_time() - printTime)/1000.0 > 100.0){
-				//printf("Pos X: %1.2lf,  Enc1Ticks: %lld, Enc2Ticks: %lld\n", position.x/10.0, meas.enc.encoder1, meas.enc.encoder2);
-				//printf("Motor A dir %s, Motor B dir %s\n",meas.enc.dir_A ? "Forward" : "Revers", meas.enc.dir_B ? "Forward" : "Revers");
-				//printf("H: %1.2f, P: %1.2f, R: %1.2f\n",meas.orient.heading, meas.orient.pitch, meas.orient.roll);
-                // ESP_LOGI(TAG, "Pos X: %1.2f,  Enc1Ticks: %d, Enc2Ticks: %d\n", position.x/10.0, meas.enc.encoder1, meas.enc.encoder2);
-                ESP_LOGI(TAG, "Heading: %1.2f, Pitch: %1.2f, Roll: %1.2f\n",meas.orient.heading, meas.orient.pitch, meas.orient.roll);
-				printTime = esp_timer_get_time();
-			}
+            meas.log.hz_gyro = it;
+            meas.log.gyro_freq = freq;
+
             xQueueSend(FIFO_Meas_to_Cont, &meas, 50 / portTICK_RATE_MS);
             random_flag++;
+            
+            it = 0;
+            left_motor_rot = 0;
+            right_motor_rot = 0;
 			process_controller_time = esp_timer_get_time();
 		}
+
 		if (process_controller_time > esp_boot_time) // ak pretecie esp_boot_time, vyresetuj cycle_time
 			process_controller_time = esp_boot_time;
         if(update_rot_data_time > esp_boot_time)
             update_rot_data_time = esp_boot_time;
 		
 	}
-    deinit_pid(pid_left);
-	deinit_pid(pid_right);
 }
