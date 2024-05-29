@@ -149,17 +149,6 @@ MainWindow::MainWindow(QWidget *parent)
 	});
 
 	pauseButton = new QPushButton("Pause");
-	connect(pauseButton, &QPushButton::clicked, [this]() {
-		if (timer->isActive()) {
-			timer->stop();
-			pauseButton->setText("Continue");
-		}
-		else {
-			timer->start();
-			pauseButton->setText("Pause");
-		}
-	});
-
 	centralWidget = new QWidget(this);
 	QVBoxLayout *layout = new QVBoxLayout(centralWidget);
 	layout->addWidget(plotMotor);
@@ -174,8 +163,22 @@ MainWindow::MainWindow(QWidget *parent)
 
 	connect(timer, &QTimer::timeout, this, &MainWindow::updateChart);
 	timer->start(50); // Update every 100 ms
-    QSize winSize(1000,800);
-    this->setMinimumSize(winSize);
+
+	connect(pauseButton, &QPushButton::clicked, [this]() {
+		if (timer->isActive()) {
+			timer->stop();
+			pauseButton->setText("Continue");
+			std::cout << "Continued" << std::endl;
+		}
+		else {
+			timer->start();
+			pauseButton->setText("Pause");
+			std::cout << "Paused" << std::endl;
+		}
+	});
+
+	QSize winSize(1000,800);
+	this->setMinimumSize(winSize);
 }
 
 MainWindow::~MainWindow()
