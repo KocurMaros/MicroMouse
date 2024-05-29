@@ -99,7 +99,7 @@ MainWindow::MainWindow(QWidget *parent)
 	tofChart->addAxis(axisXBar, Qt::AlignBottom);
 	tofSeries->attachAxis(axisXBar);
 
-	auto *axisYBar = new QValueAxis;
+	auto *axisYBar = new QValueAxis();
 	axisYBar->setRange(0, 40);
 	tofChart->addAxis(axisYBar, Qt::AlignLeft);
 	tofSeries->attachAxis(axisYBar);
@@ -229,9 +229,10 @@ void MainWindow::updateChart()
 	// Update bar motorChart
 	QStringList cat;
 	for (int i = 0; i < tofChart->count(); ++i) {
-		tofChart->replace(i, tofArray.back()[i]);
+		const auto val = tofArray.back()[i] * 100;
+		tofChart->replace(i, val);
 		// Set the distance from metres to centimetres.
-		cat << QString::number(tofArray.back()[i] * 100);
+		cat << QString::number(val);
 	}
 	categories = cat;
 	axisXBar->setCategories(categories);
