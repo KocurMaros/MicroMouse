@@ -132,4 +132,9 @@ void motor_update_current_speed(const encoders *enc, double *left, double *right
  */
 void calculate_odometry(encoders *enc, Position *pos);
 
+
+double get_pid_left_feedback();
+
+double get_pid_right_feedback();
+
 #endif // DRIVER_H

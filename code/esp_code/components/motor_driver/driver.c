@@ -305,3 +305,12 @@ void calculate_odometry(encoders *enc, Position *pos)
 	pos->y = pos->y + distance * sin(pos->theta);
 }
 
+double get_pid_left_feedback()
+{
+	return pid_left->feedback;
+}
+
+double get_pid_right_feedback()
+{
+	return pid_right->feedback;
+}
