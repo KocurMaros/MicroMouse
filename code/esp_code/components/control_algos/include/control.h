@@ -8,6 +8,6 @@
 /// @param _current_tof_data [in] current distance from the onboard TOF sensors [m]
 /// @param speed_left_ [out] the calculated speed for the left motor [mm/s]
 /// @param speed_right_ [out] the calculated speed for the right motor [mm/s]
-void control_brightenberg_fear(const values_tof *_current_tof_data, int *speed_left_, int *speed_right_);
+void control_braitenberg_fear(const values_tof *_current_tof_data, int *speed_left_, int *speed_right_);
 
 #endif // CONTROL_H

@@ -460,7 +460,7 @@ extern "C" void task_meas(void *arg)
 			last_time = esp_timer_get_time();
             left_motor_rot = 0;
             right_motor_rot = 0;
-            calculate_odometry(&meas.enc,&position);
+            //calculate_odometry(&meas.enc,&position);
             if((double)(curr_time - printTime)/1000.0 > 100.0){
 				//printf("Pos X: %1.2lf,  Enc1Ticks: %lld, Enc2Ticks: %lld\n", position.x/10.0, meas.enc.encoder1, meas.enc.encoder2);
 				//printf("Motor A dir %s, Motor B dir %s\n",meas.enc.dir_A ? "Forward" : "Revers", meas.enc.dir_B ? "Forward" : "Revers");
