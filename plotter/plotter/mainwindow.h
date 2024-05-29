@@ -33,6 +33,7 @@ private slots:
 
 private:
 	QChart *motorChart;
+	QChart *controlSignalChart;
 	QBarSeries *barSeries;
 	QBarSet *tofChart;
 	QStringList categories;
@@ -41,10 +42,12 @@ private:
 	QTimer *timer;
 	QWidget *centralWidget;
 	QChartView *plotMotor;
+	QChartView *plotControl;
 	QChartView *plotTof;
 	QChartView *plotGyro;
 	QLineSeries *motorSeriesA;
 	QLineSeries *motorSeriesB;
+	QLineSeries *controlSeries;
 	QBarSeries *tofSeries;
 	QLineSeries *gyroSeries;
 	QUdpSocket *udpSocket;
