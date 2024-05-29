@@ -7,8 +7,10 @@
 #include <QtCharts/QBarSeries>
 #include <QtCharts/QBarSet>
 #include <QtCharts/QPolarChart>
+#include <QPushButton>
 #include <QUdpSocket>
 #include <QTimer>
+#include <QLineEdit>
 #include <mutex>
 
 #ifdef win32
@@ -42,6 +44,10 @@ private:
 	QBarSeries *tofSeries;
 	QLineSeries *gyroSeries;
 	QUdpSocket *udpSocket;
+	// 4.2 - 3.3
+	QLineEdit *batteryLineEdit;
+	QLineEdit *gyroFrequencyLineEdit;
+	QPushButton *clearMotorChartButton;
 	QString localIP;
 	quint16 localPort;
 	QVector<double> timestampArray;
@@ -49,6 +55,8 @@ private:
 	QVector<double> motorArrayB;
 	QVector<QVector<double>> tofArray;
 	QVector<double> gyroZArray;
+	double batteryVoltage;
+	double gyroFrequency;
 	std::mutex mut;
 	int bufferSize;
 	int x;
