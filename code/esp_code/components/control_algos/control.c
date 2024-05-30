@@ -25,8 +25,8 @@
 #define TOF_3_DESIRED_MIN .12
 #define TOF_3_DESIRED_MAX .14
 
-#define TOF_MAX .4 // The sensor distance limit[cm]
-#define TURN_LEFT_SWITCH 0.33
+#define TOF_MAX .2 // The sensor distance limit[cm]
+#define TURN_SWITCH 0.15
 #define TURN_LEFT_THRESH 0.23
 #define FROM_LEFT_TO_STRAIGHT_THRESH 0.15
 
@@ -41,8 +41,6 @@ typedef enum Wall_dir_t{
 
 
 PID *controller;
-bool turnLeft = false;
-
 static void limit_tof_error(double *tof)
 {
     if (*tof > TOF_MAX) {
@@ -61,24 +59,16 @@ void pid_update_params(double P, double I, double D, uint8_t reg_num){
         break;
     }
 }
+
+bool turnRight = false, turnLeft = false;
+double tof_avg;
 double control_braitenberg_fear(const MeasData *_current_sensor_data, int *speed_left_, int *speed_right_){
-    
-    //2 33, 3 13, 1 & 4 25
-
-    //2 23,3 13, 1 & 4 18
-
-    //2 81, 3 10, 1 29, 4 13
-    
-    // rovno
-
-
 
     if (_current_sensor_data->tof.tof1 < .05 && _current_sensor_data->tof.tof4 < .05) {
         *speed_left_ = 0;
         *speed_right_ = 0;
         return 0;
     }
-
     
     double left_error = _current_sensor_data->tof.tof2,
            right_error = _current_sensor_data->tof.tof3;
@@ -87,23 +77,26 @@ double control_braitenberg_fear(const MeasData *_current_sensor_data, int *speed
     right_error = right_error > TOF_MAX ? TOF_MAX : right_error;
 
     double err = left_error - right_error;
-    double control_signal = pid_control_from_error_d(controller, err);
-   
-    
 
+    double control_signal = pid_control_from_error_d(controller, err);
+    tof_avg = (_current_sensor_data->tof.tof1 + _current_sensor_data->tof.tof4) / 2. / TOF_MAX;
 
     //control_sig -= left_error;
     if (control_signal > 0.1) {
         *speed_left_ -= abs(control_signal);
+        *speed_left_ *= (tof_avg > 1 ? 1 : tof_avg);
     }
     else if (control_signal < -0.1) {
         *speed_right_ -= abs(control_signal);
+        *speed_right_ *= (tof_avg > 1 ? 1 : tof_avg);
     }
+  
+
 
     return control_signal;
 }
 
 void init_controller()
 {
-    controller = init_pid(800, 0, 0, -MAX_SPEED, MAX_SPEED, NULL, NULL);
+    controller = init_pid(1000, 0, 0, -MAX_SPEED, MAX_SPEED, NULL, NULL);
 }
