@@ -389,7 +389,7 @@
                     \def\@skolaTa{\printTa}
                     \def\@tempCourse{Predmet:}
                     \def\@tempLecturer{Predn\a'a\v{s}aj\a'uci:}
-                    \def\@tempTa{Cvi\v{c}iaci:}
+                    \def\@tempTa{Ved\a'uci t\a'imu:}
                 }
             }              
             {1}{

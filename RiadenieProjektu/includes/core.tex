@@ -1,15 +1,11 @@
 % !TEX root = ../example_paper.tex
-\section{Predstavenie Riešiteľského Kolektívu}
-
-Tu uveďte informácie o členoch vášho tímu, vrátane ich rolí a zodpovedností.
-
 \section{Dohodnuté Metódy Práce, Komunikácie a Koordinácie Projektu}
 V našom tíme sme dohodli nasledujúce rozdelenie úloh a zodpovedností:
 
 \begin{itemize}
     \item \textbf{3D CAD Modelovanie:} Táto časť projektu bola rozdelená medzi Matúša a Jakuba. Sú zodpovední za vytvorenie 3D modelov potrebných pre náš projekt.
     
-    \item \textbf{Návrh PCB a Veci Spojené s Hardvérom:} Maroš a Erik sa zaoberajú návrhom PCB a ostatnými aspektmi spojenými s hardvérom nášho projektu.
+    \item \textbf{Návrh DPS a Veci Spojené s Hardvérom:} Maroš a Erik sa zaoberajú návrhom DPS a ostatnými aspektmi spojenými s hardvérom nášho projektu.
     
     \item \textbf{Softvérový Vývoj:} Tím Edo, Timo a Filip majú na starosti softvérovú časť projektu. Ich zodpovednosťou je vývoj softvéru, vrátane návrhu a implementácie regulátorov, komunikácie medzi myšou a programom a algoritmov.
 \end{itemize}
@@ -23,142 +19,37 @@ Pre rýchlu komunikáciu a diskusiu využívame platformu Discord, na správu k�
 \subsection{Týždeň 1}
 \begin{itemize}
     \item \textbf{Stretnutie:} 20/02/2024
-    \item \textbf{Cieľ: } blabla
+    \item \textbf{Cieľ:} Výber MCU, senzorov a driverov pre motory a rozmerov myšky.}
     \item \textbf{Zoznam Úloh:}
 \end{itemize}
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|l|p{0.6\linewidth}|}
+        \hline
+        \textbf{Člen} & \textbf{Úloha} \\
+        \hline
+        Eduard Zelenay & Zoznamovanie sa s platformou esp-idf \\
+        \hline
+        Erik Môcik & Rešerš potrebných senzorov \\
+        \hline
+        Filip Lobpreis & Zoznamovanie sa s platformou esp-idf \\
+        \hline
+        Jakub Močarník & Vyjasnenie priradenia k projektu\\
+        \hline
+        Maroš Kocúr & Navrhnutie a vytvorenie DPS v programe KiCAD \\
+        \hline
+        Matúš Machata & Vyjasnenie priradenia k projektu \\
+        \hline
+        Timotej Polc & Zoznamovanie sa s platformou esp-idf \\
+        \hline
+    \end{tabular}
+\end{table}
 
-\begin{tabular}{|l|l|}
-    \hline
-    \textbf{Člen} & \textbf{Úloha} \\
-    \hline
-    Eduard Zelenay & Zoznamovanie sa s platformou esp-idf \\
-    Erik Môcik & Rešerš potrebných senzorov \\
-    Filip Lobpreis & Vyhľadanie vhodných algoritmov a logiky \\
-    Jakub Močarník & Vyjasnenie priradenia k projektu\\
-    Maroš Kocúr & Navrhnutie a vytvorenie PCB v programe KiCAD \\
-    Matúš Machata & Diskusia ohľadom výberu motorov a PCB dosky, prvotné námety na riešenie HW \\
-    Timotej Polc & Konzultácia spojenia hardvéru so softvérom \\
-    \hline
-\end{tabular}
 \subsection{Týždeň 2}
+Dizajn DPS a rozdelenie úloh podľa skúseností jednotlivých členov tímu.
 \begin{itemize}
     \item \textbf{Stretnutie:} 27/02/2024
-    \item \textbf{Zoznam Úloh:}
-\end{itemize}
-
-\begin{tabular}{|l|l|}
-    \hline
-    \textbf{Člen} & \textbf{Úloha} \\
-    \hline
-    Eduard Zelenay & Študovanie datasheetu ku ToF senzorom \\
-    Erik Môcik & Rešerš potrebných senzorov \\
-    Filip Lobpreis & Vyhľadanie vhodných algoritmov a logiky \\
-    Jakub Močarník & Vyjasnenie priradenia k projektu \\
-    Maroš Kocúr & Navrhnutie a vytvorenie PCB v programe KiCAD \\
-    Matúš Machata & Príprava informácií a zdrojových materiálov (3D model motora, model PCB dosky) \\
-    Timotej Polc & Konzultácia spojenia hardvéru so softvérom \\
-    \hline
-\end{tabular}
-\newpage
-\subsection{Týždeň 3}
-\begin{itemize}
-    \item \textbf{Stretnutie:} 05/03/2024
-    \item \textbf{Zoznam Úloh:}
-\end{itemize}
-
-\begin{tabular}{|l|l|}
-    \hline
-    \textbf{Člen} & \textbf{Úloha} \\
-    \hline
-    Eduard Zelenay & Tvorba knižnice pre senzory \\
-    Erik Môcik & Rešerš potrebných senzorov \\
-    Filip Lobpreis & Vyhľadanie vhodných algoritmov a logiky \\
-    Jakub Močarník & Vyjasnenie priradenia k projektu \\
-    Maroš Kocúr & Navrhnutie a vytvorenie PCB v programe KiCAD \\
-    Matúš Machata & Prvotný návrh kolies a prevodovky, diskusia návrhov \\
-    Timotej Polc & Konzultácia spojenia hardvéru so softvérom \\
-    \hline
-\end{tabular}
-\subsection{Týždeň 4}
-\begin{itemize}
-    \item \textbf{Stretnutie:} 12/03/2024
-    \item \textbf{Zoznam Úloh:}
-\end{itemize}
-
-\begin{tabular}{|l|l|}
-    \hline
-    \textbf{Člen} & \textbf{Úloha} \\
-    \hline
-    Eduard Zelenay & Tvorba knižnice pre senzory \\
-    Erik Môcik & Rešerš potrebných senzorov \\
-    Filip Lobpreis & Vyhľadanie vhodných algoritmov a logiky \\
-    Jakub Močarník & Zaradenie k téme, priradenie CAD časti, návrh úchytov, kolies a prevodov spolu s Matúšom Machatom. \\
-    Maroš Kocúr & Navrhnutie a vytvorenie PCB v programe KiCAD \\
-    Matúš Machata & Prerábanie 3D modelu prevodovky \\
-    Timotej Polc & Konzultácia spojenia hardvéru so softvérom \\
-    \hline
-\end{tabular}
-\subsection{Týždeň 5}
-\begin{itemize}
-    \item \textbf{Stretnutie:} 19/03/2024
-    \item \textbf{Zoznam Úloh:}
-\end{itemize}
-
-\begin{tabular}{|l|l|}
-    \hline
-    \textbf{Člen} & \textbf{Úloha} \\
-    \hline
-    Eduard Zelenay & Tvorba knižnice pre senzory \\
-    Erik Môcik & Rešerš potrebných senzorov \\
-    Filip Lobpreis & Vyhľadanie vhodných algoritmov a logiky \\
-    Jakub Močarník & Prvé návrhy, prvotný návrh úchytov \\
-    Maroš Kocúr & Navrhnutie a vytvorenie PCB v programe KiCAD \\
-    Matúš Machata & Rešerš vhodných skrutiek, matiek a ostatných potrebných komponentov \\
-    Timotej Polc & Konzultácia spojenia hardvéru so softvérom \\
-    \hline
-\end{tabular}
-\subsection{Týždeň 6}
-\begin{itemize}
-    \item \textbf{Stretnutie:} 26/03/2024
-    \item \textbf{Zoznam Úloh:}
-\end{itemize}
-
-\begin{tabular}{|l|l|}
-    \hline
-    \textbf{Člen} & \textbf{Úloha} \\
-    \hline
-    Eduard Zelenay & Debugovanie, testovanie senzoru \\
-    Erik Môcik & Rešerš potrebných senzorov \\
-    Filip Lobpreis & Vyhľadanie vhodných algoritmov a logiky \\
-    Jakub Močarník & Prvý návrh s motormi pre našu aplikáciu, nasledovala tlač a pripomienkovanie nedostatkov \\
-    Maroš Kocúr & Navrhnutie a vytvorenie PCB v programe KiCAD \\
-    Matúš Machata & Prvá tlač 3D návrhu, modelovanie nového návrh z dôvodu menších nezrovnalostí \\
-    Timotej Polc & Konzultácia spojenia hardvéru so softvérom \\
-    \hline
-\end{tabular}
-\subsection{Týždeň 7}
-\begin{itemize}
-    \item \textbf{Stretnutie:} 02/04/2024
-    \item \textbf{Zoznam Úloh:}
-\end{itemize}
-
-\begin{tabular}{|l|l|}
-    \hline
-    \textbf{Člen} & \textbf{Úloha} \\
-    \hline
-    Eduard Zelenay & Implementácia 4 senzorov na reálnom zariadení \\
-    Erik Môcik & Rešerš potrebných senzorov \\
-    Filip Lobpreis & Vyhľadanie vhodných algoritmov a logiky \\
-    Jakub Močarník & Úprava komponentov na základe zistení z predošlej iterácie a ich nová tlač \\
-    Maroš Kocúr & Navrhnutie a vytvorenie PCB v programe KiCAD \\
-    Matúš Machata & Tlač ďalšej iterácie návrhu, čistenie a úprava výtlačkov \\
-    Timotej Polc & Konzultácia spojenia hardvéru so softvérom \\
-    \hline
-\end{tabular}
-\subsection{Týždeň 8}
-\begin{itemize}
-    \item \textbf{Stretnutie:} 09/04/2024
-    \item Dlho očakávaný príchod motorov Faulhaber.
+    \item \textbf{Cieľ: } Selekcia vhodných motorov, pozícia senzorov vzdialenosti a určenie bodu ťažiska. Debatovanie ohľadom nutnosti použitia kompasu pre spoľahlivejšie určovanie polohy.
     \item \textbf{Zoznam Úloh:}
 \end{itemize}
 
@@ -168,96 +59,282 @@ Pre rýchlu komunikáciu a diskusiu využívame platformu Discord, na správu k�
         \hline
         \textbf{Člen} & \textbf{Úloha} \\
         \hline
-        Eduard Zelenay & Code review, debugovanie gyroskopu \\
-        Erik Môcik & Rešerš potrebných senzorov \\
-        Filip Lobpreis & Vyhľadanie vhodných algoritmov a logiky \\
-        Jakub Močarník & Dopasovanie rozmerov komponentov na lepšie tolerancie na základe požadovaných vlastností \\
-        Maroš Kocúr & Navrhnutie a vytvorenie PCB v programe KiCAD \\
-        Matúš Machata & Nová tlač kolies a prevodovky z dôvodu nedostatočnej presnosti tlačiarne, diskusia ohľadom nahradenia prevodovky vyrobenou vstrekolisom \\
-        Timotej Polc & Konzultácia spojenia hardvéru so softvérom \\
+        Eduard Zelenay & Študovanie datasheetu ku ToF senzorom \\
+        \hline
+        Erik Môcik & Rešerš vhodných miniatúrnych motorov a enkóderov \\
+        \hline
+        Filip Lobpreis & Detailné skúmanie hotových riešení MicroMouse  \\
+        \hline
+        Jakub Močarník & Vyjasnenie priradenia k projektu \\
+        \hline
+        Maroš Kocúr & Navrhnutie a vytvorenie DPS v programe KiCAD \\
+        \hline
+        Matúš Machata & Vyjasnenie priradenia k projektu \\
+        \hline
+        Timotej Polc & Rešerš vhodných miniatúrnych motorov a enkóderov \\
         \hline
     \end{tabular}
 \end{table}
+\newpage
+\subsection{Týždeň 3}
+Stretnutie s Pánom doktorom Jurajom Slačkom ohľadom dizajnu myšky.
+\begin{itemize}
+    \item \textbf{Stretnutie:} 05/03/2024
+    \item \textbf{Cieľ: } Zvolenie efektívneho prevodového pomeru a polomeru kolies. Konzultácia návrhu bočného držiaku motorov a kolies.
+    \item \textbf{Zoznam Úloh:}
+\end{itemize}
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|l|p{0.6\linewidth}|}
+        \hline
+        \textbf{Člen} & \textbf{Úloha} \\
+        \hline
+        Erik Môcik & Výber motorov a enkóderov \\
+        \hline
+        Jakub Močarník & Návrh bočného držiaku motorov a kolies \\
+        \hline
+        Maroš Kocúr & Osádzanie a oživenie DPS \\
+        \hline
+        Matúš Machata & Prvotný návrh kolies a prevodovky \\
+        \hline
+    \end{tabular}
+\end{table}
+
+\subsection{Týždeň 4}
+Výroba a osadenie DPS so základnými súčiastkami (pasívne, regulátory napätia, MCU)
+\begin{itemize}
+    \item \textbf{Stretnutie:} 12/03/2024
+    \item \textbf{Cieľ: } Výber a objednanie vhodných senzorov na prototypizáciu.
+    \item \textbf{Zoznam Úloh:}
+\end{itemize}
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|l|p{0.6\linewidth}|}
+        \hline
+        \textbf{Člen} & \textbf{Úloha} \\
+        \hline
+        Eduard Zelenay & Naštudovanie použitého ToF senzoru \\
+        \hline
+        Erik Môcik & Objednanie senzorov(MPU 9250, VL53L1X) \\
+        \hline
+        Filip Lobpreis & Konzultácia logiky komunikácie SW s HW \\
+        \hline
+        Jakub Močarník & Tvorba ďaľšej iterácie modelov bočníc \\
+        \hline
+        Maroš Kocúr & Pridanie merania napätia batérie na DPS a obstaranie batérií \\
+        \hline
+        Matúš Machata & Prerábanie 3D modelu prevodovky \\
+        \hline
+        Timotej Polc & Konzultácia logiky komunikácie SW s HW \\
+        \hline
+    \end{tabular}
+\end{table}
+
+\subsection{Týždeň 5}
+Konzultácia možnosti spolupráce pri objednaní súčiastok so školou prostredníctvom Pána docenta Andreja Babinca.
+\begin{itemize}
+    \item \textbf{Stretnutie:} 19/03/2024
+    \item \textbf{Cieľ: } Umiestnenie gyroskopu a zvolenie vhodnej frekvencie obnovovania regulátora.
+    \item \textbf{Zoznam Úloh:}
+\end{itemize}
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|l|p{0.6\linewidth}|}
+        \hline
+        \textbf{Člen} & \textbf{Úloha} \\
+        \hline
+        Eduard Zelenay & Tvorba knižnice pre senzory \\
+        \hline
+        Filip Lobpreis & Vyhľadanie vhodných algoritmov a logiky \\
+        \hline
+        Jakub Močarník & Premodelovanie bočníc na iný motor \\
+        \hline
+        Maroš Kocúr & Programovanie štruktúry projektu v ESP-IDF \\
+        \hline
+        Matúš Machata & Rešerš vhodných skrutiek, matiek a ostatných potrebných komponentov \\
+        \hline
+        Timotej Polc & Programovanie štruktúry projektu v ESP-IDF \\
+        \hline
+    \end{tabular}
+\end{table}
+
+\subsection{Týždeň 6}
+Dokončenie knižnice pre ToF senzor. Dodanie senzorov zakúpených školou. 
+\begin{itemize}
+    \item \textbf{Stretnutie:} 26/03/2024
+    \item \textbf{Cieľ: } Vytvorenie knižnice pre gyroskop, regulátora pre motor a možnosti bezdrôtového posielania dát.
+    \item \textbf{Zoznam Úloh:}
+\end{itemize}
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|l|p{0.6\linewidth}|}
+        \hline
+        \textbf{Člen} & \textbf{Úloha} \\
+        \hline
+        Eduard Zelenay & Implementácia 4 senzorov na reálnom zariadení \\
+        \hline
+        Erik Môcik & Tvorba UDP klienta \\
+        \hline
+        Filip Lobpreis & Návrh regulátora na motor \\
+        \hline
+        Maroš Kocúr & Tvorba knižnice pre gyroskop \\
+        \hline
+        Timotej Polc & Vytvorenie odometrie \\
+        \hline
+    \end{tabular}
+\end{table}
+
+\subsection{Týždeň 7}
+Motory boli nepoužiteľné, vzhľadom na ich veľkosť a nízke rozlíšenie enkóderov. Dodané motory od univerzity, ale bez enkóderov.
+\begin{itemize}
+    \item \textbf{Stretnutie:} 02/04/2024
+    \item \textbf{Cieľ: } Zvolenie ďaľších krokov, kvôli blížiacemu sa termínu súťaže ISTROBOT. Reklamácia motorov.
+    \item \textbf{Zoznam Úloh:} V tomto týždni neboli rozvrhnuté žiadne úlohy, kvôli dodaniu nesprávnych typov motorov.
+\end{itemize}
+
+\subsection{Týždeň 8}
+Dlho očakávaný príchod motorov Faulhaber so zabudovanými enkódermi.
+\begin{itemize}
+    \item \textbf{Stretnutie:} 09/04/2024
+    \item \textbf{Cieľ: } Spojazdnenie enkóderov a návrh 3D modelov potrebných pre motory Faulhaber.
+    \item \textbf{Zoznam Úloh:}
+\end{itemize}
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|l|p{0.6\linewidth}|}
+        \hline
+        \textbf{Člen} & \textbf{Úloha} \\
+        \hline
+        Eduard Zelenay &  Tvorba UDP servera a aplikácie pre vizualizáciu dát\\
+        \hline
+        Erik Môcik & Tvorba UDP servera a aplikácie pre vizualizáciu dát \\
+        \hline
+        Filip Lobpreis & Regulátor pre nové motory \\
+        \hline
+        Jakub Močarník & Dopasovanie rozmerov komponentov \\
+        \hline
+        Maroš Kocúr & Opravenie DPS na vyššie napätie enkóderov \\
+        \hline
+        Matúš Machata & Nová tlač kolies a prevodovky z dôvodu nedostatočnej presnosti tlačiarne, diskusia ohľadom nahradenia prevodovky vyrobenou vstrekolisom \\
+        \hline
+        Timotej Polc & Revízia kódu, ladenie gyroskopu \\
+        \hline
+    \end{tabular}
+\end{table}
+\newpage
 \subsection{Týždeň 9}
+Finálna verzia myšky.
 \begin{itemize}
     \item \textbf{Stretnutie:} 16/04/2024
+    \item \textbf{Cieľ: } Testovanie všetkých senzorov a ovládačov.
     \item \textbf{Zoznam Úloh:}
 \end{itemize}
 
-\begin{tabular}{|l|l|}
-    \hline
-    \textbf{Člen} & \textbf{Úloha} \\
-    \hline
-    Eduard Zelenay & Testovanie inej open-source knižnice \\
-    Erik Môcik & Rešerš potrebných senzorov \\
-    Filip Lobpreis & Vyhľadanie vhodných algoritmov a logiky \\
-    Jakub Močarník & Pri tlači nám vznikali stále malé nepresnosti aj keď sa bral ohľad na smer tlače a aj veľkosť trisky, 
-iterovanie viacero verzií naraz aby sa čo najviac okresali čas potrebný na konečný kus\\
-    Maroš Kocúr & Navrhnutie a vytvorenie PCB v programe KiCAD \\
-    Matúš Machata & Montovanie kolies a prevodovky pre prípravu montáže na PCB \\
-    Timotej Polc & Konzultácia spojenia hardvéru so softvérom \\
-    \hline
-\end{tabular}
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|l|p{0.6\linewidth}|}
+        \hline
+        \textbf{Člen} & \textbf{Úloha} \\
+        \hline
+        Eduard Zelenay & Tvorba aplikácie pre vizualizáciu dát \\
+        \hline
+        Erik Môcik & Tvorba aplikácie pre vizualizáciu dát \\
+        \hline
+        Filip Lobpreis & Implementácia algoritmov \\
+        \hline
+        Maroš Kocúr & Synchronizovanie jadier na MCU \\
+        \hline
+        Timotej Polc & Implementácia algoritmov \\
+        \hline
+    \end{tabular}
+\end{table}
+
 \subsection{Týždeň 10}
+Synchronizovanie dát s UDP serverom a regulátorom.
 \begin{itemize}
     \item \textbf{Stretnutie:} 23/03/2024
+    \item \textbf{Cieľ: } Implementácia algoritmov.
     \item \textbf{Zoznam Úloh:}
 \end{itemize}
 
-\begin{tabular}{|l|l|}
-    \hline
-    \textbf{Člen} & \textbf{Úloha} \\
-    \hline
-    Eduard Zelenay & Code review odometrie a nekóderov \\
-    Erik Môcik & Vytvorenie UDP servera v Pythone \\
-    Filip Lobpreis & Vyhľadanie vhodných algoritmov a logiky \\
-    Jakub Močarník & Pridanie úchytov na batériu, sprofilovanie komponentov \\
-    Maroš Kocúr & Navrhnutie a vytvorenie PCB v programe KiCAD \\
-    Matúš Machata & Finálne obrábanie výtlačkov pre SW testovanie \\
-    Timotej Polc & Konzultácia spojenia hardvéru so softvérom \\
-    \hline
-\end{tabular}
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|l|p{0.6\linewidth}|}
+        \hline
+        \textbf{Člen} & \textbf{Úloha} \\
+        \hline
+        Eduard Zelenay & Písanie dokumentácie \\
+        \hline
+        Erik Môcik & Písanie dokumentácie \\
+        \hline
+        Filip Lobpreis & Testovanie algoritmov \\
+        \hline
+        Maroš Kocúr & Technologická podpora tímu \\
+        \hline
+        Timotej Polc & Testovanie algoritmov \\
+        \hline
+    \end{tabular}
+\end{table}
+\newpage
 \subsection{Týždeň 11}
+Nájdenie správnych parametrov regulátorov a odfiltrovanie chybných dát zo snímačov.
 \begin{itemize}
     \item \textbf{Stretnutie:} 30/04/2024
+    \item \textbf{Cieľ: } Testovanie algoritmov na reálnom zariadení.
     \item \textbf{Zoznam Úloh:}
 \end{itemize}
 
-\begin{tabular}{|l|l|}
-    \hline
-    \textbf{Člen} & \textbf{Úloha} \\
-    \hline
-    Eduard Zelenay & Ladenie regulátora \\
-    Erik Môcik & Grafické zobrazenie dát z enkóderov, ToF senzorov a gyroskopu pre jednoduchšie debugovanie \\
-    Filip Lobpreis & Vyhľadanie vhodných algoritmov a logiky \\
-    Jakub Močarník & Záverečné úpravy, presun zadných kolies kvôli nerovnomernosti tlače \\
-    Maroš Kocúr & Navrhnutie a vytvorenie PCB v programe KiCAD \\
-    Matúš Machata & Vytvorenie 3D modelu prevodovky \\
-    Timotej Polc & Konzultácia spojenia hardvéru so softvérom \\
-    \hline
-\end{tabular}
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|l|p{0.6\linewidth}|}
+        \hline
+        \textbf{Člen} & \textbf{Úloha} \\
+        \hline
+        Eduard Zelenay & Tvorba bludiska na testovanie \\
+        \hline
+        Erik Môcik & Tvorba bludiska na testovanie \\
+        \hline
+        Filip Lobpreis & Ladenie algoritmov \\
+        \hline
+        Jakub Močarník & Tvorba bludiska na testovanie \\
+        \hline
+        Maroš Kocúr & Technologická podpora tímu \\
+        \hline
+        Matúš Machata & Tvorba bludiska na testovanie \\
+        \hline
+        Timotej Polc & Ladenie algoritmov \\
+        \hline
+    \end{tabular}
+\end{table}
+
 \subsection{Týždeň 12}
+Myška zvláda prechádzať širšie koridory.
 \begin{itemize}
     \item \textbf{Stretnutie:} 07/05/2024
+    \item \textbf{Cieľ:} Optimalizácia myšky na prejdenie súťažných rozmerov bludiska.
     \item \textbf{Zoznam Úloh:}
 \end{itemize}
 
-\begin{tabular}{|l|l|}
-    \hline
-    \textbf{Člen} & \textbf{Úloha} \\
-    \hline
-    Eduard Zelenay & Prerábanie UDP do C++ \\
-    Erik Môcik & Spisovanie dokumentácie a riadenia projektu \\
-    Filip Lobpreis & Vyhľadanie vhodných algoritmov a logiky \\
-    Jakub Močarník & Posledné malé úpravy potrebné pre čo najlepší chod s finálnou iteráciou komponentov \\
-    Maroš Kocúr & Navrhnutie a vytvorenie PCB v programe KiCAD \\
-    Matúš Machata & Vytvorenie 3D modelu prevodovky \\
-    Timotej Polc & Konzultácia spojenia hardvéru so softvérom \\
-    \hline
-\end{tabular}
-
-
-
-\section{Podrobné Záznamy zo Stretnutí}
-
-Uveďte podrobné záznamy zo stretnutí tímu vrátane rozhodnutí a kontroly rozhodnutí.
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|l|p{0.6\linewidth}|}
+        \hline
+        \textbf{Člen} & \textbf{Úloha} \\
+        \hline
+        Eduard Zelenay & Pomoc pri práci s Git \\
+        \hline
+        Erik Môcik & Finálizovanie dokumentácie a riadenia projektu \\
+        \hline
+        Filip Lobpreis & Optimalizácia algoritmov a logiky \\
+        \hline
+        Maroš Kocúr & Optimalizácia algoritmov a logiky \\
+        \hline
+        Timotej Polc & Optimalizácia algoritmov a logiky \\
+        \hline
+    \end{tabular}
+\end{table}
