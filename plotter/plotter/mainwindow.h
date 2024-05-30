@@ -47,6 +47,8 @@ private:
 	QChart *encoderTicksChart;
 	QLineSeries *leftEncoderSeries;
 	QLineSeries *rightEncoderSeries;
+	double leftenc;
+	double rightenc;
 
 	QLineEdit *batteryLineEdit;
 

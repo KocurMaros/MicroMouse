@@ -133,7 +133,7 @@ MainWindow::MainWindow(QWidget *parent)
 		encoderTicksChart->setAxisX(axisX, controlSeries);
 
 		auto *axisY = new QValueAxis;
-		axisY->setRange(-50'000, 50'000);
+		axisY->setRange(-1'000, 1'000);
 		axisY->setLabelFormat("%i");
 		encoderTicksChart->setAxisY(axisY, controlSeries);
 		encoderTicksChart->setTitle("Control signal");
@@ -219,6 +219,8 @@ MainWindow::MainWindow(QWidget *parent)
 	connect(clearMotorChartButton, &QPushButton::clicked, [this]() {
 		motorSeriesA->clear();
 		motorSeriesB->clear();
+		leftEncoderSeries->clear();
+		rightEncoderSeries->clear();
 		motorBufferSize = 0;
 		motorBufferSizeLast = 0;
 	});
@@ -276,6 +278,8 @@ MainWindow::~MainWindow()
 {
 	motorChart->deleteLater();
 	motorSeriesA->deleteLater();
+	leftEncoderSeries->deleteLater();
+	rightEncoderSeries->deleteLater();
 	motorSeriesB->deleteLater();
 	tofSeries->deleteLater();
 	tofChart->deleteLater();
@@ -300,6 +304,8 @@ void MainWindow::readPendingDatagrams()
 			motorSeriesA->clear();
 			motorSeriesB->clear();
 			controlSeries->clear();
+			leftEncoderSeries->clear();
+			rightEncoderSeries->clear();
 			motorBufferSize = 0;
 			motorBufferSizeLast = 0;
 			continue;
@@ -329,8 +335,8 @@ void MainWindow::readPendingDatagrams()
 			posXLineEdit->setText(POS_X_TXT(values[10].toDouble()));
 			posXLineEdit->setText(POS_X_TXT(values[11].toDouble()));
 			control = values[12].toDouble();
-			leftEncoderSeries->append(timestamp, values[13].toDouble());
-			rightEncoderSeries->append(timestamp, values[13].toDouble());
+			leftenc = values[13].toDouble();
+			rightenc = values[13].toDouble();
 		}
 	}
 	disconnectedTimer->start(2000);
@@ -350,10 +356,14 @@ void MainWindow::updateChart()
 
 	motorSeriesA->append(timestamp, motorA);
 	motorSeriesB->append(timestamp, motorB);
+	leftEncoderSeries->append(timestamp, leftenc);
+	rightEncoderSeries->append(timestamp, rightenc);
+
 	controlSeries->append(timestamp, control);
 	auto start = motorSeriesA->at(0).x();
 	motorChart->axes(Qt::Horizontal).first()->setRange(start, timestamp);
 	controlSignalChart->axes(Qt::Horizontal).first()->setRange(start, timestamp);
+	encoderTicksChart->axes(Qt::Horizontal).first()->setRange(start, timestamp);
 
 	// Update bar motorChart
 	QStringList cat;
@@ -376,6 +386,8 @@ void MainWindow::updateChart()
 		motorSeriesA->remove(0);
 		motorSeriesB->remove(0);
 		controlSeries->remove(0);
+		leftEncoderSeries->remove(0);
+		rightEncoderSeries->remove(0);
 		motorBufferSize--;
 	}
 }
