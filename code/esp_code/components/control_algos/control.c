@@ -53,30 +53,29 @@ double control_braitenberg_fear(const MeasData *_current_sensor_data, int *speed
     
     // rovno
 
-START_TURN_LEFT:
-    if(turnLeft)
-    {
-        *speed_left_ = 20;
-        *speed_right_ = 100;
+// START_TURN_LEFT:
+//     if(turnLeft)
+//     {
+//         *speed_left_ = 20;
+//         *speed_right_ = 100;
 
-        if(_current_sensor_data->tof.tof2 < FROM_LEFT_TO_STRAIGHT_THRESH)
-            turnLeft = false;
+//         if(_current_sensor_data->tof.tof2 < FROM_LEFT_TO_STRAIGHT_THRESH)
+//             turnLeft = false;
+//         return;
+//     }
 
-        return;
-    }
+//     if(_current_sensor_data->tof.tof2 > TURN_LEFT_THRESH && _current_sensor_data->tof.tof3 < TOF_3_DESIRED_MAX)
+//     {
+//         *speed_left_ = 100;
+//         *speed_right_ = 100;
 
-    if(_current_sensor_data->tof.tof2 > TURN_LEFT_THRESH && _current_sensor_data->tof.tof3 < TOF_3_DESIRED_MAX)
-    {
-        *speed_left_ = 100;
-        *speed_right_ = 100;
-
-        return;
-    }
-    else if (_current_sensor_data->tof.tof2 <= TURN_LEFT_THRESH && _current_sensor_data->tof.tof3 < TOF_3_DESIRED_MAX)
-    {
-        turnLeft = true;
-        goto START_TURN_LEFT;
-    }
+//         return;
+//     }
+//     else if (_current_sensor_data->tof.tof2 <= TURN_LEFT_THRESH && _current_sensor_data->tof.tof3 < TOF_3_DESIRED_MAX)
+//     {
+//         turnLeft = true;
+//         goto START_TURN_LEFT;
+//     }
     
     
     
@@ -102,5 +101,5 @@ START_TURN_LEFT:
 
 void init_controller()
 {
-    controller = init_pid(1500, 1, 0, -MAX_SPEED, MAX_SPEED);
+    controller = init_pid(1500, 0, 0, -MAX_SPEED-25, MAX_SPEED);
 }

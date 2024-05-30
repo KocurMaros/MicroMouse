@@ -142,4 +142,5 @@ double get_pid_left_feedback();
 
 double get_pid_right_feedback();
 
+void clear_ramp();
 #endif // DRIVER_H

@@ -37,6 +37,18 @@ PID *pid_left;
 PID *pid_right;
 Direction dir;
 
+float current_multiplier = 0.0;
+
+uint16_t ramp_multiplier(uint16_t currentPwm, float dR){
+	current_multiplier += dR;
+	if(current_multiplier > 1.0)
+		current_multiplier =  1.0;
+	currentPwm = (uint16_t)(currentPwm*current_multiplier);
+	return currentPwm;
+}
+void clear_ramp(){
+	current_multiplier = 0;
+}
 void cap_pwm(int *currentPwm)
 {
 	*currentPwm = (*currentPwm < -1023 ? -1023 : *currentPwm > 1023 ? 1023 : *currentPwm);
@@ -85,8 +97,8 @@ void init_motor_driver()
 	pwm_init(MOTOR_A_PWM, MOTOR_A_PWM_CHANNEL);
 	pwm_init(MOTOR_B_PWM, MOTOR_B_PWM_CHANNEL);
 
-	pid_left = init_pid(10, 0.03, 0, 0, 1023);
-	pid_right = init_pid(10, 0.03, 0, 0, 1023); //cc timo chod dopice pls dik
+	pid_left = init_pid(7.5, 0.15, 0, 0, 1023);
+	pid_right = init_pid(7.5, 0.15, 0, 0, 1023); //cc timo chod dopice pls dik
 }
 
 void move_forward()
@@ -157,8 +169,8 @@ void set_speed_dir(int speed_left, int speed_right)
 	}
 	//move_forward();
 	
-	pwm_change_duty_raw(MOTOR_A_PWM_CHANNEL, pid_control(pid_left, speed_left));
-	pwm_change_duty_raw(MOTOR_B_PWM_CHANNEL, pid_control(pid_right, speed_right));
+	pwm_change_duty_raw(MOTOR_A_PWM_CHANNEL, ramp_multiplier(pid_control(pid_left, speed_left),0.01));
+	pwm_change_duty_raw(MOTOR_B_PWM_CHANNEL, ramp_multiplier(pid_control(pid_right, speed_right),0.01));
 }
 
 PID *init_pid(double kp, double ki, double kd, double lower_limit, double upper_limit)
@@ -198,6 +210,9 @@ uint16_t pid_control(PID *pid, double reference)
 	tmp = tmp > pid->upper_limit ? pid->upper_limit : (tmp< -pid->lower_limit ? -pid->lower_limit : tmp);
 
 	double error = reference - tmp;
+
+	if(abs(reference) < 20.0)
+		clear_ramp();
 	//printf("Reference: %1.2lf \t Feedback: %1.2lf \t ERROR = %1.2lf\n",reference,  pid->feedback, error);
 	if ((double)(esp_timer_get_time() - start_time) / 1000.0 > 100.0)
 	{
@@ -211,6 +226,11 @@ uint16_t pid_control(PID *pid, double reference)
 uint16_t pid_control_from_error(PID *pid, double error)
 {
 	pid->integral += error;
+
+	double int_low = -pid->upper_limit / pid->ki, 
+		   int_high = pid->upper_limit / pid->ki;
+
+	pid->integral = pid->integral < int_low ? int_low : (pid->integral > int_high ? int_high : pid->integral);
 
 	double derivative = error - pid->last_error;
 

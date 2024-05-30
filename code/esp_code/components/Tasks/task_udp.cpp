@@ -25,8 +25,8 @@ static Position position;
 
 int speed_left = 100, speed_right = 100;
 
-float cmpfunc (const void * a, const void * b) {
-   return ( *(float*)a - *(float*)b );
+int cmpfunc (const void * a, const void * b) {
+   return ( *(int*)a - *(int*)b );
 }
 
 
@@ -42,42 +42,42 @@ extern "C" void task_udp(void *arg)
     double ret = 0;
     uint32_t ulNotifiedValue;
     
-    uint8_t tof_index = 0;
-    uint8_t tof_itterations = 10;
-    float tof1[tof_itterations] = {0};
-    float tof2[tof_itterations] = {0};
-    float tof3[tof_itterations] = {0};
-    float tof4[tof_itterations] = {0};
-    float temp_tof1[tof_itterations], temp_tof2[tof_itterations], temp_tof3[tof_itterations], temp_tof4[tof_itterations];
+    // uint8_t tof_index = 0;
+    // uint8_t tof_itterations = 3;
+    // float tof1[tof_itterations] = {0};
+    // float tof2[tof_itterations] = {0};
+    // float tof3[tof_itterations] = {0};
+    // float tof4[tof_itterations] = {0};
+    // float temp_tof1[tof_itterations], temp_tof2[tof_itterations], temp_tof3[tof_itterations], temp_tof4[tof_itterations];
     for (;;) {
         xTaskNotifyWait(0x00, ULONG_MAX, &ulNotifiedValue, portMAX_DELAY);
         
 		if (ulNotifiedValue == COMM_OK) {
 			(void)xQueueReceive(FIFO_Meas_to_Cont, &val, (100/portTICK_PERIOD_MS)); // wait longer than 10 ms 
-            tof1[tof_index] = val.tof.tof1;
-            tof2[tof_index] = val.tof.tof2;
-            tof3[tof_index] = val.tof.tof3;
-            tof4[tof_index] = val.tof.tof4;
-            tof_index++;
-            if(tof_index >= tof_itterations)
-                tof_index = 0;
-            memcpy(temp_tof1, tof1, sizeof(tof1));
-            memcpy(temp_tof2, tof2, sizeof(tof2));
-            memcpy(temp_tof3, tof3, sizeof(tof3));
-            memcpy(temp_tof4, tof4, sizeof(tof4));
+            // tof1[tof_index] = val.tof.tof1;
+            // tof2[tof_index] = val.tof.tof2;
+            // tof3[tof_index] = val.tof.tof3;
+            // tof4[tof_index] = val.tof.tof4;
+            // tof_index++;
+            // if(tof_index >= tof_itterations)
+            //     tof_index = 0;
+            // memcpy(temp_tof1, tof1, sizeof(tof1));
+            // memcpy(temp_tof2, tof2, sizeof(tof2));
+            // memcpy(temp_tof3, tof3, sizeof(tof3));
+            // memcpy(temp_tof4, tof4, sizeof(tof4));
 
-            qsort(temp_tof1, tof_itterations, sizeof(float), cmpfunc);
-            qsort(temp_tof2, tof_itterations, sizeof(float), cmpfunc);
-            qsort(temp_tof3, tof_itterations, sizeof(float), cmpfunc);
-            qsort(temp_tof4, tof_itterations, sizeof(float), cmpfunc);
+            // qsort(temp_tof1, tof_itterations, sizeof(float), cmpfunc);
+            // qsort(temp_tof2, tof_itterations, sizeof(float), cmpfunc);
+            // qsort(temp_tof3, tof_itterations, sizeof(float), cmpfunc);
+            // qsort(temp_tof4, tof_itterations, sizeof(float), cmpfunc);
 
-            val.tof.tof1 = temp_tof1[tof_itterations/2];
-            val.tof.tof2 = temp_tof2[tof_itterations/2];
-            val.tof.tof3 = temp_tof3[tof_itterations/2];
-            val.tof.tof4 = temp_tof4[tof_itterations/2];
+            // val.tof.tof1 = temp_tof1[tof_itterations/2];
+            // val.tof.tof2 = temp_tof2[tof_itterations/2];
+            // val.tof.tof3 = temp_tof3[tof_itterations/2];
+            // val.tof.tof4 = temp_tof4[tof_itterations/2];
 
-            speed_left = 100;
-            speed_right = 100;
+            speed_left = 200;
+            speed_right = 200;
             ret = control_braitenberg_fear(&val, &speed_left, &speed_right);
             set_speed_dir(speed_left, speed_right);  
             calculate_odometry(&val.enc, &position, &val.orient);
