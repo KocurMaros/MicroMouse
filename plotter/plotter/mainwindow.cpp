@@ -79,7 +79,7 @@ MainWindow::MainWindow(QWidget *parent)
 		motorChart->setAxisX(axisX, motorSeriesB);
 
 		auto *axisY = new QValueAxis;
-		axisY->setRange(-25, 25);
+        axisY->setRange(-200, 200);
 		axisY->setLabelFormat("%i");
 		motorChart->setAxisY(axisY, motorSeriesA);
 		motorChart->setAxisY(axisY, motorSeriesB);
@@ -97,7 +97,7 @@ MainWindow::MainWindow(QWidget *parent)
 		controlSignalChart->setAxisX(axisX, controlSeries);
 
 		auto *axisY = new QValueAxis;
-		axisY->setRange(-200, 200);
+        axisY->setRange(-100, 100);
 		axisY->setLabelFormat("%i");
 		controlSignalChart->setAxisY(axisY, controlSeries);
 		controlSignalChart->setTitle("Control signal");

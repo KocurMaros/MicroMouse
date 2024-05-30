@@ -229,11 +229,20 @@ double pid_control_from_error_d(PID *pid, double error)
 {
 	pid->integral += error;
 
+	double int_low = pid->lower_limit / pid->ki, 
+		   int_high = pid->upper_limit / pid->ki;
+
+	pid->integral = pid->integral < int_low ? int_low : (pid->integral > int_high ? int_high : pid->integral);
+	
 	double derivative = error - pid->last_error;
 
 	double tmp = pid->kp * error + pid->ki * pid->integral + pid->kd * derivative;
 	pid->virginOutput = tmp;
-	pid->clampedOutput = pid->virginOutput < pid->lower_limit ? pid->lower_limit : (pid->virginOutput > pid->upper_limit ? pid->upper_limit : pid->virginOutput);
+	pid->clampedOutput =  pid->virginOutput /**2.5*/ > pid->upper_limit ? pid->upper_limit : pid->virginOutput/**2.5*/;
+	pid->clampedOutput = pid->clampedOutput < 0 ? pid->clampedOutput /** 9.5*/ : pid->clampedOutput;
+
+	pid->clampedOutput = pid->clampedOutput < pid->lower_limit ? pid->lower_limit : pid->clampedOutput;
+
 	//printf("PID_TMP: %1.2lf \t PID OUT: %1.2lf \t PID_ACTUAL: %1.2lf \t ERROR: %1.2lf\n", tmp, pid->virginOutput, pid->clampedOutput, error);
 
 	pid->last_error = error;
