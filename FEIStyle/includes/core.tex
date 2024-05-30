@@ -182,11 +182,28 @@ Postup na~inicializáciu ESP IDF a~následné spustenie projektu je nasledovný:
 Alternatívne spustenie je možné pomocou platformy \textbf{Visual Studio Code} s~nainštalovaným rozšírením
 \textbf{ESP-IDF}~\cite{espIDF}.
 \subsection{UDP Komunikácia}
-Pre spolahlivejšie ladenie a sledovanie správania programu sme implementovali UDP komunikáciu v prostredí Qt Creator v jazyku C++. Táto komunikácia nám umožnila používať realtime grafy na sledovanie správania mikromyši. Súčasťou implementácie bolo aj vytvorenie servera a komunikácia medzi PCB mikromyši a serverom.
+Pre spolahlivejšie ladenie a sledovanie správania programu sme implementovali UDP komunikáciu v prostredí Qt Creator v jazyku C++. Táto komunikácia nám umožnila používať realtime grafy na sledovanie správania mikromyši. Súčasťou implementácie bolo aj vytvorenie servera a komunikácia medzi PCB mikromyši a serverom. V tejto komunikácii funguje ESP32 ako klient a počítač ako server. ESP32 posiela údaje o stave mikromyši na počítač, ktorý ich zobrazuje v našej mini HMI aplikácii. 
+\begin{figure}[!htpb]
+    \centering
+    \includegraphics[width=1\linewidth]{includes//images/image.png}
+    \caption{Používateľské rozhranie HMI aplikácie }
+    \label{fig:UDP}
+\end{figure}
+Táto aplikácia nám poskytuje efektívny nástroj na ladenie a prácu s mikromyšou, čo nám umožňuje rýchlo a presne reagovať na zmeny a optimalizovať výkon našej autonómnej myšky. \ref{fig:UDP} 
+\newpage
 \subsection{Senzory}
 
 \subsubsection{VL53L1X}
 Pre snímanie vzdialenosti bola vytvorená knižnica na kalibráciu a vyčítavanie dát zo senzora VL53L1X. Komunikácia prebieha prostredníctvom komunikačného protokolu $I^2 C$. Knižnica je nadstavbou nad voľne dostupným rozhraním od STMicroelectronics.
+
+\subsubsection{MPU9250}
+\begin{figure}[!htpb]
+    \centering
+    \includegraphics[width=1\linewidth]{includes//images/rpy.png}
+    \caption{Gyroskop s akcelerometrom MPU9250 }
+    \label{fig:UDP}
+\end{figure}
+V našom projekte sme použili senzor MPU9250, ktorý je trojosovým akcelerometrom a gyroskopom. Tento senzor nám umožňuje získavať presné údaje o orientácii mikromyši v trojrozmernom priestore. Kľúčovou súčasťou spracovania dát z tohto senzoru je výpočet Eulerových uhlov -- roll, pitch a yaw. Tieto údaje sú neoceniteľné pre stabilizáciu a presné navigačné manévre mikromyši, poskytujúc tak lepší prehľad o jej aktuálnom náklone a orientácii.
 
 \subsection{Odometria}
 \label{subsec:odometria}
