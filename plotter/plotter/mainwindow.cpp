@@ -37,10 +37,14 @@
 MainWindow::MainWindow(QWidget *parent)
 	: QMainWindow(parent)
 	, motorChart(new QChart())
-	, controlSignalChart(new QChart())
 	, motorSeriesA(new QLineSeries())
 	, motorSeriesB(new QLineSeries())
+	, controlSignalChart(new QChart())
 	, controlSeries(new QLineSeries())
+	, axisXBar(new QBarCategoryAxis())
+	, encoderTicksChart(new QChart())
+	, leftEncoderSeries(new QLineSeries())
+	, rightEncoderSeries(new QLineSeries())
 	, tofSeries(new QBarSeries())
 	, tofChart(new QBarSet("BarSet"))
 	, gyroChart(new QPolarChart())
@@ -66,6 +70,12 @@ MainWindow::MainWindow(QWidget *parent)
 	connect(udpSocket, &QUdpSocket::readyRead, this, &MainWindow::readPendingDatagrams);
 
 	{
+		motorSeriesA->setName("Tof 1 Series");
+		motorSeriesA->setColor(Qt::blue);
+
+		motorSeriesB->setName("Tof 2 Series");
+		motorSeriesB->setColor(Qt::red);
+
 		// Setup line motorChart
 		motorChart->legend()->hide();
 		motorChart->addSeries(motorSeriesA);
@@ -84,23 +94,52 @@ MainWindow::MainWindow(QWidget *parent)
 		motorChart->setAxisY(axisY, motorSeriesA);
 		motorChart->setAxisY(axisY, motorSeriesB);
 		motorChart->setTitle("Motor 1 and 2");
+
+		plotMotor = new QChartView(motorChart);
+		plotMotor->setRenderHint(QPainter::Antialiasing);
 	}
 
 	{
 		controlSignalChart->legend()->hide();
-		controlSignalChart->addSeries(controlSeries);
+		controlSignalChart->addSeries(leftEncoderSeries);
+		controlSignalChart->addSeries(rightEncoderSeries);
 		controlSignalChart->createDefaultAxes();
 
 		auto *axisX = new QValueAxis;
 		axisX->setRange(0, MOTOR_AXIS_LIMIT);
 		axisX->setLabelFormat("%i");
-		controlSignalChart->setAxisX(axisX, controlSeries);
+		controlSignalChart->setAxisX(axisX, leftEncoderSeries);
+		controlSignalChart->setAxisX(axisX, rightEncoderSeries);
 
 		auto *axisY = new QValueAxis;
-        axisY->setRange(-100, 100);
+		axisY->setRange(-100, 100);
 		axisY->setLabelFormat("%i");
-		controlSignalChart->setAxisY(axisY, controlSeries);
+		controlSignalChart->setAxisY(axisY, leftEncoderSeries);
+		controlSignalChart->setAxisY(axisY, rightEncoderSeries);
 		controlSignalChart->setTitle("Control signal");
+
+		plotControl = new QChartView(controlSignalChart);
+		plotControl->setRenderHint(QPainter::Antialiasing);
+	}
+
+	{
+		encoderTicksChart->legend()->hide();
+		encoderTicksChart->addSeries(controlSeries);
+		encoderTicksChart->createDefaultAxes();
+
+		auto *axisX = new QValueAxis;
+		axisX->setRange(0, MOTOR_AXIS_LIMIT);
+		axisX->setLabelFormat("%i");
+		encoderTicksChart->setAxisX(axisX, controlSeries);
+
+		auto *axisY = new QValueAxis;
+		axisY->setRange(-50'000, 50'000);
+		axisY->setLabelFormat("%i");
+		encoderTicksChart->setAxisY(axisY, controlSeries);
+		encoderTicksChart->setTitle("Control signal");
+
+		plotEncoderTicks = new QChartView(encoderTicksChart);
+		plotEncoderTicks->setRenderHint(QPainter::Antialiasing);
 	}
 
 	batteryLineEdit = new QLineEdit(this);
@@ -108,12 +147,6 @@ MainWindow::MainWindow(QWidget *parent)
 
 	gyroFrequencyLineEdit = new QLineEdit(this);
 	gyroFrequencyLineEdit->setText(GYRO_TEXT(0));
-
-	motorSeriesA->setName("Tof 1 Series");
-	motorSeriesA->setColor(Qt::blue);
-
-	motorSeriesB->setName("Tof 2 Series");
-	motorSeriesB->setColor(Qt::red);
 
 	// Setup bar chart
 	tofChart->append({ 0, 0, 0, 0 }); // Initialize with 4 values
@@ -130,7 +163,6 @@ MainWindow::MainWindow(QWidget *parent)
 			   << "2"
 			   << "3"
 			   << "4";
-	axisXBar = new QBarCategoryAxis();
 	axisXBar->append(categories);
 	tofChart->addAxis(axisXBar, Qt::AlignBottom);
 	tofSeries->attachAxis(axisXBar);
@@ -160,11 +192,6 @@ MainWindow::MainWindow(QWidget *parent)
 	gyroChart->setTitle("Gyro, Z axis");
 
 	// Configure layout
-	plotMotor = new QChartView(motorChart);
-	plotMotor->setRenderHint(QPainter::Antialiasing);
-
-	plotControl = new QChartView(controlSignalChart);
-	plotControl->setRenderHint(QPainter::Antialiasing);
 
 	plotTof = new QChartView(tofChart);
 	plotTof->setRenderHint(QPainter::Antialiasing);
@@ -202,7 +229,12 @@ MainWindow::MainWindow(QWidget *parent)
 	layout->addWidget(plotMotor);
 	layout->addWidget(plotControl);
 	layout->addWidget(plotTof);
-	layout->addWidget(plotGyro);
+
+	QBoxLayout *hLayout = new QHBoxLayout();
+	hLayout->addWidget(plotGyro);
+	hLayout->addWidget(plotEncoderTicks);
+
+	layout->addLayout(hLayout);
 	layout->addWidget(batteryLineEdit);
 	layout->addWidget(gyroFrequencyLineEdit);
 	layout->addWidget(posXLineEdit);
@@ -223,7 +255,7 @@ MainWindow::MainWindow(QWidget *parent)
 		}
 		else {
 			timer->start();
-            pauseButton->setText("Pause");
+			pauseButton->setText("Pause");
 			std::cout << "Paused" << std::endl;
 		}
 	});
@@ -250,6 +282,7 @@ MainWindow::~MainWindow()
 	gyroChart->deleteLater();
 	gyroSeries->deleteLater();
 	clearMotorChartButton->deleteLater();
+	encoderTicksChart->deleteLater();
 }
 
 void MainWindow::readPendingDatagrams()
@@ -284,7 +317,7 @@ void MainWindow::readPendingDatagrams()
 
 		{
 			std::scoped_lock lock(mut);
-			timeStamp = values[0].toDouble();
+			timestamp = values[0].toDouble() / 1'000'000;
 			motorA = values[6].toDouble();
 			motorB = values[7].toDouble();
 			tofArray.append(QVector<double>({ tofY_1, tofY_2, tofY_3, tofY_4 }));
@@ -296,6 +329,8 @@ void MainWindow::readPendingDatagrams()
 			posXLineEdit->setText(POS_X_TXT(values[10].toDouble()));
 			posXLineEdit->setText(POS_X_TXT(values[11].toDouble()));
 			control = values[12].toDouble();
+			leftEncoderSeries->append(timestamp, values[13].toDouble());
+			rightEncoderSeries->append(timestamp, values[13].toDouble());
 		}
 	}
 	disconnectedTimer->start(2000);
@@ -312,8 +347,6 @@ void MainWindow::updateChart()
 	}
 
 	std::scoped_lock lock(mut);
-
-	double timestamp = timeStamp / 1'000'000.;
 
 	motorSeriesA->append(timestamp, motorA);
 	motorSeriesB->append(timestamp, motorB);

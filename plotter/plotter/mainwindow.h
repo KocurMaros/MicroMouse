@@ -32,35 +32,46 @@ private slots:
 	void readPendingDatagrams();
 
 private:
-	QChart *motorChart;
-	QChart *controlSignalChart;
-	QBarSeries *barSeries;
-	QBarSet *tofChart;
-	QStringList categories;
-	QBarCategoryAxis *axisXBar;
-	QPolarChart *gyroChart;
-	QTimer *timer;
-	QWidget *centralWidget;
 	QChartView *plotMotor;
-	QChartView *plotControl;
-	QChartView *plotTof;
-	QChartView *plotGyro;
+	QChart *motorChart;
 	QLineSeries *motorSeriesA;
 	QLineSeries *motorSeriesB;
+
+	QChartView *plotControl;
+	QChart *controlSignalChart;
 	QLineSeries *controlSeries;
-	QBarSeries *tofSeries;
+
+	// 50'000
+	// 2 encoders
+	QChartView *plotEncoderTicks;
+	QChart *encoderTicksChart;
+	QLineSeries *leftEncoderSeries;
+	QLineSeries *rightEncoderSeries;
+
+	QLineEdit *batteryLineEdit;
+
+	QChartView *plotGyro;
 	QLineSeries *gyroSeries;
+	QLineEdit *gyroFrequencyLineEdit;
+	QPolarChart *gyroChart;
+
+	QBarSet *tofChart;
+	QBarCategoryAxis *axisXBar;
+
+	QStringList categories;
+	QTimer *timer;
+	QWidget *centralWidget;
+	QChartView *plotTof;
+	QBarSeries *tofSeries;
 	QUdpSocket *udpSocket;
 	// 4.2 - 3.3
-	QLineEdit *batteryLineEdit;
-	QLineEdit *gyroFrequencyLineEdit;
 	QLineEdit *posXLineEdit;
 	QLineEdit *posYLineEdit;
 	QPushButton *clearMotorChartButton;
 	QPushButton *pauseButton;
 	QString localIP;
 	quint16 localPort;
-	double timeStamp;
+	double timestamp;
 	double motorA;
 	double control;
 	double motorB;
