@@ -101,21 +101,18 @@ MainWindow::MainWindow(QWidget *parent)
 
 	{
 		controlSignalChart->legend()->hide();
-		controlSignalChart->addSeries(leftEncoderSeries);
-		controlSignalChart->addSeries(rightEncoderSeries);
+		controlSignalChart->addSeries(controlSeries);
 		controlSignalChart->createDefaultAxes();
 
 		auto *axisX = new QValueAxis;
 		axisX->setRange(0, MOTOR_AXIS_LIMIT);
 		axisX->setLabelFormat("%i");
-		controlSignalChart->setAxisX(axisX, leftEncoderSeries);
-		controlSignalChart->setAxisX(axisX, rightEncoderSeries);
+		controlSignalChart->setAxisX(axisX, controlSeries);
 
 		auto *axisY = new QValueAxis;
 		axisY->setRange(-100, 100);
 		axisY->setLabelFormat("%i");
-		controlSignalChart->setAxisY(axisY, leftEncoderSeries);
-		controlSignalChart->setAxisY(axisY, rightEncoderSeries);
+		controlSignalChart->setAxisY(axisY, controlSeries);
 		controlSignalChart->setTitle("Control signal");
 
 		plotControl = new QChartView(controlSignalChart);
@@ -124,19 +121,22 @@ MainWindow::MainWindow(QWidget *parent)
 
 	{
 		encoderTicksChart->legend()->hide();
-		encoderTicksChart->addSeries(controlSeries);
+		encoderTicksChart->addSeries(leftEncoderSeries);
+		encoderTicksChart->addSeries(rightEncoderSeries);
 		encoderTicksChart->createDefaultAxes();
 
 		auto *axisX = new QValueAxis;
 		axisX->setRange(0, MOTOR_AXIS_LIMIT);
 		axisX->setLabelFormat("%i");
-		encoderTicksChart->setAxisX(axisX, controlSeries);
+		encoderTicksChart->setAxisX(axisX, leftEncoderSeries);
+		encoderTicksChart->setAxisX(axisX, rightEncoderSeries);
 
 		auto *axisY = new QValueAxis;
 		axisY->setRange(-1'000, 1'000);
 		axisY->setLabelFormat("%i");
-		encoderTicksChart->setAxisY(axisY, controlSeries);
-		encoderTicksChart->setTitle("Control signal");
+		encoderTicksChart->setAxisY(axisY, leftEncoderSeries);
+		encoderTicksChart->setAxisY(axisY, rightEncoderSeries);
+		encoderTicksChart->setTitle("Encoder ticks");
 
 		plotEncoderTicks = new QChartView(encoderTicksChart);
 		plotEncoderTicks->setRenderHint(QPainter::Antialiasing);
@@ -336,7 +336,7 @@ void MainWindow::readPendingDatagrams()
 			posXLineEdit->setText(POS_X_TXT(values[11].toDouble()));
 			control = values[12].toDouble();
 			leftenc = values[13].toDouble();
-			rightenc = values[13].toDouble();
+			rightenc = values[14].toDouble();
 		}
 	}
 	disconnectedTimer->start(2000);
