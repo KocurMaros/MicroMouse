@@ -46,6 +46,9 @@ extern "C" void task_udp(void *arg)
             ret = control_braitenberg_fear(&val, &speed_left, &speed_right);
             set_speed_dir(speed_left, speed_right);  
             calculate_odometry(&val.enc, &position, &val.orient);
+
+           
+
         }
         core_time = esp_timer_get_time();
         if(core_time - send_time > 100'000){
