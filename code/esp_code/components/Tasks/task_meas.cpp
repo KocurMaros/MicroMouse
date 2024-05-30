@@ -319,6 +319,7 @@ extern "C" void task_meas(void *arg)
 
     float freq = 0;
     uint32_t it = 0;
+
 	for (;;) {
         //low voltage protection
         meas.log.voltage = esp_adc_cal_raw_to_voltage(adc1_get_raw(ADC1_CHANNEL_3), adc_chars) * 2.0;
