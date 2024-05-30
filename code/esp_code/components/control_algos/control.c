@@ -80,8 +80,8 @@ double control_braitenberg_fear(const MeasData *_current_sensor_data, int *speed
     
     
     
-    double left_error = _current_sensor_data->tof.tof2 - TOF_2_REFERENCE,
-           right_error = _current_sensor_data->tof.tof3 - TOF_3_REFERENCE;
+    double left_error = _current_sensor_data->tof.tof2,
+           right_error = _current_sensor_data->tof.tof3;
     
     double err = left_error - right_error;
     //double right_error = _current_sensor_data->tof.tof3 - TOF_3_REFERENCE;
@@ -101,5 +101,5 @@ double control_braitenberg_fear(const MeasData *_current_sensor_data, int *speed
 
 void init_controller()
 {
-    controller = init_pid(1500, 0, 0, -MAX_SPEED-25, MAX_SPEED);
+    controller = init_pid(1500, 0, 0, -MAX_SPEED-25, MAX_SPEED+12);
 }
