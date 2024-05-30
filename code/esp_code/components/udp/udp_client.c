@@ -34,48 +34,13 @@ int addr_family = 0;
 int ip_protocol = 0;    
 int sock;
 struct sockaddr_in dest_addr;
-void send_empty_mess(){
-    int err = sendto(sock, "micromouse", strlen("micromouse"), 0, (struct sockaddr *)&dest_addr, sizeof(dest_addr));
-    if (err < 0) {
-        //ESP_LOGE(TAG, "Error occurred during sending: errno %d", errno);
-    }
-}
-void send_message(char *message, double *P, double *I, double *D, uint8_t *flag){
+
+void send_message(char *message){
    // printf("Sending message\n   %s\n",message);
     int err = sendto(sock, message, strlen(message), 0, (struct sockaddr *)&dest_addr, sizeof(dest_addr));
     if (err < 0) {
         //ESP_LOGE(TAG, "Error occurred during sending: errno %d", errno);
     }
-
-    //RECEIVE MESSAGE
-    // socklen_t len = sizeof(dest_addr);
-    // err = recvfrom(sock, rx_buffer, sizeof(rx_buffer) - 1, 0, (struct sockaddr *)&dest_addr, &len);
-    // printf("Received message\n   %s\n",rx_buffer);
-    // if (err < 0) {
-    //     //ESP_LOGE(TAG, "recvfrom failed: errno %d", errno);
-    //     *flag = 0;
-    // } else {
-    //     *flag = 0;
-    //     rx_buffer[err] = '\0'; // Null-terminate whatever we received and treat like a string
-    //     if(rx_buffer[0] != '0'){
-    //         *flag = rx_buffer[0] - '0';
-    //         char *token = strtok(rx_buffer, ",");
-    //         while (token != NULL) {
-    //             if(token[0] == 'P'){
-    //                 token = strtok(NULL, ",");
-    //                 *P = atof(token);
-    //             } else if(token[0] == 'I'){
-    //                 token = strtok(NULL, ",");
-    //                 *I = atof(token);
-    //             } else if(token[0] == 'D'){
-    //                 token = strtok(NULL, ",");
-    //                 *D = atof(token);
-    //             }
-    //         }
-    //     }
-    // }
-    //TODO receive message with paramaters 
-    //server side send 4 parameters flag P I D if flag 0 then no change
 }
 
 void init_udp(void){

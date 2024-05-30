@@ -4,7 +4,6 @@
 #include <stdint.h>
 
 void init_udp(void);
-void send_empty_mess();
-void send_message(char *message, double *P, double *I, double *D, uint8_t *flag);
+void send_message(char *message);
 
 #endif

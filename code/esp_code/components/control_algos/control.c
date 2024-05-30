@@ -85,22 +85,34 @@ double control_braitenberg_fear(const MeasData *_current_sensor_data, int *speed
     right_error = right_error > TOF_MAX ? TOF_MAX : right_error;
 
     double err = left_error - right_error;
+    double control_signal = 0;
     //double right_error = _current_sensor_data->tof.tof3 - TOF_3_REFERENCE;
 
-    double control_signal_left = pid_control_from_error_d(controller, err);
+    if (err >= 0)
+    {
+        controller->kp = 1000;
+        control_signal = pid_control_from_error_d(controller, err);
+    }
+    else
+    {
+        controller->kp = 1000;//sada
+        control_signal = pid_control_from_error_d(controller, err);
+    }
+    
+
 
     //control_sig -= left_error;
-    if (control_signal_left > 0.1) {
-        *speed_left_ -= abs(control_signal_left);
+    if (control_signal > 0.1) {
+        *speed_left_ -= abs(control_signal);
     }
-    else if (control_signal_left < -0.1) {
-        *speed_right_ -= abs(control_signal_left);
+    else if (control_signal < -0.1) {
+        *speed_right_ -= abs(control_signal);
     }
 
-    return control_signal_left;
+    return control_signal;
 }
 
 void init_controller()
 {
-    controller = init_pid(1000, 5, 0, -MAX_SPEED, MAX_SPEED, NULL, NULL);
+    controller = init_pid(1000, 0, 0, -MAX_SPEED, MAX_SPEED, NULL, NULL);
 }
