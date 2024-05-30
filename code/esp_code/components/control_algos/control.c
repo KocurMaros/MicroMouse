@@ -31,7 +31,7 @@
 #define FROM_LEFT_TO_STRAIGHT_THRESH 0.15
 
 
-#define MAX_SPEED 150
+#define MAX_SPEED 250
 
 typedef enum Wall_dir_t{
     WALL_LEFT = 0,
@@ -71,6 +71,8 @@ double control_braitenberg_fear(const MeasData *_current_sensor_data, int *speed
     
     // rovno
 
+
+
     if (_current_sensor_data->tof.tof1 < .05 && _current_sensor_data->tof.tof4 < .05) {
         *speed_left_ = 0;
         *speed_right_ = 0;
@@ -85,19 +87,8 @@ double control_braitenberg_fear(const MeasData *_current_sensor_data, int *speed
     right_error = right_error > TOF_MAX ? TOF_MAX : right_error;
 
     double err = left_error - right_error;
-    double control_signal = 0;
-    //double right_error = _current_sensor_data->tof.tof3 - TOF_3_REFERENCE;
-
-    if (err >= 0)
-    {
-        controller->kp = 1000;
-        control_signal = pid_control_from_error_d(controller, err);
-    }
-    else
-    {
-        controller->kp = 1000;//sada
-        control_signal = pid_control_from_error_d(controller, err);
-    }
+    double control_signal = pid_control_from_error_d(controller, err);
+   
     
 
 
@@ -114,5 +105,5 @@ double control_braitenberg_fear(const MeasData *_current_sensor_data, int *speed
 
 void init_controller()
 {
-    controller = init_pid(1000, 0, 0, -MAX_SPEED, MAX_SPEED, NULL, NULL);
+    controller = init_pid(800, 0, 0, -MAX_SPEED, MAX_SPEED, NULL, NULL);
 }

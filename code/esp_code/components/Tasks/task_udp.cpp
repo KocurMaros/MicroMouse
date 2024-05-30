@@ -77,8 +77,8 @@ extern "C" void task_udp(void *arg)
             // val.tof.tof3 = temp_tof3[tof_itterations/2];
             // val.tof.tof4 = temp_tof4[tof_itterations/2];
 
-            speed_left = 200;
-            speed_right = 200;
+            speed_left = 300;
+            speed_right = 300;
             ret = control_braitenberg_fear(&val, &speed_left, &speed_right);
             set_speed_dir(speed_left, speed_right);  
             calculate_odometry(&val.enc, &position, &val.orient);

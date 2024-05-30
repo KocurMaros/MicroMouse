@@ -110,7 +110,7 @@ MainWindow::MainWindow(QWidget *parent)
 		controlSignalChart->setAxisX(axisX, controlSeries);
 
 		auto *axisY = new QValueAxis;
-		axisY->setRange(-100, 100);
+		axisY->setRange(-300, 300);
 		axisY->setLabelFormat("%i");
 		controlSignalChart->setAxisY(axisY, controlSeries);
 		controlSignalChart->setTitle("Control signal");
