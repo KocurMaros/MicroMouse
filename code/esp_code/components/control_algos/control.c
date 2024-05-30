@@ -53,17 +53,17 @@ double control_braitenberg_fear(const MeasData *_current_sensor_data, int *speed
     
     // rovno
 
-// START_TURN_LEFT:
-//     if(turnLeft)
-//     {
-//         *speed_left_ = 50;
-//         *speed_right_ = 100;
+START_TURN_LEFT:
+    if(turnLeft)
+    {
+        *speed_left_ = 20;
+        *speed_right_ = 100;
 
-//         if(_current_sensor_data->tof.tof2 < FROM_LEFT_TO_STRAIGHT_THRESH)
-//             turnLeft = false;
+        if(_current_sensor_data->tof.tof2 < FROM_LEFT_TO_STRAIGHT_THRESH)
+            turnLeft = false;
 
-//         return;
-//     }
+        return;
+    }
 
     if(_current_sensor_data->tof.tof2 > TURN_LEFT_THRESH && _current_sensor_data->tof.tof3 < TOF_3_DESIRED_MAX)
     {
@@ -72,11 +72,11 @@ double control_braitenberg_fear(const MeasData *_current_sensor_data, int *speed
 
         return;
     }
-    // else if (_current_sensor_data->tof.tof2 <= TURN_LEFT_THRESH && _current_sensor_data->tof.tof3 < TOF_3_DESIRED_MAX)
-    // {
-    //     turnLeft = true;
-    //     goto START_TURN_LEFT;
-    // }
+    else if (_current_sensor_data->tof.tof2 <= TURN_LEFT_THRESH && _current_sensor_data->tof.tof3 < TOF_3_DESIRED_MAX)
+    {
+        turnLeft = true;
+        goto START_TURN_LEFT;
+    }
     
     
     
