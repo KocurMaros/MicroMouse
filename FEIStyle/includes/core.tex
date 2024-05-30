@@ -1,26 +1,27 @@
 % !TEX root = ../example_paper.tex
 
 \section{Hardware}
+Z hárdverovej stránky sme potrebovali v tomto projekte vytvoriť dosku plošných spojov (PCB - Printed Circuit Boards) a návrh držiakov motorov, gyroskopu a kolies, ktorých výroba prebiehala pomocou 3D tlače.
 \subsection{Model}
 \label{sec:hardware}
-Kolesá a ozubené koliečko pre hriadeľ motora boli vytlačené v 3D tlačiarni s resinovou náplňou \textbf{FabPro 1000 Resin Cartridge Tough BLK}. Na obrázkoch \ref{fig:gear} a \ref{fig:wheel_w_gear} môžeme vidieť návrhy ozubeého koliečka pre hriadeľ a kolesa. 
+Kolesá a ozubené koliesko pre hriadeľ motora boli vytlačené v 3D tlačiarni s resinovou náplňou FabPro 1000 Resin Cartridge Tough BLK. Na obrázkoch \ref{fig:gear} a \ref{fig:wheel_w_gear} môžeme vidieť návrhy ozubeného kolieska pre hriadeľ a kolesa. 
 
 \begin{figure}[!htbp]
         \centering
         \includegraphics[scale=0.8]{includes/images/motor_gear.png}
-        \caption{Užívateľské rozhranie s označenými komponentami}
+        \caption{UTechnický nákres prevodu motora}
         \label{fig:gear}
 \end{figure}
 
 \begin{figure}[!htbp]
         \centering
         \includegraphics[scale=0.8]{includes/images/wheel_w_gear_2_blueprint.png}
-        \caption{Koleso s ozubenými kolesami}
+        \caption{Koleso s prevodovkou}
         \label{fig:wheel_w_gear}
 \end{figure}
 \newpage
 \subsection{Motory}
-Použité motory boli vybrané s ohľadom na ich výkonnosť a spoľahlivosť. Nižšie uvádzame detaily o týchto motoroch \ref{fig:motor}:
+Použité motory boli vybrané s ohľadom na ich výkonnosť a spoľahlivosť. Sú to jednosmerné motory, vidieť ich môžeme na \ref{fig:motor} a detaily o nich uvádzame nižšie:
 
 \begin{figure}[!htbp]
         \centering
@@ -38,7 +39,21 @@ Použité motory boli vybrané s ohľadom na ich výkonnosť a spoľahlivosť. N
 \end{itemize}
 
 \subsection{Enkódery}
-Na monitorovanie polohy a otáčok motorov sme použili enkódery. Nižšie sú uvedené informácie o použitých enkóderoch \ref{fig:encoder}:
+Na monitorovanie polohy a otáčok motorov sme použili magnetické enkódery. Informáciu o rotácií získavajú ako zmenu magnetického poľa. Enkóder obsahuje dva Hallove články, ktoré merajú veľkosť magnetickej indukcie ako Hallovo napätie ako: 
+
+
+
+\begin{equation}
+\label{enc_eq}
+U_H = h_H \frac{BI_p}{h}
+\end{equation}
+kde $U_H$ je Hallovo napätie, $h_H$ je Hallova konštanta, $B$ je magnetická indukcia, $I_p$ je pomocný prúd, $h$ je hrúbka polovodičovej doštičky. Tieto Hallove články merajú magnetickú indukciu v dvoch osiach na seba kolmých.
+
+
+
+Enkóder obsahuje permanentný magnet pripevnený na jeho hriadeľ. Rotáciou hriadeľa sa točí magnet, a teda aj smer magnetického poľa. Zmeny v oboch osiach sú prekonvertované cez AD prevodník na digitálne signály. Skrz trigonometrické funkcie je následne vypočítaný fázový posun medzi týmito signálmi. To je dôležité nielen kvôli výpočtu rotácie hriadeľa, ale aj pre zistenie smeru rotácie.
+
+Nižšie sú uvedené informácie o použitých enkóderoch \ref{fig:encoder}:
 
 \begin{figure}[!htbp]
         \centering
@@ -53,11 +68,18 @@ Na monitorovanie polohy a otáčok motorov sme použili enkódery. Nižšie sú 
   \item Kanály: 2
   \item Odkaz na technický list: \href{https://www.faulhaber.com/fileadmin/Import/Media/EN_IEH2-4096_DFF.pdf}{Technický list enkódera}
 \end{itemize}
-Náklady na tieto motory so zabudovanýnmi enkódermi boli hradené školou vďaka finančnému príspevku od docenta Andreja Babinca.
 
 \subsection{Gyroskop}
 
-Na sledovanie orientácie a pohybu robota sme implementovali gyroskop. Ďalej sú uvedené podrobnosti o použitom gyroskopu \ref{fig:gyro}:
+Na sledovanie orientácie a pohybu robota sme si zvolili MEMS gyroskop. Tie merajú uhlovú rýchlosť prostredníctvom Coriolisovho efektu. Coriolisova sila je spôsobená inerciou objektu v priamom pohybe, kolmo na smer pohybu objektu a jej výpočet je daný: 
+
+\begin{equation}
+\label{enc_eq}
+\vec{F} = -2m\vec{\Omega_z}x\vec{v}
+\end{equation}
+MEMS Gyroskop obsahuje vybrujúce elementy na pružine. Keď sa gyroskop pohybuje kapacitný senzor deteguje vibrácie, tie sa následne premenia na uhlové zrýchlenie.
+    
+Ďalej sú uvedené podrobnosti o použitom module \ref{fig:gyro}:
 \begin{figure}[!htbp]
         \centering
         \includegraphics[scale=0.8]{includes/images/mpu9205.png}
@@ -66,14 +88,37 @@ Na sledovanie orientácie a pohybu robota sme implementovali gyroskop. Ďalej s�
 \end{figure}
 \begin{itemize}
   \item Model: MPU9250
-  \item Typ: Gyroskop a akcelerometer
+  \item Typ: Gyroskop, akcelerometer a magnetometer
   \item Komunikácia: I2C, SPI
   \item Odkaz na technický list: \href{https://www.invensense.com/products/motion-tracking/9-axis/mpu-9250/}{MPU9250 Technical Datasheet}
 \end{itemize}
-\subsection{ToF}
-Ako vzdialenostný senzor sme zvolili VL53L1X. Je to Time-of-Flight (doba trvania letu) laserový merací modul poskytujúci presné meranie vzdialenosti bez ohľadu na farbu alebo odrazivosť cieľa.
+\subsection{Laserový diaľkomer}
+Ako vzdialenostný senzor sme zvolili Time-of-Flight (doba trvania letu) laserový merací modul poskytujúci presné meranie vzdialenosti bez ohľadu na farbu alebo odrazivosť cieľa. 
+Time-of-Flight senzory fungujú na báze merania času letu laserového lúča vyslaného zo senzora, k objektu a naspäť. Vzdialenosť je z nameraného času vypočítaná podľa vzorca na \ref{tof_eq}:
 
-Tento kompaktný modul, ktorý môžeme vidieť na obrázku  \ref{fig:vl53l1x} dokáže spoľahlivo a rýchlo merať vzdialenosť až do 400cm s frekvecnciou do 50Hz. Jeho zorné pole je štandardne 27°, avšak je možnosť zmenšiť ho podľa potreby. Okrem pinov na napájanie a komunikáciu, taktiež obsahuje aj pin na prerušenie a pin na shutdown (vyradenie). Komunikácia so senzorom prebieha prostredníctvom protokolu $I^2 C$.
+\begin{equation}
+\label{tof_eq}
+d = \frac{c \cdot t}{2}
+\end{equation}
+kde $d$ je vypočítaná vzdialenosť, $c$ je rýchlosť svetla a $t$ je doba letu lúča.
+
+Modul môžeme vidieť na obrázku  \ref{fig:vl53l1x}. Nižšie sú uvedené parametre senzora.
+
+\begin{itemize}
+
+    \item Model: VL53L1X
+
+    \item Maximálna vzdialenosť: 400cm
+
+    \item Frekvencia merania: nastaviteľná až do 50Hz
+
+    \item Zorné pole: 27°
+
+    \item Komunikácia: I2C
+
+    \item Odkaz na technický list: \href{https://www.st.com/resource/en/datasheet/vl53l1x.pdf}{Technický list laserového diaľkomera}
+
+\end{itemize}
 
 \begin{figure}[!htpb]
     \centering
@@ -84,12 +129,12 @@ Tento kompaktný modul, ktorý môžeme vidieť na obrázku  \ref{fig:vl53l1x} d
 
 Na meranie vzdialenosti sme využili štyri takéto moduly pripevnené na dosku vyosené relatívne od dopredného smeru myši o 45° a 10°.
 
-Z hárdverovej stránky sme potrebovali v tomto projekte vytvoriť dosku plošných spojov (PCB - Printed Circuit Boards) a návrh držiakov motorov, gyroskopu a kolies, ktorých výroba prebiehala pomocou 3D tlače.
 \subsection{PCB}
+\subsubsection{Komponenty}
 \begin{itemize}
-    \item \textbf{Senzory ToF (VL53L1X)}: Prepojenie s ESP32 cez I2C alebo UART rozhranie.
+    \item \textbf{Senzory ToF (VL53L1X)}: Prepojenie s ESP32 cez I2C rozhranie.
     \item \textbf{Gyroskop s akcelerometrom (MPU9250)}: Prepojenie s ESP32 cez I2C rozhranie.
-    \item \textbf{Driver na motor (TB6612FNG)}: Umiestnený blízko motorov, prepojenie s ESP32 cez PWM signály.
+    \item \textbf{Driver na motor (TB6612FNG)}: Umiestnený blízko motorov, posiela PWM signály motorom.
     \item \textbf{MCU (ESP32)}: Centrálny riadiaci prvok PCB.
     \item \textbf{Step-up menič na 5V}: Zabezpečenie stabilných 5V pre logické obvody a enkodéry.
     \item \textbf{Logic shifter}: Prekladanie signálov medzi 3,3V a 5V úrovňami.
@@ -97,7 +142,7 @@ Z hárdverovej stránky sme potrebovali v tomto projekte vytvoriť dosku plošn�
     \item \textbf{Batéria (Li-ion 1000mAh)}: Umiestnená na PCB s prístupnými napájacími konektormi a ochrannými obvodmi.
 \end{itemize}
 
-\textbf{Proces tvorby PCB}
+\subsubsection{Proces tvorby PCB}
 \begin{itemize}
 
 \item \textbf{Návrh schémy}\\
@@ -182,6 +227,11 @@ Postup na~inicializáciu ESP IDF a~následné spustenie projektu je nasledovný:
 Alternatívne spustenie je možné pomocou platformy \textbf{Visual Studio Code} s~nainštalovaným rozšírením
 \textbf{ESP-IDF}~\cite{espIDF}.
 \subsection{UDP Komunikácia}
+\subsubsection{Client}
+
+%TODO: rozdelit medzi klienta a server
+
+\subsubsection{Server}
 Pre spolahlivejšie ladenie a sledovanie správania programu sme implementovali UDP komunikáciu v prostredí Qt Creator v jazyku C++. Táto komunikácia nám umožnila používať realtime grafy na sledovanie správania mikromyši. Súčasťou implementácie bolo aj vytvorenie servera a komunikácia medzi PCB mikromyši a serverom. V tejto komunikácii funguje ESP32 ako klient a počítač ako server. ESP32 posiela údaje o stave mikromyši na počítač, ktorý ich zobrazuje v našej mini HMI aplikácii. 
 \begin{figure}[!htpb]
     \centering
@@ -194,17 +244,25 @@ Táto aplikácia nám poskytuje efektívny nástroj na ladenie a prácu s mikrom
 \subsection{Senzory}
 
 \subsubsection{VL53L1X}
+%TODO:obrazok co nas zaujima (luc a tam vzdialensot)
 Pre snímanie vzdialenosti bola vytvorená knižnica na kalibráciu a vyčítavanie dát zo senzora VL53L1X. Komunikácia prebieha prostredníctvom komunikačného protokolu $I^2 C$. Knižnica je nadstavbou nad voľne dostupným rozhraním od STMicroelectronics.
 
 \subsubsection{MPU9250}
+%TODO:obrazok co nas zaujima (roll pitch a yaw --> yaw!)
+
 \begin{figure}[!htpb]
     \centering
-    \includegraphics[width=1\linewidth]{includes//images/rpy.png}
+    \includegraphics[width=10cm]{includes//images/rpy.png}
     \caption{Gyroskop s akcelerometrom MPU9250 }
     \label{fig:UDP}
 \end{figure}
 V našom projekte sme použili senzor MPU9250, ktorý je trojosovým akcelerometrom a gyroskopom. Tento senzor nám umožňuje získavať presné údaje o orientácii mikromyši v trojrozmernom priestore. Kľúčovou súčasťou spracovania dát z tohto senzoru je výpočet Eulerových uhlov -- roll, pitch a yaw. Tieto údaje sú neoceniteľné pre stabilizáciu a presné navigačné manévre mikromyši, poskytujúc tak lepší prehľad o jej aktuálnom náklone a orientácii.
 
+\subsubsection{IEH2-4096}
+
+%TODO: enkodery - inkrementalne, mame vytvoreny impulz counter, ktory nam vrati interrupt po 1/8 natocenia motora -- kazdu 1/8 otocenia motora = tick, prepocitame si to
+
+\newpage
 \subsection{Odometria}
 \label{subsec:odometria}
 
@@ -220,21 +278,23 @@ cez základný vzťah:
 \begin{align*}
 	\Delta y_t = y_{t-1} + \Delta s_t \cdot \sin(\theta_{t-1} + \Delta \theta_t)
 \end{align*}
+Uhol $\theta$ získavame z gyroskopu 
+
 
 \newpage
 
-\subsection{PID}
+\subsection{PID regulátor motorov}
 \label{subsec:pid}
 
 Do motorov posielame ako akčný zásah signál PWM (\acrlong{PWM}). Tento signál môže nadobúdať hodnoty od~0 po~1023.
 Zároveň musíme myslieť aj na~prepäťovú ochranu. Keď pošleme do~motorov veľké zrýchlenie, tak sa stane, že sa program
 na~čipe zresetuje.
 
-Aby sme ošetrili tieto situácie, tak sme neimplementovali PID regulátor s~antiwindup zapojením. Jeho obmedzenie je
-nastavené zdola na~0 a~zhora na~1023. Toto obmedzenie zdola je nastavené na~0 kvôli implementácii nastavenia smeru
+Aby sme ošetrili tieto situácie, sme pridali rozbehový člen v podobe rampového signálu, ktorý zabezpečí postupné zmeny žiadanej hodnoty namiesto skokových zmien. Na riadenie motorov sme implementovali PID regulátor s Antiwindupom. 
+Jeho obmedzenie je nastavené zdola na~0 a~zhora na~1023. Toto obmedzenie zdola je nastavené na~0 kvôli implementácii nastavenia smeru
 otáčania motorov. V~prostredí ESP musíme dopredu nastaviť smer otáčania motorov. Po jeho nastavení sa všetky hodnoty
 posielajú ako \textit{unsigned}. Teda ak by sme mu poslali zápornú hodnotu, tak by sa motor rozbehol nastaveným smerom.
-Antiwindup zapojenie by maximálnu rýchlosť obmedzilo na~1023.
+Antiwindup zapojenie maximálnu rýchlosť obmedzuje na~1023.
 
 Pre jednoduchosť ovládania sme nastavili regulátor tak, aby vstupná žiadaná hodnota bol v~milimetroch za~sekundu.
 Regulátor si túto hodnotu prepočíta na~PWM signál, ktorý pošle motorom. Spätné väzby sa získavajú z~enkóderov
@@ -255,3 +315,7 @@ Rovnica \ref{eq:mmps2pwm} obsahuje parametre:
 	\item $\Delta t$ - Časový interval od~posledného merania
 \end{itemize}
 
+
+\subsection{Riadiaci algoritmus}
+
+%TODO: UML Algoritmus, popisat k nemu veci
