@@ -25,13 +25,13 @@
 #define TOF_3_DESIRED_MIN .12
 #define TOF_3_DESIRED_MAX .14
 
-#define TOF_MAX 40 // The sensor distance limit[cm]
+#define TOF_MAX .4 // The sensor distance limit[cm]
 #define TURN_LEFT_SWITCH 0.33
 #define TURN_LEFT_THRESH 0.23
 #define FROM_LEFT_TO_STRAIGHT_THRESH 0.15
 
 
-#define MAX_SPEED 100
+#define MAX_SPEED 150
 
 typedef enum Wall_dir_t{
     WALL_LEFT = 0,
@@ -43,6 +43,24 @@ typedef enum Wall_dir_t{
 PID *controller;
 bool turnLeft = false;
 
+static void limit_tof_error(double *tof)
+{
+    if (*tof > TOF_MAX) {
+        *tof = TOF_MAX;
+    }
+}
+void pid_update_params(double P, double I, double D, uint8_t reg_num){
+    switch (reg_num){
+    case 1:
+        controller->kp = P;
+        controller->ki = I;
+        controller->kd = D;
+        break;
+    
+    default:
+        break;
+    }
+}
 double control_braitenberg_fear(const MeasData *_current_sensor_data, int *speed_left_, int *speed_right_){
     
     //2 33, 3 13, 1 & 4 25
@@ -53,36 +71,19 @@ double control_braitenberg_fear(const MeasData *_current_sensor_data, int *speed
     
     // rovno
 
-// START_TURN_LEFT:
-//     if(turnLeft)
-//     {
-//         *speed_left_ = 20;
-//         *speed_right_ = 100;
+    if (_current_sensor_data->tof.tof1 < .05 && _current_sensor_data->tof.tof4 < .05) {
+        *speed_left_ = 0;
+        *speed_right_ = 0;
+        return 0;
+    }
 
-//         if(_current_sensor_data->tof.tof2 < FROM_LEFT_TO_STRAIGHT_THRESH)
-//             turnLeft = false;
-//         return;
-//     }
-
-//     if(_current_sensor_data->tof.tof2 > TURN_LEFT_THRESH && _current_sensor_data->tof.tof3 < TOF_3_DESIRED_MAX)
-//     {
-//         *speed_left_ = 100;
-//         *speed_right_ = 100;
-
-//         return;
-//     }
-//     else if (_current_sensor_data->tof.tof2 <= TURN_LEFT_THRESH && _current_sensor_data->tof.tof3 < TOF_3_DESIRED_MAX)
-//     {
-//         turnLeft = true;
-//         goto START_TURN_LEFT;
-//     }
-    
-    
-    
     
     double left_error = _current_sensor_data->tof.tof2,
            right_error = _current_sensor_data->tof.tof3;
     
+    left_error = left_error > TOF_MAX ? TOF_MAX : left_error;
+    right_error = right_error > TOF_MAX ? TOF_MAX : right_error;
+
     double err = left_error - right_error;
     //double right_error = _current_sensor_data->tof.tof3 - TOF_3_REFERENCE;
 
@@ -101,5 +102,5 @@ double control_braitenberg_fear(const MeasData *_current_sensor_data, int *speed
 
 void init_controller()
 {
-    controller = init_pid(1500, 0, 0, -MAX_SPEED-25, MAX_SPEED+12);
+    controller = init_pid(1000, 5, 0, -MAX_SPEED, MAX_SPEED, NULL, NULL);
 }

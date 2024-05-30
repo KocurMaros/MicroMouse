@@ -35,6 +35,8 @@ typedef struct picontrol {
 	double clampedOutput;
 	double lower_limit;
 	double upper_limit;
+    uint16_t (*update_feedback)(uint16_t, float);
+    void (*clear_ramp)(void);
 } PID;
 
 
@@ -74,7 +76,8 @@ void set_speed_dir(int speed_left, int speed_right);
  *
  * @return The PID controller @c PID.
  */
-PID *init_pid(double kp, double ki, double kd, double lower_limit, double upper_limit);
+PID *init_pid(double kp, double ki, double kd, double lower_limit, double upper_limit,  uint16_t (*update_feedback)(uint16_t, float),
+    void (*clear_ramp)(void));
 
 /**
  * @brief Deinitialize a PID controller.

@@ -11,5 +11,5 @@
 double control_braitenberg_fear(const MeasData *_current_tof_data, int *speed_left_, int *speed_right_);
 
 void init_controller();
-
+void pid_update_params(double P, double I, double D, uint8_t reg_num);
 #endif // CONTROL_H

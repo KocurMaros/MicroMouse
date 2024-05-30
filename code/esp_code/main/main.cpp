@@ -53,7 +53,7 @@ void app_main()
 
     vTaskDelay(250 / portTICK_PERIOD_MS); // Wait for the sensors to start
 
-    send_message("micromouse");
+    send_empty_mess();
 
     xTaskCreatePinnedToCore(task_meas,   /* Function to implement the task */
                             "meas data from sensosors", /* Name of the task */

@@ -63,7 +63,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 
 	// Set up UDP server
-	localIP = "192.168.137.1";
+	localIP = "10.42.0.1";
 	localPort = 3333;
 	udpSocket = new QUdpSocket(this);
 	udpSocket->bind(QHostAddress(localIP), localPort);
@@ -381,7 +381,7 @@ void MainWindow::updateChart()
 	gyroSeries->append(RAD2DEG(gyroZArray.back()), 100); // Point on the perimeter of the compass
 	gyroSeries->append(RAD2DEG(gyroZArray.back()), 0);	// Center of the compass
 
-	qDebug() << "Series size: " << motorSeriesA->count();
+	// qDebug() << "Series size: " << motorSeriesA->count();
 	if (motorBufferSize > MOTOR_AXIS_LIMIT) {
 		motorSeriesA->remove(0);
 		motorSeriesB->remove(0);

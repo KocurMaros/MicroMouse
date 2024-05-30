@@ -49,6 +49,9 @@ extern "C" void task_udp(void *arg)
     // float tof3[tof_itterations] = {0};
     // float tof4[tof_itterations] = {0};
     // float temp_tof1[tof_itterations], temp_tof2[tof_itterations], temp_tof3[tof_itterations], temp_tof4[tof_itterations];
+   
+    double P, I, D;
+    uint8_t flag = 0;
     for (;;) {
         xTaskNotifyWait(0x00, ULONG_MAX, &ulNotifiedValue, portMAX_DELAY);
         
@@ -82,7 +85,7 @@ extern "C" void task_udp(void *arg)
             set_speed_dir(speed_left, speed_right);  
             calculate_odometry(&val.enc, &position, &val.orient);
 
-           
+
 
         }
         core_time = esp_timer_get_time();
@@ -95,9 +98,13 @@ extern "C" void task_udp(void *arg)
             // printf("It took: %d\n", val.log.hz_gyro);
             // printf("Voltage: %f\n", val.log.voltage);
             // printf("Freq gyro: %f\n", val.log.gyro_freq);
-			send_message(message_buff);
+			send_message(message_buff, &P, &I, &D, &flag);
 			memset(message_buff,'\0', MESSAGE_BUFF_LEN);
             send_time = core_time;
+            if(flag == 0)
+                continue;
+            pid_update_params(P, I, D, flag);
+            flag = 0;
         }
 	}
     deinit_pid(pid_left);
