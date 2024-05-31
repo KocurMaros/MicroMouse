@@ -383,7 +383,7 @@
                     \def\@skolaTa{\printTa}
                     \def\@tempCourse{Predmet:}
                     \def\@tempLecturer{Predn\a'a\v{s}aj\a'uci:}
-                    \def\@tempTa{Cvi\v{c}iaci:}
+                    \def\@tempTa{Ved\a'uci p\a'imu:}
                 }
             }              
             {1}{
@@ -465,8 +465,9 @@
         {1}{\section*{\fontsize{22pt}{1.3}\selectfont Acknowledgments}}
         }[]
         
-    \ifthenelse{\isempty{#1}}
-    {Chcem sa po\v{d}akova\v{t} ved\'{u}cemu z\'{a}vere\v{c}nej pr\'{a}ce, ktor\'{y}m bol \printVeduciZaverecnejPrace, za odborn\'{e} vedenie, rady a pripomienky, ktor\'{e} mi pomohli pri vypracovan\'{i} tejto  \typPraceTempII.}
+    %\ifthenelse{\isempty{#1}}
+    {Chceme sa po\v{d}akova\v{t} doc. Ing. Andrejovi Babincovi PhD., za vybavenie financi\a'i od Fakulty elektrotechniky a informatiky STU, na motory a senzory.}
+    % {Chcem sa po\v{d}akova\v{t} ved\'{u}cemu z\'{a}vere\v{c}nej pr\'{a}ce, ktor\'{y}m bol \printVeduciZaverecnejPrace, za odborn\'{e} vedenie, rady a pripomienky, ktor\'{e} mi pomohli pri vypracovan\'{i} tejto  \typPraceTempII.}
     {\input{#1}}    
     \newpage
 }
