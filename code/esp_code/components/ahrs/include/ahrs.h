@@ -21,6 +21,7 @@ void ahrs_update(float gx, float gy, float gz, float ax, float ay, float az, flo
 void get_quaternion(float *q0, float *q1, float *q2, float *q3);
 void ahrs_update_imu(float gx, float gy, float gz, float ax, float ay, float az);
 void ahrs_get_euler_in_degrees(float *heading, float *pitch, float *roll);
+void MadgwickGetEulerAngles(float *heading, float *pitch, float *roll);
 
 #endif // AHRS_H
 //=====================================================================================================

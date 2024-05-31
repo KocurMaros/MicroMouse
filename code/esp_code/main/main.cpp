@@ -23,17 +23,17 @@
 QueueHandle_t FIFO_Meas_to_Cont;
 
 TaskHandle_t xTaskControlHandle;
-TaskHandle_t xTaskMeasHandle;
+    TaskHandle_t xTaskMeasHandle;
 
-uint64_t random_flag = 0;
 
 extern "C" 
 { 
-    #include "udp_client.h" 
+    #include "udp_client.h"
 	void app_main(); 
 	void task_meas(void * arg);
-    void task_control(void * arg);  
+    void task_udp(void * arg);  
 } 
+
 void app_main()
 {
     //* Initialize Components
@@ -45,16 +45,22 @@ void app_main()
     }
     ESP_ERROR_CHECK(ret);
     
-    FIFO_Meas_to_Cont = xQueueCreate(2, sizeof(MeasData));
-    //init_udp();
 
+    
+
+    FIFO_Meas_to_Cont = xQueueCreate(2, sizeof(MeasData));
+    init_udp();
+
+    vTaskDelay(250 / portTICK_PERIOD_MS); // Wait for the sensors to start
+
+    send_message("micromouse");
     xTaskCreatePinnedToCore(task_meas,   /* Function to implement the task */
                             "meas data from sensosors", /* Name of the task */
                             8192,       /*Stack size in words */
                             NULL,       /* Task input parameter */
-                            10,          /* Priority of the task */
+                            100,          /* Priority of the task */
                             &xTaskMeasHandle,       /* Task handle. */
                             1);  /* Core where the task should run */
   
-    xTaskCreatePinnedToCore(task_control, "Control motors and algorithm", 4096, NULL, 100, &xTaskControlHandle, 0);
+    xTaskCreatePinnedToCore(task_udp, "Control motors and algorithm", 4096, NULL, 100, &xTaskControlHandle, 0);
 }

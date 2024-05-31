@@ -1,6 +1,7 @@
 #include "include/driver.h"
 
 #include "../../build/config/sdkconfig.h"
+#include "../include/driver.h"
 
 #include "esp_system.h"
 #include "esp_sntp.h"
@@ -20,17 +21,48 @@
 #define LEDC_FREQUENCY (8000)			// Frequency in Hertz. Set frequency at 5 kHz
 
 #define WHEEL_DIAMETER 24				// 24 mm
-#define IMPULZS_PER_ROTATION 4096		// 4096 impulzes per rotation
-#define CHASSIS_WIDTH 915				// 915 mm
+#define IMPULZS_PER_ROTATION 4096		// 4096 impulzes per rotation				// 915 mm
 #define PI 3.14159265359
 #define GEAR_RATIO 4					// The motor does 4 rotations per one wheel rotation.
+#define MAX_MOTOR_RPM 11000				// The max unloaded RPM of the motor
 
-#define TO_MM_PER_SECOND(encoder_impulzes, time_s) (encoder_impulzes * (PI * WHEEL_DIAMETER) / IMPULZS_PER_ROTATION / GEAR_RATIO  * (time_s))
-#define TO_PWM_FROM_MM_PER_SECOND(speed_mm_s) (speed_mm_s / (PI * WHEEL_DIAMETER) * IMPULZS_PER_ROTATION / GEAR_RATIO)
-#define TO_MM_PER_SECOND_FROM_PWM(pwm)((PI * WHEEL_DIAMETER) * GEAR_RATIO * pwm / IMPULZS_PER_ROTATION)
+#define MAX_WHEEL_RPM MAX_MOTOR_RPM / GEAR_RATIO
+#define MAX_WHEEL_SPEED ((MAX_WHEEL_RPM * PI * WHEEL_DIAMETER) / 60.0)
+
+#define TO_MM_PER_SECOND(encoder_impulzes, time_s) ((encoder_impulzes / (time_s) /  (IMPULZS_PER_ROTATION * GEAR_RATIO) * ((PI * WHEEL_DIAMETER))))
+#define TO_PWM_FROM_MM_PER_SECOND(speed_mm_s) ((speed_mm_s) / MAX_WHEEL_SPEED * 1023)
+#define TO_M_FROM_MM(mms) ((mms) / 1000.0)
 
 PID *pid_left;
 PID *pid_right;
+Direction dir;
+
+float current_multiplier_1 = 0.0;
+float current_multiplier_2 = 0.0;
+
+uint16_t ramp_multiplier_1(uint16_t currentPwm, float dR){
+	current_multiplier_1 += dR;
+	if(current_multiplier_1 > 1.0)
+		current_multiplier_1 =  1.0;
+	currentPwm = (uint16_t)(currentPwm*current_multiplier_1);
+	return currentPwm;
+}
+
+uint16_t ramp_multiplier_2(uint16_t currentPwm, float dR){
+	current_multiplier_2 += dR;
+	if(current_multiplier_2 > 1.0)
+		current_multiplier_2 =  1.0;
+	currentPwm = (uint16_t)(currentPwm*current_multiplier_2);
+	return currentPwm;
+}
+
+void clear_ramp_1(){
+	current_multiplier_1 = 0;
+}
+
+void clear_ramp_2(){
+	current_multiplier_2 = 0;
+}
 
 void cap_pwm(int *currentPwm)
 {
@@ -80,8 +112,8 @@ void init_motor_driver()
 	pwm_init(MOTOR_A_PWM, MOTOR_A_PWM_CHANNEL);
 	pwm_init(MOTOR_B_PWM, MOTOR_B_PWM_CHANNEL);
 
-	pid_left = init_pid(3, 0, 0, 1023);
-	pid_right = init_pid(3, 0, 0, 1023);
+	pid_left = init_pid(7.5, 0.15, 0, 0, 1023, ramp_multiplier_1, clear_ramp_1);
+	pid_right = init_pid(7.5, 0.15, 0, 0, 1023, ramp_multiplier_2, clear_ramp_2); //cc timo chod dopice pls dik
 }
 
 void move_forward()
@@ -121,7 +153,7 @@ const char *direction_to_string(Direction dir)
 	switch (dir) {
 	case Forward:
 		return "Forward";
-	case Backwared:
+	case Backward:
 		return "Backward";
 	case Left:
 		return "Left";
@@ -134,49 +166,30 @@ const char *direction_to_string(Direction dir)
 
 void set_speed_dir(int speed_left, int speed_right)
 {
-	// Direction dir;
-	// int diff = speed_left - speed_right;
-
-	//cap_pwm(&speed_left);
-	//cap_pwm(&speed_right);
-
-
-	// if (diff < -0.1) {
-	// 	dir = Left;
-	// 	move_left();
-	// }
-	// else if (diff > 0.1) {
-	// 	dir = Right;
-	// 	move_right();
-	// }
-	// else if (speed_left < 0) {
-	// 	dir = Backwared;
-	// 	move_backward();
-	// }
-	// else {
-	// 	dir = Forward;
-	// 	move_forward();
-	// }
-	move_forward();
-
-	// speed_left = abs(speed_left);
-	// speed_right = abs(speed_right);
-
-	int pwm_left = TO_PWM_FROM_MM_PER_SECOND(pid_control(pid_left, speed_left, false)); 
-	int pwm_right = TO_PWM_FROM_MM_PER_SECOND(pid_control(pid_right, speed_right, false)); 
-
-	cap_pwm(&pwm_left);
-	cap_pwm(&pwm_right);
-	//printf("Setting speed: left: %f, right: %f, direction: %s\n", pwm_left, pwm_right, direction_to_string(dir)); 
-
-	//printf("PWM_RIGHT = %d\n", pwm_right);
-	//printf("PWM_LEFT = %d\n", pwm_left);
-
-	pwm_change_duty_raw(MOTOR_A_PWM_CHANNEL, pwm_left);
-	pwm_change_duty_raw(MOTOR_B_PWM_CHANNEL, pwm_right);
+	if (speed_left < 0 && speed_right > 0) {
+		dir = Left;
+		move_left();
+	}
+	else if (speed_left > 0 && speed_right < 0) {
+		dir = Right;
+		move_right();
+	}
+	else if (speed_left < 0 && speed_right < 0) {
+		dir = Backward;
+		move_backward();
+	}
+	else {
+		dir = Forward;
+		move_forward();
+	}
+	//move_forward();
+	
+	pwm_change_duty_raw(MOTOR_A_PWM_CHANNEL, ramp_multiplier_1(pid_control(pid_left, speed_left),0.01));
+	pwm_change_duty_raw(MOTOR_B_PWM_CHANNEL, ramp_multiplier_2(pid_control(pid_right, speed_right),0.01));
 }
 
-PID *init_pid(double kp, double ki, double kd, double limit)
+PID *init_pid(double kp, double ki, double kd, double lower_limit, double upper_limit,  uint16_t (*update_feedback)(uint16_t, float),
+    void (*clear_ramp)(void))
 {
 	PID *pid = (PID*)calloc(1, sizeof(PID));
 
@@ -189,8 +202,10 @@ PID *init_pid(double kp, double ki, double kd, double limit)
 	pid->reference = 0;
 	pid->virginOutput = 0;
 	pid->clampedOutput = 0;
-	pid->limit = limit;
-
+	pid->lower_limit = lower_limit;
+	pid->upper_limit = upper_limit;
+    pid->update_feedback = update_feedback;
+    pid->clear_ramp = clear_ramp;
 	return pid;
 }
 
@@ -199,55 +214,97 @@ void deinit_pid(PID *pid)
 	free(pid);
 }
 
-double pid_control(PID *pid, double reference, bool limit)
+uint16_t pid_control(PID *pid, double reference)
 {
-	double error = reference - pid->feedback;
-	//printf("ERROR = %1.2lf\n", error);
-	return pid_control_from_error(pid, error, limit);
+	static uint64_t start_time = 0;
+	
+	reference = reference < 0 ? -reference : reference;
+	
+	reference = TO_PWM_FROM_MM_PER_SECOND(reference);
+	reference = reference > pid->upper_limit ? pid->upper_limit : (reference < -pid->lower_limit ? -pid->lower_limit : reference);
+
+	double tmp = TO_PWM_FROM_MM_PER_SECOND(pid->feedback);
+	tmp = tmp > pid->upper_limit ? pid->upper_limit : (tmp< -pid->lower_limit ? -pid->lower_limit : tmp);
+
+	double error = reference - tmp;
+
+	if(abs(reference) < 20.0)
+		pid->clear_ramp();
+	//printf("Reference: %1.2lf \t Feedback: %1.2lf \t ERROR = %1.2lf\n",reference,  pid->feedback, error);
+	if ((double)(esp_timer_get_time() - start_time) / 1000.0 > 100.0)
+	{
+		//printf("ERROR: %1.5lf, SPEED: %1.5lf\n", error, pid->feedback);
+		start_time = esp_timer_get_time();
+	}
+	
+	return pid_control_from_error(pid, error);
 }
 
-double pid_control_from_error(PID *pid, double error, bool limit)
+uint16_t pid_control_from_error(PID *pid, double error)
 {
 	pid->integral += error;
 
-	if(limit)
-		pid->integral += pid->clampedOutput - pid->virginOutput;
+	double int_low = -pid->upper_limit / pid->ki, 
+		   int_high = pid->upper_limit / pid->ki;
+
+	pid->integral = pid->integral < int_low ? int_low : (pid->integral > int_high ? int_high : pid->integral);
 
 	double derivative = error - pid->last_error;
 
-	pid->virginOutput = pid->kp * error + pid->ki * pid->integral + pid->kd * derivative;
+	double tmp = pid->kp * error + pid->ki * pid->integral + pid->kd * derivative;
+	pid->virginOutput = tmp;
+	pid->clampedOutput = pid->virginOutput < pid->lower_limit ? pid->lower_limit : (pid->virginOutput > pid->upper_limit ? pid->upper_limit : pid->virginOutput);
+	//printf("PID_TMP: %1.2lf \t PID OUT: %1.2lf \t PID_ACTUAL: %1.2lf \t ERROR: %1.2lf\n", tmp, pid->virginOutput, pid->clampedOutput, error);
 
-	if (limit) {
-		if (pid->virginOutput < 0) {
-			pid->clampedOutput = (pid->virginOutput < -pid->limit ? pid->limit : (pid->virginOutput > -15 ? -15. : pid->virginOutput));
-		}
-		else {
-			pid->clampedOutput = (pid->virginOutput > pid->limit ? pid->limit : (pid->virginOutput < 15 ? 15. : pid->virginOutput));
-		}
-	}
+	pid->last_error = error;
 
-	pid->last_error = (limit ? pid->clampedOutput : pid->virginOutput);
-
-	return (limit ? pid->clampedOutput : pid->virginOutput);
+	//printf("Calculated AZ: %lf\n", pid->clampedOutput);
+	return (uint16_t)round(pid->clampedOutput);
 }
 
-void motor_update_current_speed(const encoders *enc, double delta_time_s, double *left, double *right)
+double pid_control_from_error_d(PID *pid, double error)
 {
-	double left_speed = enc->encoder1;
-	double right_speed = enc->encoder2;
+	pid->integral += error;
 
-	// Convert to mm/s from impulses pre second
-	left_speed = TO_MM_PER_SECOND(left_speed, delta_time_s);
-	right_speed = TO_MM_PER_SECOND(right_speed, delta_time_s);
+	double int_low = pid->lower_limit / pid->ki, 
+		   int_high = pid->upper_limit / pid->ki;
 
-	//printf("LEFT_SPD = %1.2lf\nPRGHT_SPD = %1.2lf\n",left_speed,right_speed);
+	pid->integral = pid->integral < int_low ? int_low : (pid->integral > int_high ? int_high : pid->integral);
+	
+	double derivative = error - pid->last_error;
 
+	double tmp = pid->kp * error + pid->ki * pid->integral + pid->kd * derivative;
+	pid->virginOutput = tmp;
+	pid->clampedOutput =  pid->virginOutput /**2.5*/ > pid->upper_limit ? pid->upper_limit : pid->virginOutput/**2.5*/;
+	pid->clampedOutput = pid->clampedOutput < 0 ? pid->clampedOutput /** 9.5*/ : pid->clampedOutput;
+
+	pid->clampedOutput = pid->clampedOutput < pid->lower_limit ? pid->lower_limit : pid->clampedOutput;
+
+	//printf("PID_TMP: %1.2lf \t PID OUT: %1.2lf \t PID_ACTUAL: %1.2lf \t ERROR: %1.2lf\n", tmp, pid->virginOutput, pid->clampedOutput, error);
+
+	pid->last_error = error;
+
+	//printf("Calculated AZ: %lf\n", pid->clampedOutput);
+	return pid->clampedOutput;
+}
+
+void motor_update_current_speed(const encoders *enc, double *left, double *right)
+{
+	double dt = (double)enc->time_diff / 1000000.0;
+	double  left_speed = (TO_MM_PER_SECOND(enc->encoder1, dt)), 
+		    right_speed = TO_MM_PER_SECOND(enc->encoder2, dt);
+
+	left_speed = left_speed < 0 ? -left_speed : left_speed;
+	right_speed = right_speed < 0 ? -right_speed : right_speed;
+	//printf("LEFT_SPD = %1.2lf, RIGHT_SPD = %1.2lf , dt = %lf\n", left_speed, right_speed, dt);
+    //printf("encoder1: %d, encoder2: %d\n", enc->encoder1, enc->encoder2);
+	
 	pid_left->feedback = left_speed;
 	pid_right->feedback = right_speed;
 
 	if(left != NULL)
 		*left = left_speed;
-	
+
 	if(right != NULL)
 		*right = right_speed;
 }
@@ -263,22 +320,47 @@ static double wrap_angle(double angle)
 	return angle;
 }
 
-void calculate_odometry(const encoders *enc, Position *pos)
+void update_encoders(encoders *enc)
+{
+	// Update the encoder values
+	switch (dir) {
+	case Backward:
+		enc->encoder1 = enc->encoder1 * -1;
+		enc->encoder2 = enc->encoder2 * -1;
+		break;
+	case Left:
+		enc->encoder1 = enc->encoder1;
+		enc->encoder2 = enc->encoder2 * -1;
+		break;
+	case Right:
+		enc->encoder1 = enc->encoder1 * -1;
+		enc->encoder2 = enc->encoder2;
+		break;
+	default:
+		break;
+	}
+}
+
+void calculate_odometry(encoders *enc, Position *pos, const orientation *gyro)
 {
 	double left_speed = 0;
 	double right_speed = 0;
-
 	double delta_time_s = enc->time_diff / 1000000.;
-	motor_update_current_speed(enc, delta_time_s, &left_speed, &right_speed);
+	
+	update_encoders(enc);
+
+	motor_update_current_speed(enc, &left_speed, &right_speed);
 
 	double left_distance = left_speed * delta_time_s;
 	double right_distance = right_speed * delta_time_s;
 
-	// Calculate the distance the robot has moved
+	// Calculate the distance the robot has moved [mm]
 	double distance = (left_distance + right_distance) / 2.;
+	//sprintf("LEFT_DIST = %1.2lf, RIGHT_DIST = %1.2lf, DIST = %1.2lf, DIR: %s\n", left_distance, right_distance, distance, direction_to_string(dir));
 
 	// Calculate the angle the robot has turned
-	double angle = (right_distance - left_distance) / CHASSIS_WIDTH;
+	//todo: calculate angle from gyro cuz of the skid
+	double angle = gyro->heading;
 
 	// Calculate the new position of the robot
 	pos->theta = wrap_angle(pos->theta + angle);
@@ -286,3 +368,12 @@ void calculate_odometry(const encoders *enc, Position *pos)
 	pos->y = pos->y + distance * sin(pos->theta);
 }
 
+double get_pid_left_feedback()
+{
+	return pid_left->feedback;
+}
+
+double get_pid_right_feedback()
+{
+	return pid_right->feedback;
+}

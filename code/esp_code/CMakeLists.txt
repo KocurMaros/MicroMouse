@@ -8,6 +8,7 @@ idf_build_component("components/driver_tof")
 idf_build_component("components/mpu9250")
 idf_build_component("components/motor_driver")
 idf_build_component("components/ahrs")
+idf_build_component("components/control_algos")
 
 set(EXTRA_COMPONENT_DIRS $ENV{IDF_PATH}../esp-idf-lib/components)
 project(MicroMouse)

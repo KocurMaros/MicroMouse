@@ -36,13 +36,12 @@ int sock;
 struct sockaddr_in dest_addr;
 
 void send_message(char *message){
-    printf("Sending message\n   %s\n",message);
+   // printf("Sending message\n   %s\n",message);
     int err = sendto(sock, message, strlen(message), 0, (struct sockaddr *)&dest_addr, sizeof(dest_addr));
     if (err < 0) {
-        ESP_LOGE(TAG, "Error occurred during sending: errno %d", errno);
+        //ESP_LOGE(TAG, "Error occurred during sending: errno %d", errno);
     }
 }
-
 
 void init_udp(void){
     ESP_ERROR_CHECK(esp_netif_init());

@@ -16,16 +16,21 @@ typedef struct orientation
 	float pitch;
 	float heading;
 } orientation;
+
+/// @brief Encoder data, where encoder 1/2 are ticks and time_diff is the time difference in us
 typedef struct encoders
 {
-	uint64_t encoder1;
-	uint64_t encoder2;
-	uint64_t time_diff;
+	int32_t encoder1;
+	int32_t encoder2;
+    int64_t time_diff;
 } encoders;
 typedef struct logging
 {
 	float voltage;
 	bool button_start;
+    int hz_gyro;
+    float gyro_freq;
+    
 } logging;
 typedef struct MeasData
 {
