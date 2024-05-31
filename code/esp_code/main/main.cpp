@@ -23,7 +23,7 @@
 QueueHandle_t FIFO_Meas_to_Cont;
 
 TaskHandle_t xTaskControlHandle;
-TaskHandle_t xTaskMeasHandle;
+    TaskHandle_t xTaskMeasHandle;
 
 
 extern "C" 

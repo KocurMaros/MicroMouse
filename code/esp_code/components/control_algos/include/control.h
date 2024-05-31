@@ -4,6 +4,9 @@
 #include <stdbool.h>
 #include "meas_data.h"
 
+extern bool turnRight;
+extern bool turnLeft;
+
 /// @brief A fear behaviour version of the Brightenberg vehicle
 /// @param _current_tof_data [in] current distance from the onboard TOF sensors [m]
 /// @param speed_left_ [out] the calculated speed for the left motor [mm/s]
