@@ -300,11 +300,11 @@ a~dopočítavajú sa na~milimetre za~sekundu. Tieto hodnoty sa taktiež prepoč�
 za sekundu na~PWM signál je závislý uskutočňovaný nasledujúcim výpočtom:
 
 \begin{equation}
-	\text{PWM} = d \pi \frac{IMP_t}{IMP_{pr} i \Delta t}
-	\label{eq:mmps2pwm}
+	\text{mmps} = d \pi \frac{IMP_t}{IMP_{pr} i \Delta t}
+	\label{eq:imp2mmps}
 \end{equation}
 
-Rovnica \ref{eq:mmps2pwm} obsahuje parametre:
+Rovnica \ref{eq:imp2mmps} obsahuje parametre:
 \begin{itemize}
 	\item d - Priemer kolesa,
 	\item $IMP_t$ - Aktuálne impulzy z~enkóderu,
@@ -312,6 +312,19 @@ Rovnica \ref{eq:mmps2pwm} obsahuje parametre:
 	\item i - Pomer prevodovky motora. Na~našich motoroch je to prevod 32:8,
 	\item $\Delta t$ - Časový interval od~posledného merania
 \end{itemize}
+
+\begin{equation}
+	\text{PWM} = \frac{mmps}{MWS IMP_{pr}}
+	\label{eq:mmps2pwm}
+\end{equation}
+
+Rovnica \ref{eq:mmps2pwm} obsahuje parametre:
+\begin{itemize}
+	\item mmps - Rýchlosť robota v~milimetroch za~sekundu vypocitanej v rovnici \ref{eq:imp2mmps},
+	\item MWS - Maximálna rýchlosť otacania kolies,
+	\item $IMP_{pr}$ - Impulzy z~enkóderu za~jednu otáčku (per rotation).
+\end{itemize}
+
 
 \newpage
 \subsection{Riadiaci algoritmus}
