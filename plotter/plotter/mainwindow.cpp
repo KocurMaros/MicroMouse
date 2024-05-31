@@ -55,7 +55,23 @@ MainWindow::MainWindow(QWidget *parent)
 	, gyroFrequency(0)
 	, motorA(0)
 	, motorB(0)
+    , motorAMax(0)
+    , motorAMin(0)
+    , motorBMax(0)
+    , motorBMin(0)
+    , controlMax(0)
+    , controlMin(0)
+    , encoderLeftMax(0)
+    , encoderLeftMin(0)
+    , encoderRightMax(0)
+    , encoderRightMin(0)
 	, motorBufferSize(0)
+    , motorLowerLimit(0)
+    , motorUpperLimit(250)
+    , controlLowerLimit(-300)
+    , controlUpperLimit(300)
+    , encoderLowerLimit(-1000)
+    , encoderUpperLimit(1000)
 {
 	setWindowTitle("Real-Time Plot");
 	//initalize arrays to 0
@@ -89,7 +105,7 @@ MainWindow::MainWindow(QWidget *parent)
 		motorChart->setAxisX(axisX, motorSeriesB);
 
 		auto *axisY = new QValueAxis;
-        axisY->setRange(0, 250);
+        axisY->setRange(motorLowerLimit, motorUpperLimit);
 		axisY->setLabelFormat("%i");
 		motorChart->setAxisY(axisY, motorSeriesA);
 		motorChart->setAxisY(axisY, motorSeriesB);
@@ -110,7 +126,7 @@ MainWindow::MainWindow(QWidget *parent)
 		controlSignalChart->setAxisX(axisX, controlSeries);
 
 		auto *axisY = new QValueAxis;
-		axisY->setRange(-300, 300);
+        axisY->setRange(controlLowerLimit, controlUpperLimit);
 		axisY->setLabelFormat("%i");
 		controlSignalChart->setAxisY(axisY, controlSeries);
 		controlSignalChart->setTitle("Control signal");
@@ -132,7 +148,7 @@ MainWindow::MainWindow(QWidget *parent)
 		encoderTicksChart->setAxisX(axisX, rightEncoderSeries);
 
 		auto *axisY = new QValueAxis;
-		axisY->setRange(-1'000, 1'000);
+        axisY->setRange(encoderLowerLimit, encoderUpperLimit);
 		axisY->setLabelFormat("%i");
 		encoderTicksChart->setAxisY(axisY, leftEncoderSeries);
 		encoderTicksChart->setAxisY(axisY, rightEncoderSeries);
@@ -365,10 +381,20 @@ void MainWindow::updateChart()
 	controlSignalChart->axes(Qt::Horizontal).first()->setRange(start, timestamp);
 	encoderTicksChart->axes(Qt::Horizontal).first()->setRange(start, timestamp);
 
+    findMinMax(&motorAMin, &motorAMax, motorLowerLimit, motorUpperLimit, motorSeriesA);
+    findMinMax(&motorBMin, &motorBMax, motorLowerLimit, motorUpperLimit, motorSeriesB);
+    findMinMax(&controlMin, &controlMax, controlLowerLimit, controlUpperLimit, controlSeries);
+    findMinMax(&encoderLeftMin, &encoderLeftMax, encoderLowerLimit, encoderUpperLimit, leftEncoderSeries);
+    findMinMax(&encoderRightMin, &encoderRightMax, encoderLowerLimit, encoderUpperLimit, rightEncoderSeries);
+
+    controlSignalChart->axes(Qt::Vertical).first()->setRange(controlMin, controlMax);
+    motorChart->axes(Qt::Vertical).first()->setRange(std::min(motorAMin,motorBMin), std::max(motorAMax,motorBMax));
+    encoderTicksChart->axes(Qt::Vertical).first()->setRange(std::min(encoderLeftMin,encoderRightMin), std::max(encoderLeftMax,encoderRightMax));
+
 	// Update bar motorChart
 	QStringList cat;
 	for (int i = 0; i < 4; ++i) {
-		const auto val = tofArray.back()[i] * 100;
+        const auto val = tofArray.back()[i] * 100;
 		tofChart->replace(i, val);
 		// Set the distance from metres to centimetres.
 		cat << QString::number(val);
@@ -390,4 +416,17 @@ void MainWindow::updateChart()
 		rightEncoderSeries->remove(0);
 		motorBufferSize--;
 	}
+}
+
+void MainWindow::findMinMax(double *min, double *max, int lowerLimit, int upperLimit,  QLineSeries *series){
+    *min = lowerLimit;
+    *max = upperLimit;
+    for(int i = 0; i<series->points().size();i++){
+        if (series->points().at(i).y() > *max){
+            *max = series->points().at(i).y();
+        }
+        if (series->points().at(i).y() < *min){
+            *min = series->points().at(i).y();
+        }
+    }
 }

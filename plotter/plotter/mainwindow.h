@@ -37,6 +37,31 @@ private:
 	QLineSeries *motorSeriesA;
 	QLineSeries *motorSeriesB;
 
+    double motorAMax;
+    double motorAMin;
+
+    double motorBMax;
+    double motorBMin;
+
+    double controlMax;
+    double controlMin;
+
+    double encoderLeftMin;
+    double encoderLeftMax;
+
+    double encoderRightMin;
+    double encoderRightMax;
+
+    int motorLowerLimit;
+    int motorUpperLimit;
+
+    int controlLowerLimit;
+    int controlUpperLimit;
+
+    int encoderLowerLimit;
+    int encoderUpperLimit;
+
+
 	QChartView *plotControl;
 	QChart *controlSignalChart;
 	QLineSeries *controlSeries;
@@ -88,6 +113,7 @@ private:
 	std::atomic<int> motorBufferSizeLast;
 	bool connected;
 	QTimer *disconnectedTimer;
+    void findMinMax(double *min, double *max ,int lowerLimit, int upperLimit, QLineSeries *series);
 };
 
 #endif // MAINWINDOW_H
