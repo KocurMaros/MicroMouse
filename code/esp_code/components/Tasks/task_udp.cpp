@@ -44,7 +44,10 @@ float gyro_ziadane(float _gyro_actual){
         return gyro_clamp(_gyro_actual + M_PI);
 
 }
-
+float calc_gyro_error(float _gyro_actual, float _gyro_wanted){
+    float error = fabsf(atan2(sin(_gyro_wanted*M_PI/180.0 - _gyro_actual*M_PI/180.0), cos(sin(_gyro_wanted*M_PI/180.0 - _gyro_actual*M_PI/180.0))));
+    return error*180.0/M_PI;
+}
 extern "C" void task_udp(void *arg)
 {
 	printf("Task control run on core: %d\n", xPortGetCoreID());
@@ -97,18 +100,22 @@ extern "C" void task_udp(void *arg)
             speed_left = 300;
             speed_right = 300;
             ret = control_braitenberg_fear(&val, &speed_left, &speed_right);
-            /*
-            printf("Speed left: %d, Speed right: %d\n", speed_left, speed_right);
+            // printf("Speed left: %d, Speed right: %d\n", speed_left, speed_right);
             if(turnLeft || turnRight){
                 if(_gyro_wanted == 0){
+                    printf("Start reverse\n");
                     reverse_time = esp_timer_get_time();
                     _gyro_wanted = gyro_ziadane(val.orient.heading);
                 }
-                if(esp_timer_get_time() - reverse_time < 200'000){
-                    set_speed_dir(-70, -70); 
+                if(esp_timer_get_time() - reverse_time < 2'000'000){
+                    printf("Reverse\n");
+                    speed_left = -100;
+                    speed_right = -100;
+                    set_speed_dir(speed_left, speed_right); 
                     calculate_odometry(&val.enc, &position, &val.orient);
                 }else{
-                    double cA =  pid_control_from_error(rot_reg, gyro_clamp(_gyro_wanted - val.orient.heading));
+                    printf("Rotate\n ");
+                    double cA =  pid_control_from_error(rot_reg, calc_gyro_error(val.orient.heading, _gyro_wanted));
                     if(turnLeft){
                         speed_left = abs(cA) > 100 ? cA : 100;
                         speed_right = -(abs(cA) > 100 ? cA : 100);
@@ -117,14 +124,15 @@ extern "C" void task_udp(void *arg)
                         speed_left = -(abs(cA) > 100 ? cA : 100);
                         speed_right = (abs(cA) > 100 ? cA : 100);
                     }
-                    printf("Gyro wanted: %f, Gyro actual: %f, Control: %f\n", _gyro_wanted, val.orient.heading, cA);
-                    if(abs(_gyro_wanted - val.orient.heading) < 0.1){
+                    printf("Gyro wanted: %f, Gyro actual: %f, Control: %f Error %f\n", _gyro_wanted, val.orient.heading, cA,calc_gyro_error(val.orient.heading, _gyro_wanted) );
+                    if(calc_gyro_error(val.orient.heading, _gyro_wanted) < 0.1){
                         turnLeft = false;
                         turnRight = false;
                         _gyro_wanted = 0;
                     }
                 }
             }
+            /*
             */
             set_speed_dir(speed_left, speed_right);  
             calculate_odometry(&val.enc, &position, &val.orient);

@@ -68,6 +68,7 @@ double control_braitenberg_fear(const MeasData *_current_sensor_data, int *speed
         *speed_left_ = 0;
         *speed_right_ = 0;
         /*
+        */
         if(_current_sensor_data->tof.tof2 < TOF_MAX/4 && _current_sensor_data->tof.tof3 < TOF_MAX/4){
             if(_current_sensor_data->tof.tof2 < _current_sensor_data->tof.tof3){
                 turnRight = true;
@@ -75,7 +76,6 @@ double control_braitenberg_fear(const MeasData *_current_sensor_data, int *speed
                 turnLeft = true;
             }
         }
-        */
         return 0;
     }
 
