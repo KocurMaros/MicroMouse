@@ -78,7 +78,7 @@ Na sledovanie orientácie a pohybu robota sme si zvolili MEMS gyroskop. Tie mera
 \vec{F} = -2m\vec{\Omega_z}x\vec{v}
 \end{equation}
 MEMS Gyroskop obsahuje vybrujúce elementy na pružine. Keď sa gyroskop pohybuje kapacitný senzor deteguje vibrácie, tie sa následne premenia na uhlové zrýchlenie.
-    
+    \newpage
 Ďalej sú uvedené podrobnosti o použitom module \ref{fig:gyro}:
 \begin{figure}[!htbp]
         \centering
@@ -103,7 +103,12 @@ d = \frac{c \cdot t}{2}
 kde $d$ je vypočítaná vzdialenosť, $c$ je rýchlosť svetla a $t$ je doba letu lúča.
 
 Modul môžeme vidieť na obrázku  \ref{fig:vl53l1x}. Nižšie sú uvedené parametre senzora.
-
+\begin{figure}[!htpb]
+    \centering
+    \includegraphics[width=7cm]{includes/images/vl53l1x.jpg}
+    \caption{Vzdialenostný senzor VL53L1X}
+    \label{fig:vl53l1x}
+\end{figure}
 \begin{itemize}
 
     \item Model: VL53L1X
@@ -120,12 +125,7 @@ Modul môžeme vidieť na obrázku  \ref{fig:vl53l1x}. Nižšie sú uvedené par
 
 \end{itemize}
 
-\begin{figure}[!htpb]
-    \centering
-    \includegraphics[width=7cm]{includes/images/vl53l1x.jpg}
-    \caption{Vzdialenostný senzor VL53L1X}
-    \label{fig:vl53l1x}
-\end{figure}
+
 
 Na meranie vzdialenosti sme využili štyri takéto moduly pripevnené na dosku vyosené relatívne od dopredného smeru myši o 45° a 10°.
 
@@ -207,7 +207,7 @@ Upravovanie vzdialeností kolies bolo kľúčové pre dosiahnutie optimálnej ma
 \section{Software}
 \label{sec:software}
 
-Na písanie kódu sme použili prostredie \textbf{esp\_idf} verzie \textit{4\.4\.7}, ktoré sme vytvorili za~pomoci
+Na písanie kódu sme použili prostredie \textbf{esp\_idf} verzie \textit{4.4.7}, ktoré sme vytvorili za~pomoci
 ich repozitára \cite{espGithub}.
 
 Postup na~inicializáciu ESP IDF a~následné spustenie projektu je nasledovný:
@@ -226,19 +226,7 @@ Postup na~inicializáciu ESP IDF a~následné spustenie projektu je nasledovný:
 
 Alternatívne spustenie je možné pomocou platformy \textbf{Visual Studio Code} s~nainštalovaným rozšírením
 \textbf{ESP-IDF}~\cite{espIDF}.
-\subsection{UDP Komunikácia}
-\subsubsection{Client}
-Klientom v našom prípade je ESP32, ktorý sa používa v PCB mikromyši. Toto zariadenie je zodpovedné za zber údajov o stave a správaní mikromyši a ich odosielanie na server. Komunikácia s serverom prebieha prostredníctvom UDP protokolu, čo umožňuje rýchly a efektívny prenos dát.
-\subsubsection{Server}
-Na strane servera sme použili vývojové prostredie Qt Creator s programovacím jazykom C++ na implementáciu serverovej časti, ktorá prijíma dáta od klienta. Server je integrovaný s mini HMI (Human-Machine Interface) aplikáciou, ktorá umožňuje real-time vizualizáciu dát prostredníctvom grafov a poskytuje užívateľské rozhranie pre sledovanie a ladenie správania mikromyši.
 \newpage
-\begin{figure}[!htpb]
-    \centering
-    \includegraphics[width=14cm]{includes//images/image.png}
-    \caption{Používateľské rozhranie HMI aplikácie }
-    \label{fig:UDP}
-\end{figure}
-HMI aplikácia je kľúčovým nástrojom pre efektívne diagnostikovanie a optimalizáciu výkonu autonómnej mikromyši. \ref{fig:UDP} 
 \subsection{Senzory}
 \subsubsection{VL53L1X}
 Pre snímanie vzdialenosti bola vytvorená knižnica na kalibráciu a vyčítavanie dát zo senzora VL53L1X. Komunikácia prebieha prostredníctvom komunikačného protokolu $I^2 C$. Knižnica je nadstavbou nad voľne dostupným rozhraním od STMicroelectronics.
@@ -268,18 +256,27 @@ Každý "tick" nám indikuje 1/8 otáčky motora, a pomocou softvéru potom prep
 \label{subsec:odometria}
 
 % Pridat referencia na~motor a~enkoder ked budu vytvorene v~hardweri
-Podobne ako v~predmete \textit{Riadenie mobilných robotov} sme použili odometriu na~výpočet polohy robota.
+Pri počítaní polohy robota bola použítá odometria.
 Použili sme na~to inkrementálny enkóder \ref{encoder_section}, ktorý je pripojený na~motor \ref{motor_section}. Z enkóderov si získame aktuálnu polohu robota
 cez základný vzťah:
 
 \begin{equation}
 	\label{eq:odometria}
-	 \Delta x_t = x_{t-1} + \Delta s_t \cdot \cos(\theta_{t-1} + \Delta \theta_t)
+	 \Delta x_t = x_{t-1} + \Delta s_t \cdot \cos(\phi_{t-1} + \Delta \phi_t)
 \end{equation}
-\begin{align*}
-	\Delta y_t = y_{t-1} + \Delta s_t \cdot \sin(\theta_{t-1} + \Delta \theta_t)
-\end{align*}
-Uhol $\theta$ získavame z gyroskopu 
+\begin{align}
+	\Delta y_t = y_{t-1} + \Delta s_t \cdot \sin(\phi_{t-1} + \Delta \phi_t)
+\end{align}
+,kde:
+\begin{itemize}
+    \item $\Delta x_t$ a $\Delta y_t$ sú zmeny pozície robota v osiach $x$ a $y$ v čase $t$,
+    \item $x_{t-1}$ a $y_{t-1}$ sú predchádzajúce pozície robota v osiach $x$ a $y$,
+    \item $\Delta s_t$ je vzdialenosť, ktorú robot prešiel od posledného merania,
+    \item $\phi_{t-1}$ je predchádzajúci uhol orientácie robota,
+    \item $\Delta \phi_t$ je zmena uhla orientácie robota získaná z gyroskopu.
+\end{itemize}
+
+Pre lepšie pochopenie odometrie a jej presnosti je dôležité zvážiť aj potenciálne chyby z enkóderov a gyroskopu, ako aj spôsoby ich korekcie v softvérovom riešení robota.
 
 
 \newpage
@@ -344,3 +341,16 @@ Na obrázku \ref{fig:uml_algo} je znázornený tokový diagram, ktorý predstavu
             \item Ak \textbf{nie}, vykoná sa krok Udržuj smer, čo znamená pokračovanie v súčasnom smere bez zmeny.
         \end{itemize}
 \end{enumerate}
+\subsection{UDP Komunikácia}
+\subsubsection{Client}
+Klientom v našom prípade je ESP32, ktorý sa používa v PCB mikromyši. Toto zariadenie je zodpovedné za zber údajov o stave a správaní mikromyši a ich odosielanie na server. Komunikácia s serverom prebieha prostredníctvom UDP protokolu, čo umožňuje rýchly a efektívny prenos dát.
+\subsubsection{Server}
+Na strane servera sme použili vývojové prostredie Qt Creator s programovacím jazykom C++ na implementáciu serverovej časti, ktorá prijíma dáta od klienta. Server je integrovaný s mini HMI (Human-Machine Interface) aplikáciou, ktorá umožňuje real-time vizualizáciu dát prostredníctvom grafov a poskytuje užívateľské rozhranie pre sledovanie a ladenie správania mikromyši.
+
+\begin{figure}[!htpb]
+    \centering
+    \includegraphics[width=14cm]{includes//images/image.png}
+    \caption{Používateľské rozhranie HMI aplikácie }
+    \label{fig:UDP}
+\end{figure}
+HMI aplikácia je kľúčovým nástrojom pre efektívne diagnostikovanie a optimalizáciu výkonu autonómnej mikromyši. \ref{fig:UDP} 
