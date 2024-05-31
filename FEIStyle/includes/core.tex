@@ -7,27 +7,27 @@ Z hárdverovej stránky sme potrebovali v tomto projekte vytvoriť dosku plošn�
 Kolesá a ozubené koliesko pre hriadeľ motora boli vytlačené v 3D tlačiarni s resinovou náplňou FabPro 1000 Resin Cartridge Tough BLK. Na obrázkoch \ref{fig:gear} a \ref{fig:wheel_w_gear} môžeme vidieť návrhy ozubeného kolieska pre hriadeľ a kolesa. 
 
 \begin{figure}[!htbp]
-        \centering
-        \includegraphics[scale=0.8]{includes/images/motor_gear.png}
-        \caption{UTechnický nákres prevodu motora}
-        \label{fig:gear}
+		\centering
+		\includegraphics[scale=0.8]{includes/images/motor_gear.png}
+		\caption{UTechnický nákres prevodu motora}
+		\label{fig:gear}
 \end{figure}
 
 \begin{figure}[!htbp]
-        \centering
-        \includegraphics[scale=0.8]{includes/images/wheel_w_gear_2_blueprint.png}
-        \caption{Koleso s prevodovkou}
-        \label{fig:wheel_w_gear}
+		\centering
+		\includegraphics[scale=0.8]{includes/images/wheel_w_gear_2_blueprint.png}
+		\caption{Koleso s prevodovkou}
+		\label{fig:wheel_w_gear}
 \end{figure}
 \newpage
 \subsection{Motory}\label{motor_section}
 Použité motory boli vybrané s ohľadom na ich výkonnosť a spoľahlivosť. Sú to jednosmerné motory, vidieť ich môžeme na \ref{fig:motor} a detaily o nich uvádzame nižšie:
 
 \begin{figure}[!htbp]
-        \centering
-        \includegraphics[scale=0.8]{includes/images/faulhaber.png}
-        \caption{DC Mikromotor Faulhaber 1717T003SR}
-        \label{fig:motor}
+		\centering
+		\includegraphics[scale=0.8]{includes/images/faulhaber.png}
+		\caption{DC Mikromotor Faulhaber 1717T003SR}
+		\label{fig:motor}
 \end{figure}
 
 \begin{itemize}
@@ -56,10 +56,10 @@ Enkóder obsahuje permanentný magnet pripevnený na jeho hriadeľ. Rotáciou hr
 Nižšie sú uvedené informácie o použitých enkóderoch \ref{fig:encoder}:
 
 \begin{figure}[!htbp]
-        \centering
-        \includegraphics[scale=0.8]{includes/images/encoder.png}
-        \caption{Enkóder IEH2-4096}
-        \label{fig:encoder}
+		\centering
+		\includegraphics[scale=0.8]{includes/images/encoder.png}
+		\caption{Enkóder IEH2-4096}
+		\label{fig:encoder}
 \end{figure}
 
 \begin{itemize}
@@ -78,13 +78,13 @@ Na sledovanie orientácie a pohybu robota sme si zvolili MEMS gyroskop. Tie mera
 \vec{F} = -2m\vec{\Omega_z}x\vec{v}
 \end{equation}
 MEMS Gyroskop obsahuje vybrujúce elementy na pružine. Keď sa gyroskop pohybuje kapacitný senzor deteguje vibrácie, tie sa následne premenia na uhlové zrýchlenie.
-    \newpage
+	\newpage
 Ďalej sú uvedené podrobnosti o použitom module \ref{fig:gyro}:
 \begin{figure}[!htbp]
-        \centering
-        \includegraphics[scale=0.8]{includes/images/mpu9205.png}
-        \caption{Gyroskop MPU9250}
-        \label{fig:gyro}
+		\centering
+		\includegraphics[scale=0.8]{includes/images/mpu9205.png}
+		\caption{Gyroskop MPU9250}
+		\label{fig:gyro}
 \end{figure}
 \begin{itemize}
   \item Model: MPU9250
@@ -104,24 +104,24 @@ kde $d$ je vypočítaná vzdialenosť, $c$ je rýchlosť svetla a $t$ je doba le
 
 Modul môžeme vidieť na obrázku  \ref{fig:vl53l1x}. Nižšie sú uvedené parametre senzora.
 \begin{figure}[!htpb]
-    \centering
-    \includegraphics[width=7cm]{includes/images/vl53l1x.jpg}
-    \caption{Vzdialenostný senzor VL53L1X}
-    \label{fig:vl53l1x}
+	\centering
+	\includegraphics[width=7cm]{includes/images/vl53l1x.jpg}
+	\caption{Vzdialenostný senzor VL53L1X}
+	\label{fig:vl53l1x}
 \end{figure}
 \begin{itemize}
 
-    \item Model: VL53L1X
+	\item Model: VL53L1X
 
-    \item Maximálna vzdialenosť: 400cm
+	\item Maximálna vzdialenosť: 400cm
 
-    \item Frekvencia merania: nastaviteľná až do 50Hz
+	\item Frekvencia merania: nastaviteľná až do 50Hz
 
-    \item Zorné pole: 27°
+	\item Zorné pole: 27°
 
-    \item Komunikácia: I2C
+	\item Komunikácia: I2C
 
-    \item Odkaz na technický list: \href{https://www.st.com/resource/en/datasheet/vl53l1x.pdf}{Technický list laserového diaľkomera}
+	\item Odkaz na technický list: \href{https://www.st.com/resource/en/datasheet/vl53l1x.pdf}{Technický list laserového diaľkomera}
 
 \end{itemize}
 
@@ -132,14 +132,14 @@ Na meranie vzdialenosti sme využili štyri takéto moduly pripevnené na dosku 
 \subsection{PCB}
 \subsubsection{Komponenty}
 \begin{itemize}
-    \item \textbf{Senzory ToF (VL53L1X)}: Prepojenie s ESP32 cez I2C rozhranie.
-    \item \textbf{Gyroskop s akcelerometrom (MPU9250)}: Prepojenie s ESP32 cez I2C rozhranie.
-    \item \textbf{Driver na motor (TB6612FNG)}: Umiestnený blízko motorov, posiela PWM signály motorom.
-    \item \textbf{MCU (ESP32)}: Centrálny riadiaci prvok PCB.
-    \item \textbf{Step-up menič na 5V}: Zabezpečenie stabilných 5V pre logické obvody a enkodéry.
-    \item \textbf{Logic shifter}: Prekladanie signálov medzi 3,3V a 5V úrovňami.
-    \item \textbf{Ochrana batérie}: Meranie napätia batérie a prúdové ochrany.
-    \item \textbf{Batéria (Li-ion 1000mAh)}: Umiestnená na PCB s prístupnými napájacími konektormi a ochrannými obvodmi.
+	\item \textbf{Senzory ToF (VL53L1X)}: Prepojenie s ESP32 cez I2C rozhranie.
+	\item \textbf{Gyroskop s akcelerometrom (MPU9250)}: Prepojenie s ESP32 cez I2C rozhranie.
+	\item \textbf{Driver na motor (TB6612FNG)}: Umiestnený blízko motorov, posiela PWM signály motorom.
+	\item \textbf{MCU (ESP32)}: Centrálny riadiaci prvok PCB.
+	\item \textbf{Step-up menič na 5V}: Zabezpečenie stabilných 5V pre logické obvody a enkodéry.
+	\item \textbf{Logic shifter}: Prekladanie signálov medzi 3,3V a 5V úrovňami.
+	\item \textbf{Ochrana batérie}: Meranie napätia batérie a prúdové ochrany.
+	\item \textbf{Batéria (Li-ion 1000mAh)}: Umiestnená na PCB s prístupnými napájacími konektormi a ochrannými obvodmi.
 \end{itemize}
 
 \subsubsection{Proces tvorby PCB}
@@ -161,17 +161,17 @@ Implementovali sme obvody na stabilizáciu napätia (3,3V a 5V), ochrany batéri
 
 \textbf{Taktiež sme museli myslieť na nasledovné:}
 \begin{itemize}
-    \item Udržanie minimálnej dĺžky kritických signálových trás (I2C, PWM).
-    \item Oddelenie silových a signálových ciest na PCB, aby sa minimalizovalo rušenie.
-    \item Zabezpečenie dostatočnej kapacity a filtrácie na napájacích cestách.
-    \item Implementácia ochranných obvodov pre batériu a citlivé komponenty.
+	\item Udržanie minimálnej dĺžky kritických signálových trás (I2C, PWM).
+	\item Oddelenie silových a signálových ciest na PCB, aby sa minimalizovalo rušenie.
+	\item Zabezpečenie dostatočnej kapacity a filtrácie na napájacích cestách.
+	\item Implementácia ochranných obvodov pre batériu a citlivé komponenty.
 \end{itemize}
 
 \begin{figure}[!htpb]
-    \centering
-    \includegraphics[width=1\linewidth]{includes//images/PCB.png}
-    \caption{Návrh PCB dosky použitej vo finálnej verzii.}
-    \label{fig:PCB}
+	\centering
+	\includegraphics[width=1\linewidth]{includes//images/PCB.png}
+	\caption{Návrh PCB dosky použitej vo finálnej verzii.}
+	\label{fig:PCB}
 \end{figure}
 
 \clearpage\subsection{CAD}
@@ -198,10 +198,10 @@ Upravovanie vzdialeností kolies bolo kľúčové pre dosiahnutie optimálnej ma
 \clearpage Návrh a výroba 3D komponentov pre Micro Mouse zahŕňala použitie existujúcich modelov kolies a gumy, ako aj iteratívny návrh úchytov. Tento prístup umožnil efektívne vytvorenie funkčných a spoľahlivých komponentov, ktoré prispievajú k optimálnemu výkonu Micro Mouse.
 
 \begin{figure}[!htpb]
-    \centering
-    \includegraphics[width=1\linewidth]{includes//images/main_board.jpg}
-    \caption{Konečná verzia návrhu všetkých komponentov vyrábaných pomocou 3D tlače usporiadaných na PCB.}
-    \label{fig:MainBoard}
+	\centering
+	\includegraphics[width=1\linewidth]{includes//images/main_board.jpg}
+	\caption{Konečná verzia návrhu všetkých komponentov vyrábaných pomocou 3D tlače usporiadaných na PCB.}
+	\label{fig:MainBoard}
 \end{figure}
 
 \section{Software}
@@ -228,21 +228,22 @@ Alternatívne spustenie je možné pomocou platformy \textbf{Visual Studio Code}
 \textbf{ESP-IDF}~\cite{espIDF}.
 \newpage
 \subsection{Senzory}
+\label{subsec:senzory}
 \subsubsection{VL53L1X}
 Pre snímanie vzdialenosti bola vytvorená knižnica na kalibráciu a vyčítavanie dát zo senzora VL53L1X. Komunikácia prebieha prostredníctvom komunikačného protokolu $I^2 C$. Knižnica je nadstavbou nad voľne dostupným rozhraním od STMicroelectronics.
 \begin{figure}[!htpb]
-    \centering
-    \includegraphics[width=8cm]{includes//images/tof_pic.png}
-    \caption{Základný princíp ToF}
-    \label{fig:tof_pic}
+	\centering
+	\includegraphics[width=8cm]{includes//images/tof_pic.png}
+	\caption{Základný princíp ToF}
+	\label{fig:tof_pic}
 \end{figure}
 Na obrázku \ref{fig:tof_pic} je zobrazený princíp fungovania senzora využívajúceho metódu Time-of-Flight (ToF) pre meranie vzdialenosti. Zariadenie emituje svetelný signál, ktorý sa odrazi od objektu a vráti späť k senzoru.
 \subsubsection{MPU9250}
 \begin{figure}[!htpb]
-    \centering
-    \includegraphics[width=10cm]{includes//images/rpy.png}
-    \caption{Gyroskop s akcelerometrom MPU9250 }
-    \label{fig:rpy}
+	\centering
+	\includegraphics[width=10cm]{includes//images/rpy.png}
+	\caption{Gyroskop s akcelerometrom MPU9250 }
+	\label{fig:rpy}
 \end{figure}
 V našom projekte sme použili senzor MPU9250, ktorý je trojosovým akcelerometrom a gyroskopom. Tento senzor nám umožňuje získavať presné údaje o orientácii mikromyši v trojrozmernom priestore. Kľúčovou súčasťou spracovania dát z tohto senzoru je výpočet Eulerových uhlov -- roll, pitch a yaw. Tieto údaje sú neoceniteľné pre stabilizáciu a presné navigačné manévre mikromyši, poskytujúc tak lepší prehľad o jej aktuálnom náklone a orientácii.
 
@@ -269,17 +270,15 @@ cez základný vzťah:
 \end{align}
 ,kde:
 \begin{itemize}
-    \item $\Delta x_t$ a $\Delta y_t$ sú zmeny pozície robota v osiach $x$ a $y$ v čase $t$,
-    \item $x_{t-1}$ a $y_{t-1}$ sú predchádzajúce pozície robota v osiach $x$ a $y$,
-    \item $\Delta s_t$ je vzdialenosť, ktorú robot prešiel od posledného merania,
-    \item $\phi_{t-1}$ je predchádzajúci uhol orientácie robota,
-    \item $\Delta \phi_t$ je zmena uhla orientácie robota získaná z gyroskopu.
+	\item $\Delta x_t$ a $\Delta y_t$ sú zmeny pozície robota v osiach $x$ a $y$ v čase $t$,
+	\item $x_{t-1}$ a $y_{t-1}$ sú predchádzajúce pozície robota v osiach $x$ a $y$,
+	\item $\Delta s_t$ je vzdialenosť, ktorú robot prešiel od posledného merania,
+	\item $\phi_{t-1}$ je predchádzajúci uhol orientácie robota,
+	\item $\Delta \phi_t$ je zmena uhla orientácie robota získaná z gyroskopu.
 \end{itemize}
 
 Pre lepšie pochopenie odometrie a jej presnosti je dôležité zvážiť aj potenciálne chyby z enkóderov a gyroskopu, ako aj spôsoby ich korekcie v softvérovom riešení robota.
 
-
-\newpage
 
 \subsection{PID regulátor motorov}
 \label{subsec:pid}
@@ -325,34 +324,32 @@ Rovnica \ref{eq:mmps2pwm} obsahuje parametre:
 	\item $IMP_{pr}$ - Impulzy z~enkóderu za~jednu otáčku (per rotation).
 \end{itemize}
 
-
-\newpage
 \subsection{Riadiaci algoritmus}
 %TODO: UML Algoritmus, popisat k nemu veci ----- ak budete chciet menit veci v diagrame, v images bude aj .drawio file, ktory sa da rovno editovat pre usetrenie casu
 \begin{figure}[!htpb]
-    \centering
-    \includegraphics[width=1\linewidth]{includes//images/uml_algo.png}
-    \caption{UML diagram logiky algoritmu }
-    \label{fig:uml_algo}
+	\centering
+	\includegraphics[width=1\linewidth]{includes//images/uml_algo.png}
+	\caption{UML diagram logiky algoritmu }
+	\label{fig:uml_algo}
 \end{figure}
 Na obrázku \ref{fig:uml_algo} je znázornený tokový diagram, ktorý predstavuje algoritmus na rozhodovanie o pohybe v priestore. Tento diagram obsahuje niekoľko krokov a rozhodnutí:
 \begin{enumerate}
-    \item \textbf{Štart - }Začiatočný bod algoritmu.
-    \item \textbf{Slepá ulica? - }Rozhodovací krok, kde sa algoritmus pýta, či sa pred myškou nachádza slepá ulica.
-        \begin{itemize}
-            \item Ak \textbf{áno}, nasleduje krok Otoč sa, čo znamená zmenu smeru o 180 stupňov.
-            \item Ak \textbf{nie}, pokračuje ďalším rozhodnutím.
-        \end{itemize}
-    \item \textbf{Je ľavá stena bližšie ako pravá? - }Ďalšie rozhodovacie kritérium zvažujúce relatívne pozície stien.
-        \begin{itemize}
-            \item Ak \textbf{áno}, nasleduje krok Zaboč doprava.
-            \item Ak \textbf{nie}, presmeruje sa na ďalší rozhodovací bod.
-        \end{itemize}
-    \item \textbf{Sú rovnako vzdialené? - }Rozhoduje, či sú obidve steny rovnako vzdialené od myšky.
-        \begin{itemize}
-            \item Ak \textbf{áno}, nasleduje krok Zaboč doľava.
-            \item Ak \textbf{nie}, vykoná sa krok Udržuj smer, čo znamená pokračovanie v súčasnom smere bez zmeny.
-        \end{itemize}
+	\item \textbf{Štart - }Začiatočný bod algoritmu.
+	\item \textbf{Slepá ulica? - }Rozhodovací krok, kde sa algoritmus pýta, či sa pred myškou nachádza slepá ulica.
+		\begin{itemize}
+			\item Ak \textbf{áno}, nasleduje krok Otoč sa, čo znamená zmenu smeru o 180 stupňov.
+			\item Ak \textbf{nie}, pokračuje ďalším rozhodnutím.
+		\end{itemize}
+	\item \textbf{Je ľavá stena bližšie ako pravá? - }Ďalšie rozhodovacie kritérium zvažujúce relatívne pozície stien.
+		\begin{itemize}
+			\item Ak \textbf{áno}, nasleduje krok Zaboč doprava.
+			\item Ak \textbf{nie}, presmeruje sa na ďalší rozhodovací bod.
+		\end{itemize}
+	\item \textbf{Sú rovnako vzdialené? - }Rozhoduje, či sú obidve steny rovnako vzdialené od myšky.
+		\begin{itemize}
+			\item Ak \textbf{áno}, nasleduje krok Zaboč doľava.
+			\item Ak \textbf{nie}, vykoná sa krok Udržuj smer, čo znamená pokračovanie v súčasnom smere bez zmeny.
+		\end{itemize}
 \end{enumerate}
 \subsection{Upresnenie implementacie}
 \label{subsec:upresnennie_implementacie}
@@ -380,17 +377,22 @@ Algoritmus funguje nasledovne:
 
 Ak myška dôjde do slepej uličky, taktiež sme použili všetky 4 snímače nato aby sme detegovali do ktorej strany máme viac miesta a implementovali sme otočenie na mieste o 90 stupňov pomocou údajov z gyroskopu. Pre tento typ pohybu sme implementovali P regulátor rýchlosti kolies.
 \subsection{UDP Komunikácia}
+
 \subsubsection{Client}
+
 Klientom v našom prípade je ESP32, ktorý sa používa v PCB mikromyši. Toto zariadenie je zodpovedné za zber údajov o stave a správaní mikromyši a ich odosielanie na server. Komunikácia s serverom prebieha prostredníctvom UDP protokolu, čo umožňuje rýchly a efektívny prenos dát.
+
 \subsubsection{Server}
+
 Na strane servera sme použili vývojové prostredie Qt Creator s programovacím jazykom C++ na implementáciu serverovej časti, ktorá prijíma dáta od klienta. Server je integrovaný s mini HMI (Human-Machine Interface) aplikáciou, ktorá umožňuje real-time vizualizáciu dát prostredníctvom grafov a poskytuje užívateľské rozhranie pre sledovanie a ladenie správania mikromyši.
 
 \begin{figure}[!htpb]
-    \centering
-    \includegraphics[width=14cm]{includes//images/image.png}
-    \caption{Používateľské rozhranie HMI aplikácie }
-    \label{fig:UDP}
+	\centering
+	\includegraphics[width=14cm]{includes//images/image.png}
+	\caption{Používateľské rozhranie HMI aplikácie }
+	\label{fig:UDP}
 \end{figure}
+
 HMI aplikácia je kľúčovým nástrojom pre efektívne diagnostikovanie a optimalizáciu výkonu autonómnej mikromyši. \ref{fig:UDP} 
 \section{Vizuál MikroMyšky}
 \begin{figure}[!htpb]
