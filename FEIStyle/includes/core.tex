@@ -20,7 +20,7 @@ Kolesá a ozubené koliesko pre hriadeľ motora boli vytlačené v 3D tlačiarni
         \label{fig:wheel_w_gear}
 \end{figure}
 \newpage
-\subsection{Motory}
+\subsection{Motory}\label{motor_section}
 Použité motory boli vybrané s ohľadom na ich výkonnosť a spoľahlivosť. Sú to jednosmerné motory, vidieť ich môžeme na \ref{fig:motor} a detaily o nich uvádzame nižšie:
 
 \begin{figure}[!htbp]
@@ -38,7 +38,7 @@ Použité motory boli vybrané s ohľadom na ich výkonnosť a spoľahlivosť. S
   \item Odkaz na technický list: \href{https://www.faulhaber.com/fileadmin/Import/Media/EN_1717_SR_DFF.pdf}{Technický list motora}
 \end{itemize}
 
-\subsection{Enkódery}
+\subsection{Enkódery}\label{encoder_section}
 Na monitorovanie polohy a otáčok motorov sme použili magnetické enkódery. Informáciu o rotácií získavajú ako zmenu magnetického poľa. Enkóder obsahuje dva Hallove články, ktoré merajú veľkosť magnetickej indukcie ako Hallovo napätie ako: 
 
 
@@ -228,47 +228,49 @@ Alternatívne spustenie je možné pomocou platformy \textbf{Visual Studio Code}
 \textbf{ESP-IDF}~\cite{espIDF}.
 \subsection{UDP Komunikácia}
 \subsubsection{Client}
-
-%TODO: rozdelit medzi klienta a server
-
+Klientom v našom prípade je ESP32, ktorý sa používa v PCB mikromyši. Toto zariadenie je zodpovedné za zber údajov o stave a správaní mikromyši a ich odosielanie na server. Komunikácia s serverom prebieha prostredníctvom UDP protokolu, čo umožňuje rýchly a efektívny prenos dát.
 \subsubsection{Server}
-Pre spolahlivejšie ladenie a sledovanie správania programu sme implementovali UDP komunikáciu v prostredí Qt Creator v jazyku C++. Táto komunikácia nám umožnila používať realtime grafy na sledovanie správania mikromyši. Súčasťou implementácie bolo aj vytvorenie servera a komunikácia medzi PCB mikromyši a serverom. V tejto komunikácii funguje ESP32 ako klient a počítač ako server. ESP32 posiela údaje o stave mikromyši na počítač, ktorý ich zobrazuje v našej mini HMI aplikácii. 
+Na strane servera sme použili vývojové prostredie Qt Creator s programovacím jazykom C++ na implementáciu serverovej časti, ktorá prijíma dáta od klienta. Server je integrovaný s mini HMI (Human-Machine Interface) aplikáciou, ktorá umožňuje real-time vizualizáciu dát prostredníctvom grafov a poskytuje užívateľské rozhranie pre sledovanie a ladenie správania mikromyši.
 \begin{figure}[!htpb]
     \centering
-    \includegraphics[width=1\linewidth]{includes//images/image.png}
+    \includegraphics[width=15cm]{includes//images/image.png}
     \caption{Používateľské rozhranie HMI aplikácie }
     \label{fig:UDP}
 \end{figure}
-Táto aplikácia nám poskytuje efektívny nástroj na ladenie a prácu s mikromyšou, čo nám umožňuje rýchlo a presne reagovať na zmeny a optimalizovať výkon našej autonómnej myšky. \ref{fig:UDP} 
+HMI aplikácia je kľúčovým nástrojom pre efektívne diagnostikovanie a optimalizáciu výkonu autonómnej mikromyši. \ref{fig:UDP} 
 \newpage
 \subsection{Senzory}
 
 \subsubsection{VL53L1X}
-%TODO:obrazok co nas zaujima (luc a tam vzdialensot)
 Pre snímanie vzdialenosti bola vytvorená knižnica na kalibráciu a vyčítavanie dát zo senzora VL53L1X. Komunikácia prebieha prostredníctvom komunikačného protokolu $I^2 C$. Knižnica je nadstavbou nad voľne dostupným rozhraním od STMicroelectronics.
-
+\begin{figure}[!htpb]
+    \centering
+    \includegraphics[width=9cm]{includes//images/tof_pic.png}
+    \caption{Základný princíp ToF}
+    \label{fig:tof_pic}
+\end{figure}
+Na obrázku \ref{fig:tof_pic} je zobrazený princíp fungovania senzora využívajúceho metódu Time-of-Flight (ToF) pre meranie vzdialenosti. Zariadenie emituje svetelný signál, ktorý sa odrazi od objektu a vráti späť k senzoru.
 \subsubsection{MPU9250}
-%TODO:obrazok co nas zaujima (roll pitch a yaw --> yaw!)
-
 \begin{figure}[!htpb]
     \centering
     \includegraphics[width=10cm]{includes//images/rpy.png}
     \caption{Gyroskop s akcelerometrom MPU9250 }
-    \label{fig:UDP}
+    \label{fig:rpy}
 \end{figure}
 V našom projekte sme použili senzor MPU9250, ktorý je trojosovým akcelerometrom a gyroskopom. Tento senzor nám umožňuje získavať presné údaje o orientácii mikromyši v trojrozmernom priestore. Kľúčovou súčasťou spracovania dát z tohto senzoru je výpočet Eulerových uhlov -- roll, pitch a yaw. Tieto údaje sú neoceniteľné pre stabilizáciu a presné navigačné manévre mikromyši, poskytujúc tak lepší prehľad o jej aktuálnom náklone a orientácii.
 
 \subsubsection{IEH2-4096}
+%TODO: enkodery - inkrementalne, mame vytvoreny impulz counter, ktory nam vrati interrupt po 1/8 natocenia motora -- kazdu 1/8 otocenia motora = tick, prepocitame si to ---- Poprosim skontrolovat
+V rámci nášho projektu sme implementovali impulzové čítače s inkrementálnymi enkodérmi IEH2-4096, ktoré sú pripevnené na motory. Tieto enkodéry generujú signál v podobe elektrických impulzov v závislosti od uhlového pohybu motorov. Pre naše účely sme nastavili systém tak, aby generoval prerušenie po každej 1/8 otáčke motora.
 
-%TODO: enkodery - inkrementalne, mame vytvoreny impulz counter, ktory nam vrati interrupt po 1/8 natocenia motora -- kazdu 1/8 otocenia motora = tick, prepocitame si to
-
+Každý "tick" nám indikuje 1/8 otáčky motora, a pomocou softvéru potom prepočítavame tieto hodnoty na požadované metrické jednotky (napríklad stupne alebo radiány). Tento mechanizmus nám umožňuje presne sledovať a regulovať pohyb mikromyši, čo je kritické pre presné navigačné a kontrolné úlohy v autonómnych aplikáciách.
 \newpage
 \subsection{Odometria}
 \label{subsec:odometria}
 
 % Pridat referencia na~motor a~enkoder ked budu vytvorene v~hardweri
 Podobne ako v~predmete \textit{Riadenie mobilných robotov} sme použili odometriu na~výpočet polohy robota.
-Použili sme na~to inkrementálny enkóder, ktorý je pripojený na~motor. Z enkóderov si získame aktuálnu polohu robota
+Použili sme na~to inkrementálny enkóder \ref{encoder_section}, ktorý je pripojený na~motor \ref{motor_section}. Z enkóderov si získame aktuálnu polohu robota
 cez základný vzťah:
 
 \begin{equation}
@@ -315,7 +317,31 @@ Rovnica \ref{eq:mmps2pwm} obsahuje parametre:
 	\item $\Delta t$ - Časový interval od~posledného merania
 \end{itemize}
 
-
+\newpage
 \subsection{Riadiaci algoritmus}
-
-%TODO: UML Algoritmus, popisat k nemu veci
+%TODO: UML Algoritmus, popisat k nemu veci ----- ak budete chciet menit veci v diagrame, v images bude aj .drawio file, ktory sa da rovno editovat pre usetrenie casu
+\begin{figure}[!htpb]
+    \centering
+    \includegraphics[width=1\linewidth]{includes//images/uml_algo.png}
+    \caption{UML diagram logiky algoritmu }
+    \label{fig:uml_algo}
+\end{figure}
+Na obrázku \ref{fig:uml_algo} je znázornený tokový diagram, ktorý predstavuje algoritmus na rozhodovanie o pohybe v priestore. Tento diagram obsahuje niekoľko krokov a rozhodnutí:
+\begin{enumerate}
+    \item \textbf{Štart - }Začiatočný bod algoritmu.
+    \item \textbf{Slepá ulica? - }Rozhodovací krok, kde sa algoritmus pýta, či sa pred myškou nachádza slepá ulica.
+        \begin{itemize}
+            \item Ak \textbf{áno}, nasleduje krok Otoč sa, čo znamená zmenu smeru o 180 stupňov.
+            \item Ak \textbf{nie}, pokračuje ďalším rozhodnutím.
+        \end{itemize}
+    \item \textbf{Je ľavá stena bližšie ako pravá? - }Ďalšie rozhodovacie kritérium zvažujúce relatívne pozície stien.
+        \begin{itemize}
+            \item Ak \textbf{áno}, nasleduje krok Zaboč doprava.
+            \item Ak \textbf{nie}, presmeruje sa na ďalší rozhodovací bod.
+        \end{itemize}
+    \item \textbf{Sú rovnako vzdialené? - }Rozhoduje, či sú obidve steny rovnako vzdialené od myšky.
+        \begin{itemize}
+            \item Ak \textbf{áno}, nasleduje krok Zaboč doľava.
+            \item Ak \textbf{nie}, vykoná sa krok Udržuj smer, čo znamená pokračovanie v súčasnom smere bez zmeny.
+        \end{itemize}
+\end{enumerate}
