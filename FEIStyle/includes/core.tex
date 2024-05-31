@@ -231,21 +231,20 @@ Alternatívne spustenie je možné pomocou platformy \textbf{Visual Studio Code}
 Klientom v našom prípade je ESP32, ktorý sa používa v PCB mikromyši. Toto zariadenie je zodpovedné za zber údajov o stave a správaní mikromyši a ich odosielanie na server. Komunikácia s serverom prebieha prostredníctvom UDP protokolu, čo umožňuje rýchly a efektívny prenos dát.
 \subsubsection{Server}
 Na strane servera sme použili vývojové prostredie Qt Creator s programovacím jazykom C++ na implementáciu serverovej časti, ktorá prijíma dáta od klienta. Server je integrovaný s mini HMI (Human-Machine Interface) aplikáciou, ktorá umožňuje real-time vizualizáciu dát prostredníctvom grafov a poskytuje užívateľské rozhranie pre sledovanie a ladenie správania mikromyši.
+\newpage
 \begin{figure}[!htpb]
     \centering
-    \includegraphics[width=15cm]{includes//images/image.png}
+    \includegraphics[width=14cm]{includes//images/image.png}
     \caption{Používateľské rozhranie HMI aplikácie }
     \label{fig:UDP}
 \end{figure}
 HMI aplikácia je kľúčovým nástrojom pre efektívne diagnostikovanie a optimalizáciu výkonu autonómnej mikromyši. \ref{fig:UDP} 
-\newpage
 \subsection{Senzory}
-
 \subsubsection{VL53L1X}
 Pre snímanie vzdialenosti bola vytvorená knižnica na kalibráciu a vyčítavanie dát zo senzora VL53L1X. Komunikácia prebieha prostredníctvom komunikačného protokolu $I^2 C$. Knižnica je nadstavbou nad voľne dostupným rozhraním od STMicroelectronics.
 \begin{figure}[!htpb]
     \centering
-    \includegraphics[width=9cm]{includes//images/tof_pic.png}
+    \includegraphics[width=8cm]{includes//images/tof_pic.png}
     \caption{Základný princíp ToF}
     \label{fig:tof_pic}
 \end{figure}
